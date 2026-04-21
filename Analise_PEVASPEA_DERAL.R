@@ -3,20 +3,14 @@ rm(list = ls())
 setwd("/home/gustavo/Área de trabalho/Análise_de_Dados/")
 
 #########################################################################################
-RS <- 22   #####  Colocar AQUI a Regional
 
 ####  libraries a serem utilizadas  ###
 
-library(patchwork)
 library(foreign)
 library (dplyr)
-library (ggplot2)
 library(stringr)
 library(lubridate)
-library(ggspatial)
-library(sf)
 library(tidyr)
-library(gt)
 
 ####  Importando as bases de dados para formulação do Informe Epidemiológico      ####
 ####  As tabelas .CSV do DERAL tiveram os nomes das colunas alterados após serem baixadas
@@ -69,17 +63,6 @@ SIAGRO_2025 <- read.csv(file = "Base_de_Dados/SIAGRO/SIAGRO_2024_atualizado_Nov_
                         header = TRUE,
                         sep = ",")
 
-######   Criando objeto ID_REG. Será utilizado para selecionar
-######   RS no DBF do SINAN ONLINE.
-
-ID_REG <- as.data.frame(BASE_IBGE[which(BASE_IBGE$RS == RS), 6])
-
-ID_REG <- as.numeric(ID_REG[1,1])
-
-####   Estabelecendo o número de municípios em cada RS
-
-nrow <- NROW(BASE_IBGE[which(BASE_IBGE$RS == RS), 1])
-
 #######  2016
 
 ### Corrigindo os nomes dos municípios das 
@@ -106,6 +89,53 @@ VBP_2016$AREA_HA <- as.numeric(gsub(",", ".", VBP_2016$AREA_HA))
 
 ## Vai ser filtrado os cultivos em que o SIAGRO 2025 
 ## aponta como que utilizam agrotóxicos
+Filter_Culturas <- c("SOJA SAFRA NORMAL", 
+                     "SOJA SAFRINHA",
+                     "SILAGEM DE MILHO E/OU SORGO",
+                     "MILHO VERDE (espiga)", 
+                     "MILHO SAFRA NORMAL", 
+                     "MILHO SAFRINHA",
+                     "TRIGO", 
+                     "TRIGO MOURISCO",
+                     "FEIJAO SAFRA DA SECA",
+                     "FEIJAO SAFRA DAS AGUAS",
+                     "FEIJAO SAFRA DE INVERNO",
+                     "FEIJAO-VAGEM",
+                     "PASTAGENS E FORRAGENS",
+                     "BATATA DA SECA",
+                     "BATATA DAS AGUAS",
+                     "CANA-DE-ACUCAR",
+                     "FUMO",
+                     "UVA DE MESA",
+                     "UVA VINIFERA",
+                     "TOMATE SAFRAO",
+                     "CAFE",
+                     "LARANJA",
+                     "LIMAO",
+                     "TANGERINA MONTENEGRINA",
+                     "TANGERINA PONKAN", 
+                     "TANGERINA MURCOTE", 
+                     "MANDIOCA CONSUMO (HUMANO)", 
+                     "MANDIOCA INDUSTRIA",
+                     "AVEIA BRANCA",
+                     "AVEIA PRETA (GRAO)",
+                     "CEBOLA",
+                     "ARROZ IRRIGADO",
+                     "ARROZ SEQUEIRO",
+                     "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO",
+                     "MACA",
+                     "CEVADA",
+                     "MADEIRAS - EM TORA P/LAMINADORA - PINUS", 
+                     "MADEIRAS - EM TORA P/SERRARIA - PINUS",
+                     "AZEVEM GRAOS",
+                     "MELANCIA",
+                     "BANANA",
+                     "PEPINO",
+                     "AMENDOIM SAFRA DAS AGUAS",
+                     "PESSEGO",
+                     "PIMENTAO",
+                     "REPOLHO",
+                     "MORANGO (moranguinho)")
 
 AUX <- VBP_2016 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
@@ -284,10 +314,10 @@ AUX <- VBP_2016 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "REPOLHO" |
                             CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  arrange(desc(AREA_HA)) %>%
+  arrange(desc(AREA_HA)) %>%   #### Selecionando área como fator relevante
   arrange(MUNICIPIO) %>%
   group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  slice_head(n = 6)  #### Selecionando 06 culturas com maior área utilizada
 
 PR_DERAL_2016_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -329,6 +359,19 @@ PR_DERAL_2016_SIMPLIFICADO <- left_join(PR_DERAL_2016_SIMPLIFICADO,
 
 colnames(PR_DERAL_2016_SIMPLIFICADO)[8] <- "TON_AGRO_2016"
 
+#### Incluindo a RS no data frame de cultivos dos municípios
+
+for (i in PR_DERAL_2016_SIMPLIFICADO[, 3]){
+  PR_DERAL_2016_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2016_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 9] <-  PR_DERAL_2016_SIMPLIFICADO[which(PR_DERAL_2016_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2016_CULTIVOS_MUNICIPIOS)[9] <- "RS"
+
+PR_DERAL_2016_CULTIVOS_MUNICIPIOS <- PR_DERAL_2016_CULTIVOS_MUNICIPIOS[, -7]
+
+rm(VBP_2016)
+
 #######  2017
 
 VBP_2017$MUNICIPIO <- str_replace(VBP_2017$MUNICIPIO, "ARAPUAN", "ARAPUA")
@@ -362,7 +405,6 @@ AUX <- VBP_2017 %>%
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -370,7 +412,6 @@ AUX <- VBP_2017 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "BATATA DA SECA" |
            CULTURA == "BATATA DAS AGUAS" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "CANA-DE-ACUCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
@@ -384,7 +425,6 @@ AUX <- VBP_2017 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
            CULTURA == "MANDIOCA INDUSTRIA" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "AVEIA BRANCA" |
            CULTURA == "AVEIA PRETA (GRAO)" |
            CULTURA == "CEBOLA" |
@@ -435,7 +475,6 @@ AUX <- VBP_2017 %>%
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -443,7 +482,6 @@ AUX <- VBP_2017 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "BATATA DA SECA" |
            CULTURA == "BATATA DAS AGUAS" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "CANA-DE-ACUCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
@@ -457,7 +495,6 @@ AUX <- VBP_2017 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
            CULTURA == "MANDIOCA INDUSTRIA" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "AVEIA BRANCA" |
            CULTURA == "AVEIA PRETA (GRAO)" |
            CULTURA == "CEBOLA" |
@@ -496,7 +533,6 @@ AUX <- VBP_2017 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
                             CULTURA == "TRIGO MOURISCO" |
-                            CULTURA == "SEMENTE DE TRIGO" |
                             CULTURA == "FEIJAO SAFRA DA SECA" |
                             CULTURA == "FEIJAO SAFRA DAS AGUAS" |
                             CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -504,7 +540,6 @@ AUX <- VBP_2017 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "PASTAGENS E FORRAGENS" |
                             CULTURA == "BATATA DA SECA" |
                             CULTURA == "BATATA DAS AGUAS" |
-                            CULTURA == "MUDA DE CANA DE ACUCAR" |
                             CULTURA == "CANA-DE-ACUCAR" |
                             CULTURA == "FUMO" |
                             CULTURA == "UVA DE MESA" |
@@ -518,7 +553,6 @@ AUX <- VBP_2017 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "TANGERINA MURCOTE" |
                             CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
                             CULTURA == "MANDIOCA INDUSTRIA" |
-                            CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
                             CULTURA == "AVEIA BRANCA" |
                             CULTURA == "AVEIA PRETA (GRAO)" |
                             CULTURA == "CEBOLA" |
@@ -558,6 +592,43 @@ PR_DERAL_2017_SIMPLIFICADO <- left_join(PR_DERAL_2017_SIMPLIFICADO,
 
 colnames(PR_DERAL_2017_SIMPLIFICADO)[7] <- "MATA_NATIVA"
 
+##### Incluindo dados do SIAGRO 2017
+
+AUX <- SIAGRO_2025[, c(1, 6)]
+
+#### Tornando a coluna "Municipio" compatível para left_join
+
+AUX$Município <- toupper(AUX$Município)
+
+AUX$Município <- iconv(AUX$Município,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+AUX$Município <- str_replace(AUX$Município, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
+AUX$Município <- str_replace(AUX$Município, "PEROLA D'OESTE", "PEROLA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SAO JORGE D'OESTE", "SAO JORGE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+AUX$Município <- str_replace(AUX$Município, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
+
+PR_DERAL_2017_SIMPLIFICADO <- left_join(PR_DERAL_2017_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "Município"))
+
+colnames(PR_DERAL_2017_SIMPLIFICADO)[8] <- "TON_AGRO_2017"
+
+for (i in PR_DERAL_2017_SIMPLIFICADO[, 3]){
+  PR_DERAL_2017_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2017_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 9] <-  PR_DERAL_2017_SIMPLIFICADO[which(PR_DERAL_2017_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2017_CULTIVOS_MUNICIPIOS)[9] <- "RS"
+
+PR_DERAL_2017_CULTIVOS_MUNICIPIOS <- PR_DERAL_2017_CULTIVOS_MUNICIPIOS[, -7]
+
+rm(VBP_2017)
+
 #######  2018
 
 VBP_2018$MUNICIPIO <- str_replace(VBP_2018$MUNICIPIO, "ARAPUAN", "ARAPUA")
@@ -591,7 +662,6 @@ AUX <- VBP_2018 %>%
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -599,7 +669,6 @@ AUX <- VBP_2018 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "BATATA DA SECA" |
            CULTURA == "BATATA DAS AGUAS" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "CANA-DE-ACUCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
@@ -613,7 +682,6 @@ AUX <- VBP_2018 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
            CULTURA == "MANDIOCA INDUSTRIA" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "AVEIA BRANCA" |
            CULTURA == "AVEIA PRETA (GRAO)" |
            CULTURA == "CEBOLA" |
@@ -664,7 +732,6 @@ AUX <- VBP_2018 %>%
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -672,7 +739,6 @@ AUX <- VBP_2018 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "BATATA DA SECA" |
            CULTURA == "BATATA DAS AGUAS" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "CANA-DE-ACUCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
@@ -686,7 +752,6 @@ AUX <- VBP_2018 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
            CULTURA == "MANDIOCA INDUSTRIA" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "AVEIA BRANCA" |
            CULTURA == "AVEIA PRETA (GRAO)" |
            CULTURA == "CEBOLA" |
@@ -725,7 +790,6 @@ AUX <- VBP_2018 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
                             CULTURA == "TRIGO MOURISCO" |
-                            CULTURA == "SEMENTE DE TRIGO" |
                             CULTURA == "FEIJAO SAFRA DA SECA" |
                             CULTURA == "FEIJAO SAFRA DAS AGUAS" |
                             CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -733,7 +797,6 @@ AUX <- VBP_2018 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "PASTAGENS E FORRAGENS" |
                             CULTURA == "BATATA DA SECA" |
                             CULTURA == "BATATA DAS AGUAS" |
-                            CULTURA == "MUDA DE CANA DE ACUCAR" |
                             CULTURA == "CANA-DE-ACUCAR" |
                             CULTURA == "FUMO" |
                             CULTURA == "UVA DE MESA" |
@@ -747,7 +810,6 @@ AUX <- VBP_2018 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "TANGERINA MURCOTE" |
                             CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
                             CULTURA == "MANDIOCA INDUSTRIA" |
-                            CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
                             CULTURA == "AVEIA BRANCA" |
                             CULTURA == "AVEIA PRETA (GRAO)" |
                             CULTURA == "CEBOLA" |
@@ -787,6 +849,43 @@ PR_DERAL_2018_SIMPLIFICADO <- left_join(PR_DERAL_2018_SIMPLIFICADO,
 
 colnames(PR_DERAL_2018_SIMPLIFICADO)[7] <- "MATA_NATIVA"
 
+##### Incluindo dados do SIAGRO 2018
+
+AUX <- SIAGRO_2025[, c(1, 7)]
+
+#### Tornando a coluna "Municipio" compatível para left_join
+
+AUX$Município <- toupper(AUX$Município)
+
+AUX$Município <- iconv(AUX$Município,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+AUX$Município <- str_replace(AUX$Município, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
+AUX$Município <- str_replace(AUX$Município, "PEROLA D'OESTE", "PEROLA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SAO JORGE D'OESTE", "SAO JORGE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+AUX$Município <- str_replace(AUX$Município, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
+
+PR_DERAL_2018_SIMPLIFICADO <- left_join(PR_DERAL_2018_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "Município"))
+
+colnames(PR_DERAL_2018_SIMPLIFICADO)[8] <- "TON_AGRO_2018"
+
+for (i in PR_DERAL_2018_SIMPLIFICADO[, 3]){
+  PR_DERAL_2018_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2018_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 9] <-  PR_DERAL_2018_SIMPLIFICADO[which(PR_DERAL_2018_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2018_CULTIVOS_MUNICIPIOS)[9] <- "RS"
+
+PR_DERAL_2018_CULTIVOS_MUNICIPIOS <- PR_DERAL_2018_CULTIVOS_MUNICIPIOS[, -7]
+
+rm(VBP_2018)
+
 #######  2019
 
 VBP_2019$MUNICIPIO <- toupper(VBP_2019$MUNICIPIO)
@@ -821,7 +920,6 @@ AUX <- VBP_2019 %>%
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "Feijão (1ª safra)" |
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
@@ -829,7 +927,6 @@ AUX <- VBP_2019 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "Batata (1ª safra)" |
            CULTURA == "Batata (2ª safra)" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "Cana-de-açúcar" |
            CULTURA == "Fumo" |
            CULTURA == "UVA DE MESA" |
@@ -844,7 +941,6 @@ AUX <- VBP_2019 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "Mandioca Consumo Humano" |
            CULTURA == "Mandioca  Indústria/Consumo Animal" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "Aveia branca" |
            CULTURA == "Aveia preta" |
            CULTURA == "Cebola" |
@@ -895,7 +991,6 @@ AUX <- VBP_2019 %>%
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "Feijão (1ª safra)" |
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
@@ -903,7 +998,6 @@ AUX <- VBP_2019 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "Batata (1ª safra)" |
            CULTURA == "Batata (2ª safra)" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "Cana-de-açúcar" |
            CULTURA == "Fumo" |
            CULTURA == "UVA DE MESA" |
@@ -918,7 +1012,6 @@ AUX <- VBP_2019 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "Mandioca Consumo Humano" |
            CULTURA == "Mandioca  Indústria/Consumo Animal" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "Aveia branca" |
            CULTURA == "Aveia preta" |
            CULTURA == "Cebola" |
@@ -957,7 +1050,6 @@ AUX <- VBP_2019 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Milho (2ª safra)" |
                             CULTURA == "Trigo" |
                             CULTURA == "TRIGO MOURISCO" |
-                            CULTURA == "SEMENTE DE TRIGO" |
                             CULTURA == "Feijão (1ª safra)" |
                             CULTURA == "Feijão (2ª safra)" |
                             CULTURA == "Feijão (3ª safra)" |
@@ -965,7 +1057,6 @@ AUX <- VBP_2019 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "PASTAGENS E FORRAGENS" |
                             CULTURA == "Batata (1ª safra)" |
                             CULTURA == "Batata (2ª safra)" |
-                            CULTURA == "MUDA DE CANA DE ACUCAR" |
                             CULTURA == "Cana-de-açúcar" |
                             CULTURA == "Fumo" |
                             CULTURA == "UVA DE MESA" |
@@ -980,7 +1071,6 @@ AUX <- VBP_2019 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "TANGERINA MURCOTE" |
                             CULTURA == "Mandioca Consumo Humano" |
                             CULTURA == "Mandioca  Indústria/Consumo Animal" |
-                            CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
                             CULTURA == "Aveia branca" |
                             CULTURA == "Aveia preta" |
                             CULTURA == "Cebola" |
@@ -1023,8 +1113,51 @@ colnames(PR_DERAL_2019_SIMPLIFICADO)[7] <- "MATA_NATIVA"
 ###  Retirando acento dos municípios para poder fazer left_join com as tabelas
 
 PR_DERAL_2019_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2019_SIMPLIFICADO$Município_sem_Código,
-                                                         from = "UTF-8", 
+                                                         from = "UTF-8",
                                                          to = "ASCII//TRANSLIT")
+
+##### Incluindo dados do SIAGRO 2019
+
+AUX <- SIAGRO_2025[, c(1, 8)]
+
+#### Tornando a coluna "Municipio" compatível para left_join
+
+AUX$Município <- toupper(AUX$Município)
+
+AUX$Município <- iconv(AUX$Município,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+AUX$Município <- str_replace(AUX$Município, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
+AUX$Município <- str_replace(AUX$Município, "PEROLA D'OESTE", "PEROLA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SAO JORGE D'OESTE", "SAO JORGE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+AUX$Município <- str_replace(AUX$Município, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
+
+PR_DERAL_2019_SIMPLIFICADO <- left_join(PR_DERAL_2019_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "Município"))
+
+colnames(PR_DERAL_2019_SIMPLIFICADO)[8] <- "TON_AGRO_2019"
+
+###  Retirando acento dos municípios para poder fazer left_join com as tabelas
+
+PR_DERAL_2019_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2019_CULTIVOS_MUNICIPIOS$MUNICIPIO,
+                                                         from = "UTF-8",
+                                                         to = "ASCII//TRANSLIT")
+
+for (i in PR_DERAL_2019_SIMPLIFICADO[, 3]){
+  PR_DERAL_2019_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2019_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 13] <-  PR_DERAL_2019_SIMPLIFICADO[which(PR_DERAL_2019_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2019_CULTIVOS_MUNICIPIOS)[13] <- "RS"
+
+PR_DERAL_2019_CULTIVOS_MUNICIPIOS <- PR_DERAL_2019_CULTIVOS_MUNICIPIOS[, -c(8, 9, 10)]
+
+rm(VBP_2019)
 
 #######  2020
 
@@ -1060,7 +1193,6 @@ AUX <- VBP_2020 %>%
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -1068,7 +1200,6 @@ AUX <- VBP_2020 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "BATATA DA SECA" |
            CULTURA == "BATATA DAS AGUAS" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "CANA-DE-ACUCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
@@ -1082,7 +1213,6 @@ AUX <- VBP_2020 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
            CULTURA == "MANDIOCA INDUSTRIA" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "AVEIA BRANCA" |
            CULTURA == "AVEIA PRETA (GRAO)" |
            CULTURA == "CEBOLA" |
@@ -1109,10 +1239,6 @@ AUX <- VBP_2020 %>%
 
 PR_DERAL_2020_SIMPLIFICADO <- BASE_IBGE[, c(1, 2, 3, 5)]
 
-# PR_DERAL_2020_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2020_SIMPLIFICADO$Município_sem_Código,
-#                                                          from = "UTF-8", 
-#                                                          to = "ASCII//TRANSLIT")
-
 PR_DERAL_2020_SIMPLIFICADO <- left_join(PR_DERAL_2020_SIMPLIFICADO,
                                         AUX,
                                         by = c("Município_sem_Código" = "MUNICIPIO"))
@@ -1133,7 +1259,6 @@ AUX <- VBP_2020 %>%
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -1141,7 +1266,6 @@ AUX <- VBP_2020 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "BATATA DA SECA" |
            CULTURA == "BATATA DAS AGUAS" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "CANA-DE-ACUCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
@@ -1155,7 +1279,6 @@ AUX <- VBP_2020 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
            CULTURA == "MANDIOCA INDUSTRIA" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "AVEIA BRANCA" |
            CULTURA == "AVEIA PRETA (GRAO)" |
            CULTURA == "CEBOLA" |
@@ -1194,7 +1317,6 @@ AUX <- VBP_2020 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
                             CULTURA == "TRIGO MOURISCO" |
-                            CULTURA == "SEMENTE DE TRIGO" |
                             CULTURA == "FEIJAO SAFRA DA SECA" |
                             CULTURA == "FEIJAO SAFRA DAS AGUAS" |
                             CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -1202,7 +1324,6 @@ AUX <- VBP_2020 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "PASTAGENS E FORRAGENS" |
                             CULTURA == "BATATA DA SECA" |
                             CULTURA == "BATATA DAS AGUAS" |
-                            CULTURA == "MUDA DE CANA DE ACUCAR" |
                             CULTURA == "CANA-DE-ACUCAR" |
                             CULTURA == "FUMO" |
                             CULTURA == "UVA DE MESA" |
@@ -1216,7 +1337,6 @@ AUX <- VBP_2020 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "TANGERINA MURCOTE" |
                             CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
                             CULTURA == "MANDIOCA INDUSTRIA" |
-                            CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
                             CULTURA == "AVEIA BRANCA" |
                             CULTURA == "AVEIA PRETA (GRAO)" |
                             CULTURA == "CEBOLA" |
@@ -1261,6 +1381,48 @@ colnames(PR_DERAL_2020_SIMPLIFICADO)[7] <- "MATA_NATIVA"
 PR_DERAL_2020_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2020_SIMPLIFICADO$Município_sem_Código,
                                                          from = "UTF-8", 
                                                          to = "ASCII//TRANSLIT")
+##### Incluindo dados do SIAGRO 2020
+
+AUX <- SIAGRO_2025[, c(1, 9)]
+
+#### Tornando a coluna "Municipio" compatível para left_join
+
+AUX$Município <- toupper(AUX$Município)
+
+AUX$Município <- iconv(AUX$Município,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+AUX$Município <- str_replace(AUX$Município, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
+AUX$Município <- str_replace(AUX$Município, "PEROLA D'OESTE", "PEROLA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SAO JORGE D'OESTE", "SAO JORGE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+AUX$Município <- str_replace(AUX$Município, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
+
+PR_DERAL_2020_SIMPLIFICADO <- left_join(PR_DERAL_2020_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "Município"))
+
+colnames(PR_DERAL_2020_SIMPLIFICADO)[8] <- "TON_AGRO_2020"
+
+###  Retirando acento dos municípios para poder fazer left_join com as tabelas
+
+PR_DERAL_2020_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2020_CULTIVOS_MUNICIPIOS$MUNICIPIO,
+                                                         from = "UTF-8",
+                                                         to = "ASCII//TRANSLIT")
+
+for (i in PR_DERAL_2020_SIMPLIFICADO[, 3]){
+  PR_DERAL_2020_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2020_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 15] <-  PR_DERAL_2020_SIMPLIFICADO[which(PR_DERAL_2020_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2020_CULTIVOS_MUNICIPIOS)[15] <- "RS"
+
+PR_DERAL_2020_CULTIVOS_MUNICIPIOS <- PR_DERAL_2020_CULTIVOS_MUNICIPIOS[, -c(10, 11, 12)]
+
+rm(VBP_2020)
 
 #######  2021
 
@@ -1296,7 +1458,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "Feijão (1ª safra)" |
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
@@ -1304,7 +1465,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "Batata (1ª safra)" |
            CULTURA == "Batata (2ª safra)" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "Cana-de-açúcar" |
            CULTURA == "Fumo" |
            CULTURA == "UVA DE MESA" |
@@ -1319,7 +1479,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "Mandioca Consumo Humano" |
            CULTURA == "Mandioca  Indústria/Consumo Animal" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "Aveia branca" |
            CULTURA == "Aveia preta" |
            CULTURA == "Cebola" |
@@ -1370,7 +1529,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
            CULTURA == "TRIGO MOURISCO" |
-           CULTURA == "SEMENTE DE TRIGO" |
            CULTURA == "Feijão (1ª safra)" |
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
@@ -1378,7 +1536,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "Batata (1ª safra)" |
            CULTURA == "Batata (2ª safra)" |
-           CULTURA == "MUDA DE CANA DE ACUCAR" |
            CULTURA == "Cana-de-açúcar" |
            CULTURA == "Fumo" |
            CULTURA == "UVA DE MESA" |
@@ -1393,7 +1550,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "TANGERINA MURCOTE" |
            CULTURA == "Mandioca Consumo Humano" |
            CULTURA == "Mandioca  Indústria/Consumo Animal" |
-           CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
            CULTURA == "Aveia branca" |
            CULTURA == "Aveia preta" |
            CULTURA == "Cebola" |
@@ -1432,7 +1588,6 @@ AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Milho (2ª safra)" |
                             CULTURA == "Trigo" |
                             CULTURA == "TRIGO MOURISCO" |
-                            CULTURA == "SEMENTE DE TRIGO" |
                             CULTURA == "Feijão (1ª safra)" |
                             CULTURA == "Feijão (2ª safra)" |
                             CULTURA == "Feijão (3ª safra)" |
@@ -1440,7 +1595,6 @@ AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "PASTAGENS E FORRAGENS" |
                             CULTURA == "Batata (1ª safra)" |
                             CULTURA == "Batata (2ª safra)" |
-                            CULTURA == "MUDA DE CANA DE ACUCAR" |
                             CULTURA == "Cana-de-açúcar" |
                             CULTURA == "Fumo" |
                             CULTURA == "UVA DE MESA" |
@@ -1455,7 +1609,6 @@ AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "TANGERINA MURCOTE" |
                             CULTURA == "Mandioca Consumo Humano" |
                             CULTURA == "Mandioca  Indústria/Consumo Animal" |
-                            CULTURA == "MUDA DE MANDIOCA (MANIVAS)" |
                             CULTURA == "Aveia branca" |
                             CULTURA == "Aveia preta" |
                             CULTURA == "Cebola" |
@@ -1500,6 +1653,47 @@ colnames(PR_DERAL_2021_SIMPLIFICADO)[7] <- "MATA_NATIVA"
 PR_DERAL_2021_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2021_SIMPLIFICADO$Município_sem_Código,
                                                          from = "UTF-8", 
                                                          to = "ASCII//TRANSLIT")
+
+##### Incluindo dados do SIAGRO 2021
+
+AUX <- SIAGRO_2025[, c(1, 10)]
+
+#### Tornando a coluna "Municipio" compatível para left_join
+
+AUX$Município <- toupper(AUX$Município)
+
+AUX$Município <- iconv(AUX$Município,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+AUX$Município <- str_replace(AUX$Município, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
+AUX$Município <- str_replace(AUX$Município, "PEROLA D'OESTE", "PEROLA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SAO JORGE D'OESTE", "SAO JORGE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+AUX$Município <- str_replace(AUX$Município, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
+
+PR_DERAL_2021_SIMPLIFICADO <- left_join(PR_DERAL_2021_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "Município"))
+
+colnames(PR_DERAL_2021_SIMPLIFICADO)[8] <- "TON_AGRO_2021"
+
+PR_DERAL_2021_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2021_CULTIVOS_MUNICIPIOS$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+for (i in PR_DERAL_2021_SIMPLIFICADO[, 3]){
+  PR_DERAL_2021_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2021_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 17] <-  PR_DERAL_2021_SIMPLIFICADO[which(PR_DERAL_2021_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2021_CULTIVOS_MUNICIPIOS)[17] <- "RS"
+
+PR_DERAL_2021_CULTIVOS_MUNICIPIOS <- PR_DERAL_2021_CULTIVOS_MUNICIPIOS[, -c(8, 9, 10)]
+
+rm(VBP_2021)
 
 #######  2022
 
@@ -1581,10 +1775,6 @@ AUX <- VBP_2022 %>%
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
 PR_DERAL_2022_SIMPLIFICADO <- BASE_IBGE[, c(1, 2, 3, 5)]
-
-# PR_DERAL_2022_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2022_SIMPLIFICADO$Município_sem_Código,
-#                                                          from = "UTF-8", 
-#                                                          to = "ASCII//TRANSLIT")
 
 PR_DERAL_2022_SIMPLIFICADO <- left_join(PR_DERAL_2022_SIMPLIFICADO,
                                         AUX,
@@ -1731,6 +1921,47 @@ PR_DERAL_2022_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2022_SIMPLIF
                                                          from = "UTF-8", 
                                                          to = "ASCII//TRANSLIT")
 
+##### Incluindo dados do SIAGRO 2022
+
+AUX <- SIAGRO_2025[, c(1, 11)]
+
+#### Tornando a coluna "Municipio" compatível para left_join
+
+AUX$Município <- toupper(AUX$Município)
+
+AUX$Município <- iconv(AUX$Município,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+AUX$Município <- str_replace(AUX$Município, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
+AUX$Município <- str_replace(AUX$Município, "PEROLA D'OESTE", "PEROLA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SAO JORGE D'OESTE", "SAO JORGE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+AUX$Município <- str_replace(AUX$Município, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
+
+PR_DERAL_2022_SIMPLIFICADO <- left_join(PR_DERAL_2022_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "Município"))
+
+colnames(PR_DERAL_2022_SIMPLIFICADO)[8] <- "TON_AGRO_2022"
+
+PR_DERAL_2022_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2022_CULTIVOS_MUNICIPIOS$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+for (i in PR_DERAL_2022_SIMPLIFICADO[, 3]){
+  PR_DERAL_2022_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2022_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 18] <-  PR_DERAL_2022_SIMPLIFICADO[which(PR_DERAL_2022_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2022_CULTIVOS_MUNICIPIOS)[18] <- "RS"
+
+PR_DERAL_2022_CULTIVOS_MUNICIPIOS <- PR_DERAL_2022_CULTIVOS_MUNICIPIOS[, -c(8, 9, 10)]
+
+rm(VBP_2022)
+
 #######  2023
 
 VBP_2023$MUNICIPIO <- toupper(VBP_2023$MUNICIPIO)
@@ -1775,7 +2006,7 @@ AUX <- VBP_2023 %>%
            CULTURA == "CANA-DE-AÇÚCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
-           CULTURA == "UVA VINIFERA" |
+           CULTURA == "UVA TRANSFORMAÇÃO" |
            CULTURA == "TOMATE (1ª SAFRA)" |
            CULTURA == "TOMATE (2ª SAFRA)" |
            CULTURA == "CAFÉ" |
@@ -1812,10 +2043,6 @@ AUX <- VBP_2023 %>%
 
 PR_DERAL_2023_SIMPLIFICADO <- BASE_IBGE[, c(1, 2, 3, 5)]
 
-# PR_DERAL_2023_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2023_SIMPLIFICADO$Município_sem_Código,
-#                                                          from = "UTF-8", 
-#                                                          to = "ASCII//TRANSLIT")
-
 PR_DERAL_2023_SIMPLIFICADO <- left_join(PR_DERAL_2023_SIMPLIFICADO,
                                         AUX,
                                         by = c("Município_sem_Código" = "MUNICIPIO"))
@@ -1846,7 +2073,7 @@ AUX <- VBP_2023 %>%
            CULTURA == "CANA-DE-AÇÚCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
-           CULTURA == "UVA VINIFERA" |
+           CULTURA == "UVA TRANSFORMAÇÃO" |
            CULTURA == "TOMATE (1ª SAFRA)" |
            CULTURA == "TOMATE (2ª SAFRA)" |
            CULTURA == "CAFÉ" |
@@ -1905,7 +2132,7 @@ AUX <- VBP_2023 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "CANA-DE-AÇÚCAR" |
                             CULTURA == "FUMO" |
                             CULTURA == "UVA DE MESA" |
-                            CULTURA == "UVA VINIFERA" |
+                            CULTURA == "UVA TRANSFORMAÇÃO" |
                             CULTURA == "TOMATE (1ª SAFRA)" |
                             CULTURA == "TOMATE (2ª SAFRA)" |
                             CULTURA == "CAFÉ" |
@@ -1961,6 +2188,47 @@ PR_DERAL_2023_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2023_SIMPLIF
                                                          from = "UTF-8", 
                                                          to = "ASCII//TRANSLIT")
 
+##### Incluindo dados do SIAGRO 2023
+
+AUX <- SIAGRO_2025[, c(1, 12)]
+
+#### Tornando a coluna "Municipio" compatível para left_join
+
+AUX$Município <- toupper(AUX$Município)
+
+AUX$Município <- iconv(AUX$Município,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+AUX$Município <- str_replace(AUX$Município, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
+AUX$Município <- str_replace(AUX$Município, "PEROLA D'OESTE", "PEROLA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SAO JORGE D'OESTE", "SAO JORGE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+AUX$Município <- str_replace(AUX$Município, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
+
+PR_DERAL_2023_SIMPLIFICADO <- left_join(PR_DERAL_2023_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "Município"))
+
+colnames(PR_DERAL_2023_SIMPLIFICADO)[8] <- "TON_AGRO_2023"
+
+PR_DERAL_2023_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2023_CULTIVOS_MUNICIPIOS$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+for (i in PR_DERAL_2023_SIMPLIFICADO[, 3]){
+  PR_DERAL_2023_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2023_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 18] <-  PR_DERAL_2023_SIMPLIFICADO[which(PR_DERAL_2023_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2023_CULTIVOS_MUNICIPIOS)[18] <- "RS"
+
+PR_DERAL_2023_CULTIVOS_MUNICIPIOS <- PR_DERAL_2023_CULTIVOS_MUNICIPIOS[, -c(8, 9, 10)]
+
+rm(VBP_2023)
+
 #######  2024
 
 VBP_2024$MUNICIPIO <- toupper(VBP_2024$MUNICIPIO)
@@ -2005,7 +2273,7 @@ AUX <- VBP_2024 %>%
            CULTURA == "CANA-DE-AÇÚCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
-           CULTURA == "UVA VINIFERA" |
+           CULTURA == "UVA TRANSFORMAÇÃO" |
            CULTURA == "TOMATE (1ª SAFRA)" |
            CULTURA == "TOMATE (2ª SAFRA)" |
            CULTURA == "CAFÉ" |
@@ -2042,10 +2310,6 @@ AUX <- VBP_2024 %>%
 
 PR_DERAL_2024_SIMPLIFICADO <- BASE_IBGE[, c(1, 2, 3, 5)]
 
-# PR_DERAL_2024_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2024_SIMPLIFICADO$Município_sem_Código,
-#                                                          from = "UTF-8", 
-#                                                          to = "ASCII//TRANSLIT")
-
 PR_DERAL_2024_SIMPLIFICADO <- left_join(PR_DERAL_2024_SIMPLIFICADO,
                                         AUX,
                                         by = c("Município_sem_Código" = "MUNICIPIO"))
@@ -2076,7 +2340,7 @@ AUX <- VBP_2024 %>%
            CULTURA == "CANA-DE-AÇÚCAR" |
            CULTURA == "FUMO" |
            CULTURA == "UVA DE MESA" |
-           CULTURA == "UVA VINIFERA" |
+           CULTURA == "UVA TRANSFORMAÇÃO" |
            CULTURA == "TOMATE (1ª SAFRA)" |
            CULTURA == "TOMATE (2ª SAFRA)" |
            CULTURA == "CAFÉ" |
@@ -2135,7 +2399,7 @@ AUX <- VBP_2024 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "CANA-DE-AÇÚCAR" |
                             CULTURA == "FUMO" |
                             CULTURA == "UVA DE MESA" |
-                            CULTURA == "UVA VINIFERA" |
+                            CULTURA == "UVA TRANSFORMAÇÃO" |
                             CULTURA == "TOMATE (1ª SAFRA)" |
                             CULTURA == "TOMATE (2ª SAFRA)" |
                             CULTURA == "CAFÉ" |
@@ -2191,14 +2455,119 @@ PR_DERAL_2024_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2024_SIMPLIF
                                                          from = "UTF-8", 
                                                          to = "ASCII//TRANSLIT")
 
+##### Incluindo dados do SIAGRO 2024
 
-# AUX <- PR_DERAL_CULTIVOS_MUNICIPIOS %>% 
-#   select(MUNICIPIO, CULTURA, UNIDADE, AREA_HA, PRODUCAO, VALOR_Reais) %>%
-#   filter(!is.na(AREA_HA),
-#          UNIDADE == "TON" |
-#            UNIDADE == "HA" &
-#            CULTURA != str_detect(CULTURA, "ESTERC") )
-# 
-# TES <- AUX %>%
-#   pivot_wider(names_from = CULTURA,
-#               values_from = c(UNIDADE, AREA_HA, PRODUCAO, VALOR_Reais))
+AUX <- SIAGRO_2025[, c(1, 13)]
+
+#### Tornando a coluna "Municipio" compatível para left_join
+
+AUX$Município <- toupper(AUX$Município)
+
+AUX$Município <- iconv(AUX$Município,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+AUX$Município <- str_replace(AUX$Município, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
+AUX$Município <- str_replace(AUX$Município, "PEROLA D'OESTE", "PEROLA DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SAO JORGE D'OESTE", "SAO JORGE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
+AUX$Município <- str_replace(AUX$Município, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+AUX$Município <- str_replace(AUX$Município, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
+
+PR_DERAL_2024_SIMPLIFICADO <- left_join(PR_DERAL_2024_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "Município"))
+
+colnames(PR_DERAL_2024_SIMPLIFICADO)[8] <- "TON_AGRO_2024"
+
+PR_DERAL_2024_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2024_CULTIVOS_MUNICIPIOS$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+for (i in PR_DERAL_2024_SIMPLIFICADO[, 3]){
+  PR_DERAL_2024_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2024_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 18] <-  PR_DERAL_2024_SIMPLIFICADO[which(PR_DERAL_2024_SIMPLIFICADO$Município_sem_Código == i), 1]
+  
+}
+
+colnames(PR_DERAL_2024_CULTIVOS_MUNICIPIOS)[18] <- "RS"
+
+PR_DERAL_2024_CULTIVOS_MUNICIPIOS <- PR_DERAL_2024_CULTIVOS_MUNICIPIOS[, -c(8, 9, 10)]
+
+rm(VBP_2024,
+   SIAGRO_2025)
+
+####### Salvando arquivos
+
+write.csv(PR_DERAL_2016_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2016_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2016_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2016_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2017_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2017_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2017_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2017_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2018_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2018_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2018_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2018_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2019_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2019_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2019_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2019_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2020_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2020_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2020_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2020_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2021_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2021_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2021_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2021_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2022_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2022_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2022_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2022_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2023_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2023_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2023_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2023_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2024_CULTIVOS_MUNICIPIOS, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2024_CULTIVOS_MUNICIPIOS.csv",
+          row.names = FALSE)
+
+write.csv(PR_DERAL_2024_SIMPLIFICADO, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2024_SIMPLIFICADO.csv",
+          row.names = FALSE)
+
