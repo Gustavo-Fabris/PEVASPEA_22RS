@@ -96,7 +96,6 @@ Filter_Culturas <- c("SOJA SAFRA NORMAL",
                      "MILHO SAFRA NORMAL", 
                      "MILHO SAFRINHA",
                      "TRIGO", 
-                     "TRIGO MOURISCO",
                      "FEIJAO SAFRA DA SECA",
                      "FEIJAO SAFRA DAS AGUAS",
                      "FEIJAO SAFRA DE INVERNO",
@@ -145,7 +144,6 @@ AUX <- VBP_2016 %>%
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -215,7 +213,6 @@ AUX <- VBP_2016 %>%
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -273,7 +270,6 @@ AUX <- VBP_2016 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "FEIJAO SAFRA DA SECA" |
                             CULTURA == "FEIJAO SAFRA DAS AGUAS" |
                             CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -404,7 +400,6 @@ AUX <- VBP_2017 %>%
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -474,7 +469,6 @@ AUX <- VBP_2017 %>%
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -532,7 +526,6 @@ AUX <- VBP_2017 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "FEIJAO SAFRA DA SECA" |
                             CULTURA == "FEIJAO SAFRA DAS AGUAS" |
                             CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -661,7 +654,6 @@ AUX <- VBP_2018 %>%
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -731,7 +723,6 @@ AUX <- VBP_2018 %>%
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -789,7 +780,6 @@ AUX <- VBP_2018 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "FEIJAO SAFRA DA SECA" |
                             CULTURA == "FEIJAO SAFRA DAS AGUAS" |
                             CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -919,7 +909,6 @@ AUX <- VBP_2019 %>%
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "Feijão (1ª safra)" |
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
@@ -990,7 +979,6 @@ AUX <- VBP_2019 %>%
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "Feijão (1ª safra)" |
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
@@ -1049,7 +1037,6 @@ AUX <- VBP_2019 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Milho (1ª safra)" |
                             CULTURA == "Milho (2ª safra)" |
                             CULTURA == "Trigo" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "Feijão (1ª safra)" |
                             CULTURA == "Feijão (2ª safra)" |
                             CULTURA == "Feijão (3ª safra)" |
@@ -1192,7 +1179,6 @@ AUX <- VBP_2020 %>%
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -1258,7 +1244,6 @@ AUX <- VBP_2020 %>%
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -1316,7 +1301,6 @@ AUX <- VBP_2020 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "FEIJAO SAFRA DA SECA" |
                             CULTURA == "FEIJAO SAFRA DAS AGUAS" |
                             CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -1457,7 +1441,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "Feijão (1ª safra)" |
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
@@ -1528,7 +1511,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "Feijão (1ª safra)" |
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
@@ -1587,7 +1569,6 @@ AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Milho (1ª safra)" |
                             CULTURA == "Milho (2ª safra)" |
                             CULTURA == "Trigo" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "Feijão (1ª safra)" |
                             CULTURA == "Feijão (2ª safra)" |
                             CULTURA == "Feijão (3ª safra)" |
@@ -1728,7 +1709,6 @@ AUX <- VBP_2022 %>%
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJÃO (1ª SAFRA)" |
            CULTURA == "FEIJÃO (2ª SAFRA)" |
            CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -1795,7 +1775,6 @@ AUX <- VBP_2022 %>%
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJÃO (1ª SAFRA)" |
            CULTURA == "FEIJÃO (2ª SAFRA)" |
            CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -1854,7 +1833,6 @@ AUX <- VBP_2022 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "FEIJÃO (1ª SAFRA)" |
                             CULTURA == "FEIJÃO (2ª SAFRA)" |
                             CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -1995,7 +1973,6 @@ AUX <- VBP_2023 %>%
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJÃO (1ª SAFRA)" |
            CULTURA == "FEIJÃO (2ª SAFRA)" |
            CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -2062,7 +2039,6 @@ AUX <- VBP_2023 %>%
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJÃO (1ª SAFRA)" |
            CULTURA == "FEIJÃO (2ª SAFRA)" |
            CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -2121,7 +2097,6 @@ AUX <- VBP_2023 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "FEIJÃO (1ª SAFRA)" |
                             CULTURA == "FEIJÃO (2ª SAFRA)" |
                             CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -2233,14 +2208,14 @@ rm(VBP_2023)
 
 VBP_2024$MUNICIPIO <- toupper(VBP_2024$MUNICIPIO)
 
-VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "ITAPEJARA DO OESTE", "ITAPEJARA DOESTE")
+VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
 VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
-VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "PEROLA DO OESTE", "PEROLA DOESTE")
-VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "SAO JORGE DO OESTE", "SAO JORGE DOESTE")
+VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "PÉROLA D'OESTE", "PÉROLA DOESTE")
+VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "SÃO JORGE D'OESTE", "SÃO JORGE DOESTE")
 VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "SANTA TEREZINHA DO ITAIPU", "SANTA TEREZINHA DE ITAIPU")
-VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "RANCHO ALEGRE DO OESTE", "RANCHO ALEGRE DOESTE")
+VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
 VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "SAUDADES DO IGUACU", "SAUDADE DO IGUACU")
-VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "SANTA CRUZ DO MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
+VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
 VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "SANTA IZABEL DO IVAI", "SANTA ISABEL DO IVAI")
 VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "MUNHOZ DE MELO", "MUNHOZ DE MELLO")
 VBP_2024$MUNICIPIO <- str_replace(VBP_2024$MUNICIPIO, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
@@ -2262,7 +2237,6 @@ AUX <- VBP_2024 %>%
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJÃO (1ª SAFRA)" |
            CULTURA == "FEIJÃO (2ª SAFRA)" |
            CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -2329,7 +2303,6 @@ AUX <- VBP_2024 %>%
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
-           CULTURA == "TRIGO MOURISCO" |
            CULTURA == "FEIJÃO (1ª SAFRA)" |
            CULTURA == "FEIJÃO (2ª SAFRA)" |
            CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -2388,7 +2361,6 @@ AUX <- VBP_2024 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |
-                            CULTURA == "TRIGO MOURISCO" |
                             CULTURA == "FEIJÃO (1ª SAFRA)" |
                             CULTURA == "FEIJÃO (2ª SAFRA)" |
                             CULTURA == "FEIJÃO (3ª SAFRA)" |
@@ -2496,6 +2468,14 @@ PR_DERAL_2024_CULTIVOS_MUNICIPIOS <- PR_DERAL_2024_CULTIVOS_MUNICIPIOS[, -c(8, 9
 
 rm(VBP_2024,
    SIAGRO_2025)
+
+####### Consumo Agrotóxico/HA
+
+PR_DERAL_2024_SIMPLIFICADO$TON_AGRO_2024 <- as.numeric(gsub(",", ".", PR_DERAL_2024_SIMPLIFICADO$TON_AGRO_2024))
+
+
+PR_DERAL_2024_SIMPLIFICADO$AGRO_HA <- PR_DERAL_2024_SIMPLIFICADO$TON_AGRO_2024/PR_DERAL_2024_SIMPLIFICADO$AREA_HA
+
 
 ####### Salvando arquivos
 

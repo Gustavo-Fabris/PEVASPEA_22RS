@@ -10,9 +10,7 @@ RS <- 22   #####  Colocar AQUI a Regional
 library(patchwork)
 library(foreign)
 library (dplyr)
-library (googlesheets4)
 library (ggplot2)
-library (httpuv)
 library(stringr)
 library(lubridate)
 library(ggspatial)
@@ -69,6 +67,94 @@ AUX <- DNPR2016 %>% filter(Regional == RS)
 write.csv (assign(paste0("RS", RS, "_SINASC_2016"), AUX), 
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2016.csv"), 
            row.names = FALSE)
+
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2016$DTNASC)
+
+DNPR2016$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2016 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2016", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2016 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2016", AUX)
+
+#######
 
 ############################################################################
 
@@ -410,6 +496,93 @@ write.csv (assign(paste0("RS", RS, "_SINASC_2017"), AUX),
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2017.csv"), 
            row.names = FALSE)
 
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2017$DTNASC)
+
+DNPR2017$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2017 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2017", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2017 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2017", AUX)
+
 ############################################################################
 
 AUX <- data.frame(Município = BASE_IBGE[which(BASE_IBGE$RS == RS), 3])
@@ -749,6 +922,94 @@ AUX <- DNPR2018 %>% filter(Regional == RS)
 write.csv (assign(paste0("RS", RS, "_SINASC_2018"), AUX), 
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2018.csv"), 
            row.names = FALSE)
+
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2018$DTNASC)
+
+DNPR2018$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2018 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2018", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2018 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2018", AUX)
+
 
 ############################################################################
 
@@ -1092,6 +1353,93 @@ write.csv (assign(paste0("RS", RS, "_SINASC_2019"), AUX),
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2019.csv"), 
            row.names = FALSE)
 
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2019$DTNASC)
+
+DNPR2019$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2019 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2019", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2019 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2019", AUX)
+
 ############################################################################
 
 AUX <- data.frame(Município = BASE_IBGE[which(BASE_IBGE$RS == RS), 3])
@@ -1431,6 +1779,93 @@ AUX <- DNPR2020 %>% filter(Regional == RS)
 write.csv (assign(paste0("RS", RS, "_SINASC_2020"), AUX), 
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2020.csv"), 
            row.names = FALSE)
+
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2020$DTNASC)
+
+DNPR2020$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2020 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2020", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2020 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2020", AUX)
 
 ############################################################################
 
@@ -1772,6 +2207,93 @@ write.csv (assign(paste0("RS", RS, "_SINASC_2021"), AUX),
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2021.csv"), 
            row.names = FALSE)
 
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2021$DTNASC)
+
+DNPR2021$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2021 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2021", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2021 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2021", AUX)
+
 ############################################################################
 
 AUX <- data.frame(Município = BASE_IBGE[which(BASE_IBGE$RS == RS), 3])
@@ -2111,6 +2633,93 @@ AUX <- DNPR2022 %>% filter(Regional == RS)
 write.csv (assign(paste0("RS", RS, "_SINASC_2022"), AUX), 
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2022.csv"), 
            row.names = FALSE)
+
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2022$DTNASC)
+
+DNPR2022$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2022 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2022", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2022 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2022", AUX)
 
 ############################################################################
 
@@ -2452,6 +3061,93 @@ write.csv (assign(paste0("RS", RS, "_SINASC_2023"), AUX),
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2023.csv"), 
            row.names = FALSE)
 
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2023$DTNASC)
+
+DNPR2023$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2023 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2023", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2023 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2023", AUX)
+
 ############################################################################
 
 AUX <- data.frame(Município = BASE_IBGE[which(BASE_IBGE$RS == RS), 3])
@@ -2792,6 +3488,93 @@ write.csv (assign(paste0("RS", RS, "_SINASC_2024"), AUX),
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2024.csv"), 
            row.names = FALSE)
 
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2024$DTNASC)
+
+DNPR2024$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2024 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2024", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2024 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2024", AUX)
+
 ############################################################################
 
 AUX <- data.frame(Município = BASE_IBGE[which(BASE_IBGE$RS == RS), 3])
@@ -3131,6 +3914,93 @@ AUX <- DNPR2025 %>% filter(Regional == RS)
 write.csv (assign(paste0("RS", RS, "_SINASC_2025"), AUX), 
            paste0("Tabulacoes_R/SINASC/RS", RS, "_SINASC_2025.csv"), 
            row.names = FALSE)
+
+####  Criando tabela de nascimentos por SE
+
+AUX <- dmy(DNPR2025$DTNASC)
+
+DNPR2025$SE <- epiweek(AUX)
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2025 %>%
+                                            filter(CODMUNRES == i,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_NASC_SE_2025", AUX)
+
+####  Criando tabela de anomalias por SE
+
+AUX <- matrix(data = NA, 
+              nrow = 399, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[, 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 1
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[, 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(DNPR2025 %>%
+                                            filter(CODMUNRES == i,
+                                                   IDANOMAL == 1,
+                                                   SE == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+
+AUX[,1] <- BASE_IBGE[, 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign("PR_PEVASPEA_SINASC_ANOMAL_SE_2025", AUX)
 
 ############################################################################
 
@@ -3621,16 +4491,36 @@ write.csv (assign(paste0("RS", RS, "_PEVASPEA_SINASC_Serie_historica_Mun"), AUX)
            row.names = FALSE)
 
 AUX <- data.frame(PR_PEVASPEA_SINASC_2025[, c(1:4)],
-                  '2016' = (PR_PEVASPEA_SINASC_2016[, 6]/PR_PEVASPEA_SINASC_2016[, 5]) *1000,
-                  "2017" = (PR_PEVASPEA_SINASC_2017[, 6]/PR_PEVASPEA_SINASC_2017[, 5]) *1000,
-                  "2018" = (PR_PEVASPEA_SINASC_2018[, 6]/PR_PEVASPEA_SINASC_2018[, 5]) *1000,
-                  "2019" = (PR_PEVASPEA_SINASC_2019[, 6]/PR_PEVASPEA_SINASC_2019[, 5]) *1000,
-                  "2020" = (PR_PEVASPEA_SINASC_2020[, 6]/PR_PEVASPEA_SINASC_2020[, 5]) *1000,
-                  "2021" = (PR_PEVASPEA_SINASC_2021[, 6]/PR_PEVASPEA_SINASC_2021[, 5]) *1000,
-                  '2022' = (PR_PEVASPEA_SINASC_2022[, 6]/PR_PEVASPEA_SINASC_2022[, 5]) *1000,
-                  '2023' = (PR_PEVASPEA_SINASC_2023[, 6]/PR_PEVASPEA_SINASC_2023[, 5]) *1000,
-                  '2024' = (PR_PEVASPEA_SINASC_2024[, 6]/PR_PEVASPEA_SINASC_2024[, 5]) *1000,
-                  '2025' = (PR_PEVASPEA_SINASC_2025[, 6]/PR_PEVASPEA_SINASC_2025[, 5]) *1000)
+                  "Nascidos_2016" = PR_PEVASPEA_SINASC_2016[, 5], 
+                  "N_2016" = PR_PEVASPEA_SINASC_2016[, 6], 
+                  'Taxa_2016' = (PR_PEVASPEA_SINASC_2016[, 6]/PR_PEVASPEA_SINASC_2016[, 5]) *1000,
+                  "Nascidos_2017" = PR_PEVASPEA_SINASC_2017[, 5],
+                  "N_2017" = PR_PEVASPEA_SINASC_2017[, 6],
+                  "Taxa_2017" = (PR_PEVASPEA_SINASC_2017[, 6]/PR_PEVASPEA_SINASC_2017[, 5]) *1000,
+                  "Nascidos_2018" = PR_PEVASPEA_SINASC_2018[, 5],
+                  "N_2018" = PR_PEVASPEA_SINASC_2018[, 6],
+                  "Taxa_2018" = (PR_PEVASPEA_SINASC_2018[, 6]/PR_PEVASPEA_SINASC_2018[, 5]) *1000,
+                  "Nascidos_2019" = PR_PEVASPEA_SINASC_2019[, 5],
+                  "N_2019" = PR_PEVASPEA_SINASC_2019[, 6],
+                  "Taxa_2019" = (PR_PEVASPEA_SINASC_2019[, 6]/PR_PEVASPEA_SINASC_2019[, 5]) *1000,
+                  "Nascidos_2020" = PR_PEVASPEA_SINASC_2020[, 5],
+                  "N_2020" = PR_PEVASPEA_SINASC_2020[, 6],
+                  "Taxa_2020" = (PR_PEVASPEA_SINASC_2020[, 6]/PR_PEVASPEA_SINASC_2020[, 5]) *1000,
+                  "Nascidos_2021" = PR_PEVASPEA_SINASC_2021[, 5],
+                  "N_2021" = PR_PEVASPEA_SINASC_2021[, 6],
+                  "Taxa_2021" = (PR_PEVASPEA_SINASC_2021[, 6]/PR_PEVASPEA_SINASC_2021[, 5]) *1000,
+                  "Nascidos_2022" = PR_PEVASPEA_SINASC_2022[, 5],
+                  "N_2022" = PR_PEVASPEA_SINASC_2022[, 6],
+                  'Taxa_2022' = (PR_PEVASPEA_SINASC_2022[, 6]/PR_PEVASPEA_SINASC_2022[, 5]) *1000,
+                  "Nascidos_2023" = PR_PEVASPEA_SINASC_2023[, 5],
+                  "N_2023" = PR_PEVASPEA_SINASC_2023[, 6],
+                  'Taxa_2023' = (PR_PEVASPEA_SINASC_2023[, 6]/PR_PEVASPEA_SINASC_2023[, 5]) *1000,
+                  "Nascidos_2024" = PR_PEVASPEA_SINASC_2024[, 5],
+                  "N_2024" = PR_PEVASPEA_SINASC_2024[, 6],
+                  'Taxa_2024' = (PR_PEVASPEA_SINASC_2024[, 6]/PR_PEVASPEA_SINASC_2024[, 5]) *1000,
+                  "Nascidos_2025" = PR_PEVASPEA_SINASC_2025[, 5],
+                  "N_2025" = PR_PEVASPEA_SINASC_2025[, 6],
+                  'Taxa_2025' = (PR_PEVASPEA_SINASC_2025[, 6]/PR_PEVASPEA_SINASC_2025[, 5]) *1000)
 
 write.csv (assign(paste0("PR_PEVASPEA_SINASC_Serie_historica_Mun"), AUX), 
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_Serie_historica_Mun.csv"), 
@@ -3777,6 +4667,149 @@ colnames(AUX)[4] <- "Anomalias_Pri_2025"
 AUX$Taxa_Anomalias_2025 <- (AUX$Anomalias_2025/AUX$Nascidos_2025) * 1000
 
 AUX01[, 38:41] <- AUX[, 2:5]
+
+PR_PEVASPEA_SINASC_RS_Serie_Historica <- AUX01
+
+write.csv (PR_PEVASPEA_SINASC_RS_Serie_Historica, 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_RS_Serie_Historica.csv"), 
+           row.names = FALSE)
+
+#### Histórico de nascimentos PR p/SE
+
+PR_PEVASPEA_SINASC_NASC_SE_GERAL <- PR_PEVASPEA_SINASC_NASC_SE_2016[nrow(PR_PEVASPEA_SINASC_NASC_SE_2016),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[1,1] <- "2016"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2017[nrow(PR_PEVASPEA_SINASC_NASC_SE_2017),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[2,1] <- "2017"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2018[nrow(PR_PEVASPEA_SINASC_NASC_SE_2018),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[3,1] <- "2018"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2019[nrow(PR_PEVASPEA_SINASC_NASC_SE_2019),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[4,1] <- "2019"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2020[nrow(PR_PEVASPEA_SINASC_NASC_SE_2020),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[5,1] <- "2020"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2021[nrow(PR_PEVASPEA_SINASC_NASC_SE_2021),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[6,1] <- "2021"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2022[nrow(PR_PEVASPEA_SINASC_NASC_SE_2022),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[7,1] <- "2022"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2023[nrow(PR_PEVASPEA_SINASC_NASC_SE_2023),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[8,1] <- "2023"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2024[nrow(PR_PEVASPEA_SINASC_NASC_SE_2024),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[9,1] <- "2024"
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[nrow(PR_PEVASPEA_SINASC_NASC_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_NASC_SE_2025[nrow(PR_PEVASPEA_SINASC_NASC_SE_2025),]
+PR_PEVASPEA_SINASC_NASC_SE_GERAL[10,1] <- "2025"
+
+#### Histórico de anomalias PR p/SE
+
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL <- PR_PEVASPEA_SINASC_ANOMAL_SE_2016[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2016),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[1,1] <- "2016"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2017[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2017),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[2,1] <- "2017"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2018[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2018),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[3,1] <- "2018"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2019[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2019),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[4,1] <- "2019"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2020[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2020),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[5,1] <- "2020"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2021[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2021),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[6,1] <- "2021"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2022[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2022),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[7,1] <- "2022"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2023[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2023),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[8,1] <- "2023"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2024[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2024),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[9,1] <- "2024"
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL) +1,] <- PR_PEVASPEA_SINASC_ANOMAL_SE_2025[nrow(PR_PEVASPEA_SINASC_ANOMAL_SE_2025),]
+PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[10,1] <- "2025"
+
+#### Salvando arquivos que ficaram para trás
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_GERAL, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2016, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2016.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2017, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2017.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2018, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2018.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2019, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2019.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2020, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2020.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2021, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2021.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2022, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2022.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2023, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2023.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2024, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2024.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_NASC_SE_2025, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_NASC_SE_2025.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2016, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2016.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2017, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2017.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2018, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2018.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2019, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2019.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2020, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2020.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2021, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2021.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2022, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2022.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2023, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2023.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2024, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2024.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2025, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2025.csv", 
+           row.names = FALSE)
+
 
 rm(AUX,
    AUX01,

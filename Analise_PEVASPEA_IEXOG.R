@@ -55,6 +55,25 @@ SINAN_IEXOGNET_RS <- IEXOGNET2016 %>%
 assign(paste0("RS", RS, "_2025_SINAN"), 
        SINAN_IEXOGNET_RS) 
 
+###### Intoxicações de Interesse
+
+IEXOGNET2016 <- read.dbf(file = "Base_de_Dados/DBF/IEXOGNET2016.dbf", 
+                         as.is = FALSE)
+
+Agente <- c("02", "03", "04")
+
+SINAN_IEXOGNET_AGRO_RS <- IEXOGNET2016 %>% 
+  filter(ID_REGIONA == ID_REG | 
+           ID_RG_RESI == ID_REG,
+         AGENTE_TOX %in% Agente)
+
+assign(paste0("RS", RS, "_2025_SINAN_AGRO"), 
+       SINAN_IEXOGNET_RS) 
+
+write.csv(SINAN_IEXOGNET_RS,
+          "/home/gustavo/Área de trabalho/Intox.csv",
+          row.names = FALSE)
+
 #################################################################################################################
 ###     Construindo um for loop para realizar a tabela de notificados por semana epidemiológica               ###
 #################################################################################################################
@@ -98,6 +117,53 @@ AUX[nrow(AUX), 1] <- "Total"
 assign(paste0("RS", RS, "_2016_SE_Notificados"), AUX)
 
 assign("RS_2025_SE_Notificados", AUX)
+
+#################################################################################################################
+###     Construindo um for loop para realizar a tabela de notificações por agrotóxicos por semana epidemiológica               ###
+#################################################################################################################
+
+AUX <- matrix(data = NA, 
+              nrow = nrow, 
+              ncol = 54)
+
+AUX <- as.data.frame(AUX)
+
+colnames(AUX)[1] <- "Município" 
+
+AUX[,1] <- BASE_IBGE[which(BASE_IBGE$RS == RS), 2]
+
+colnames (AUX)[2:54] <- c(1:53)
+
+N <- 201601
+
+O <- 2
+
+for (j in 1:53){
+  for (i in BASE_IBGE[(which(BASE_IBGE$RS == RS)), 2]){
+    
+    AUX[which(AUX == i), O] <- as.integer(SINAN_IEXOGNET_RS %>%
+                                            filter(ID_MN_RESI == i,
+                                                   AGENTE_TOX == "02" |
+                                                     AGENTE_TOX == "03" |
+                                                     AGENTE_TOX == "04",
+                                                   SEM_PRI == N)%>%
+                                            count()
+                                          
+    )
+  }
+  N <- N +1
+  O <- O +1
+}
+
+AUX[,1] <- BASE_IBGE[which(BASE_IBGE$RS == RS), 3]
+
+AUX[(nrow(AUX)+ 1),2:54] <- apply(AUX[,2:54], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+assign(paste0("RS", RS, "_2016_SE_Notificados_Agrot"), AUX)
+
+assign("RS_2025_SE_Notificados_Agrot", AUX)
 
 #######   Pessoa
 
@@ -377,3 +443,149 @@ for(i in BASE_IBGE[(which(BASE_IBGE$RS == RS)), 2]){
 }                                             
 
 assign(paste0("RS", RS, "_2016_PESSOA"), AUX)
+
+#######   Intoxicação
+
+AUX <- data.frame(Município = BASE_IBGE[which(BASE_IBGE$RS == RS), 3])
+
+AUX$COD_IBGE <- BASE_IBGE[which(BASE_IBGE$RS == RS), 2]
+
+AUX$Populacao <- BASE_IBGE[which(BASE_IBGE$RS == RS), 5]
+
+AUX$RS <- BASE_IBGE[which(BASE_IBGE$RS == RS), 1]
+
+AUX <- AUX[,c(4, 1, 2, 3)]
+
+AUX$Notificados <- NA
+
+AUX$Medicamentos <- NA
+
+AUX$Agrotóxicos_Agr <- NA
+
+AUX$Agrotóxicos_Domes <- NA
+
+AUX$Agrotóxicos_Saude <- NA
+
+AUX$Raticida <- NA
+
+AUX$Produto_Vet <- NA
+
+AUX$Uso_Domic <- NA
+
+AUX$Cosmeti <- NA
+
+AUX$Quimico_Uso_Industrial <- NA
+
+AUX$Metal <- NA
+
+AUX$Drogas <- NA
+
+AUX$Planta_Toxica <- NA
+
+AUX$Alimento_Bebida <- NA
+
+AUX$Outro <- NA
+
+AUX$Ignorado <- NA
+
+###      For Loop para geração da tabela RS22_Geral       ###
+
+for(i in BASE_IBGE[(which(BASE_IBGE$RS == RS)), 2]){
+  
+  AUX[which(AUX$COD_IBGE == i), 5] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                   filter(ID_MN_RESI == i) %>% 
+                                                   count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 6] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                   filter(ID_MN_RESI == i,  
+                                                          AGENTE_TOX == "01") %>% 
+                                                   count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 7] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                   filter(ID_MN_RESI == i,  
+                                                          AGENTE_TOX == "02") %>% 
+                                                   count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 8] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                   filter(ID_MN_RESI == i,
+                                                          AGENTE_TOX == "03") %>% 
+                                                   count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 9] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                   filter(ID_MN_RESI == i, 
+                                                          AGENTE_TOX == "04") %>% 
+                                                   count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 10] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                   filter(ID_MN_RESI == i, 
+                                                          AGENTE_TOX == "05") %>%
+                                                   count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 11] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                    filter(ID_MN_RESI == i, 
+                                                           AGENTE_TOX == "06") %>%
+                                                    count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 12] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                    filter(ID_MN_RESI == i,
+                                                           AGENTE_TOX == "07") %>% 
+                                                    count() 
+  )
+  AUX[which(AUX$COD_IBGE == i), 13] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                    filter(ID_MN_RESI == i,
+                                                           AGENTE_TOX == "08") %>% 
+                                                    count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 14]  <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                     filter(ID_MN_RESI == i, 
+                                                            AGENTE_TOX == "09") %>% 
+                                                     count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 15] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                    filter(ID_MN_RESI == i, 
+                                                           AGENTE_TOX == "10") %>% 
+                                                    count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 16]<- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                   filter(ID_MN_RESI == i, 
+                                                          AGENTE_TOX == "11") %>% 
+                                                   count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 17] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                    filter(ID_MN_RESI == i, 
+                                                           AGENTE_TOX == "12") %>%
+                                                    count()
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 18] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                    filter(ID_MN_RESI == i, 
+                                                           AGENTE_TOX == "13") %>% 
+                                                    count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 19] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                    filter(ID_MN_RESI == i, 
+                                                           AGENTE_TOX == "14") %>% 
+                                                    count() 
+  )
+  
+  AUX[which(AUX$COD_IBGE == i), 20] <- as.integer(SINAN_IEXOGNET_RS %>% 
+                                                    filter(ID_MN_RESI == i, 
+                                                           AGENTE_TOX == "99" |
+                                                             is.na(AGENTE_TOX)) %>% 
+                                                    count() 
+  ) }
+
+assign(paste0("RS", RS, "_2016_GERAL"), AUX)
+
