@@ -1283,14 +1283,10 @@ AUX <- bind_rows(AUX2018 %>% mutate(Ano = 2018),
                  AUX2020 %>% mutate(Ano = 2020),
                  AUX2021 %>% mutate(Ano = 2021))
 
-colnames(AUX)[c(5:15)] <- c("Nascidos", "Nº Anomalias", "Anomalias 
-Prioritárias", "Tubo 
-Neural", "Microcefalia",
-                "Cardiopatias", "Fendas 
-Orais", "Urinárias", "Membros", 
-                "Parede 
-Abdominal", "Sindrome 
-de Down")
+colnames(AUX)[c(5:15)] <- c("Nascidos", "Nº Anomalias", "Anomalias Prioritárias", 
+                            "Tubo Neural", "Microcefalia", "Cardiopatias", 
+                            "Fendas Orais", "Urinárias", "Membros", "Parede Abdominal",
+                            "Sindrome de Down")
 
 AUX01 <- AUX[, c(1, 3, 5, 7:ncol(AUX))] %>%
   filter(RS == 22) %>%
@@ -1304,7 +1300,8 @@ AUX01 <- AUX01 %>%
     cols = 3:11, 
     names_to = "Evento", 
     values_to = "Absoluto") %>%
-  mutate(Percentual = round((Absoluto / Nascidos) * 1000, 2))
+  mutate(Percentual = round((Absoluto / Nascidos) * 1000, 2),
+         Evento_Curto = str_wrap(Evento, width = 15))
 
 #######   Criando função theme exclusiva para os gráficos de anomalias
 
@@ -1326,7 +1323,7 @@ Theme_Mun <- function(){
 AUX01$Evento <- factor(AUX01$Evento,
                   levels = sort(unique(AUX01$Evento)))
 
-max_global <- max(AUX01$Percentual, na.rm = TRUE) * 1.1 
+max_global <- max(AUX01$Percentual, na.rm = TRUE) 
 
 ######   Criando o conjunto de gráficos dos histogramas via Lapply.  ######
 
@@ -1338,20 +1335,22 @@ AUX_LIST <- AUX01 %>%
   lapply(function(dados) {
     nome_mun <- unique(dados$Município_sem_Código)
     
-    ggplot(dados, aes(x = Evento, y = Percentual)) + 
-      geom_col(color = "black", fill = "#8FBC8F") + 
+    ggplot(dados, aes(x = Evento, 
+                      y = Percentual)) + 
+      geom_col(color = "black", 
+               fill = "#8FBC8F") + 
       geom_label(aes(label = Percentual), 
-                 hjust = -0.1, # Ajustado para aparecer ao lado da barra
+                 hjust = -0.1, 
                  size = 3) +
       labs(x = "Tipo de Anomalia", 
            y = "Anomalias/1000 Nascimentos",
            title = paste0(nome_mun, " - Prioritárias")) +
       coord_flip() +
-      # Correção das escalas:
-      scale_y_continuous(limits = c(0, max_global), 
-                         expand = expansion(mult = c(0, 0.1))) + 
+     scale_y_continuous(limits = c(0, max_global), 
+                        expand = expansion(mult = c(0, 0.3))) + 
       Theme_Mun()
   })
+
 RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun <- wrap_plots(AUX_LIST, ncol = 2) +
   plot_annotation(caption = Fonte,
                   theme = theme(
@@ -1468,6 +1467,77 @@ PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_22_25 <- gt(AUX[, c(1, 2, 7:22)]) %>%
   ) %>%
   opt_row_striping()
 
+### Gráfico de municípios da 22ªRS
+
+AUX <- bind_rows(AUX2022 %>% mutate(Ano = 2022),
+                 AUX2023 %>% mutate(Ano = 2023),
+                 AUX2024 %>% mutate(Ano = 2024),
+                 AUX2025 %>% mutate(Ano = 2025))
+
+colnames(AUX)[c(5:15)] <- c("Nascidos", "Nº Anomalias", "Anomalias Prioritárias", 
+                            "Tubo Neural", "Microcefalia", "Cardiopatias", 
+                            "Fendas Orais", "Urinárias", "Membros", "Parede Abdominal",
+                            "Sindrome de Down")
+
+AUX01 <- AUX[, c(1, 3, 5, 7:ncol(AUX))] %>%
+  filter(RS == 22) %>%
+  group_by(Município_sem_Código) %>%
+  summarise(across(2:12, \(x) sum(x, na.rm = TRUE)))
+
+AUX01 <- AUX01[, c(-ncol(AUX01))]
+
+AUX01 <- AUX01 %>%
+  pivot_longer(
+    cols = 3:11, 
+    names_to = "Evento", 
+    values_to = "Absoluto") %>%
+  mutate(Percentual = round((Absoluto / Nascidos) * 1000, 2),
+         Evento_Curto = str_wrap(Evento, width = 15))
+
+AUX01$Evento <- factor(AUX01$Evento,
+                       levels = sort(unique(AUX01$Evento)))
+
+max_global <- max(AUX01$Percentual, na.rm = TRUE) 
+
+######   Criando o conjunto de gráficos dos histogramas via Lapply.  ######
+
+AUX_LIST <- AUX01 %>%
+  mutate(
+    Município_sem_Código = gsub("_", " ", Município_sem_Código)
+  ) %>%
+  group_split(Município_sem_Código) %>% 
+  lapply(function(dados) {
+    nome_mun <- unique(dados$Município_sem_Código)
+    
+    ggplot(dados, aes(x = Evento, 
+                      y = Percentual)) + 
+      geom_col(color = "black", 
+               fill = "#8FBC8F") + 
+      geom_label(aes(label = Percentual), 
+                 hjust = -0.1, 
+                 size = 3) +
+      labs(x = "Tipo de Anomalia", 
+           y = "Anomalias/1000 Nascimentos",
+           title = paste0(nome_mun, " - Prioritárias")) +
+      coord_flip() +
+      scale_y_continuous(limits = c(0, max_global), 
+                         expand = expansion(mult = c(0, 0.3))) + 
+      Theme_Mun()
+  })
+
+RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II <- wrap_plots(AUX_LIST, ncol = 2) +
+  plot_annotation(caption = Fonte,
+                  theme = theme(
+                    plot.caption = element_text(
+                      size = 16,       
+                      hjust = 0,      
+                      face = "italic",  
+                      margin = margin(t = 20) 
+                    ) 
+                  )
+  )
+
+
 ####  Salvando os gráficos, mapas e tabelas
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_SINASC_GRAF_SERIE_HIST.png",
@@ -1553,8 +1623,14 @@ ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_PEVA
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun.png",
        RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun,
-       width = 38,
-       height = 46,
+       width = 48,
+       height = 56,
+       units = "cm",)
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II.png",
+       RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II,
+       width = 48,
+       height = 56,
        units = "cm",)
 
 rm(cores,
