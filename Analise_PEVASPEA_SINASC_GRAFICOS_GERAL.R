@@ -1162,7 +1162,7 @@ Paraná (2022 - 2025)",
 ################################################################################
 
 
-#### Tabela ANomalias Regionais 2022 - 2025
+#### Tabela ANomalias Regionais 2018 - 2021
 # 
 AUX2018 <- read.csv (file = "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2018.csv",
                      header = TRUE,
@@ -1180,10 +1180,10 @@ AUX2021 <- read.csv (file = "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2021.csv",
                      header = TRUE,
                      sep = ",")
 
-AUX <- bind_rows(AUX2022 %>% mutate(Ano = 2022),
-                 AUX2023 %>% mutate(Ano = 2023),
-                 AUX2024 %>% mutate(Ano = 2024),
-                 AUX2025 %>% mutate(Ano = 2025))
+AUX <- bind_rows(AUX2018 %>% mutate(Ano = 2018),
+                 AUX2019 %>% mutate(Ano = 2019),
+                 AUX2020 %>% mutate(Ano = 2020),
+                 AUX2021 %>% mutate(Ano = 2021))
 
 AUX01 <- AUX %>%
   group_by(RS) %>%
@@ -1195,13 +1195,174 @@ AUX <- AUX01 %>%
     names_to = "Evento", 
     values_to = "Absoluto"
   ) %>%
-  mutate(Percentual = round((Absoluto / Nascidos) * 100, 2)
+  mutate(Percentual = round((Absoluto / Nascidos) * 1000, 2)
   ) %>%
+  rename(`(n)` = Absoluto, `(%)` = Percentual) %>% 
   pivot_wider(names_from = Evento, 
-    values_from = c(Absoluto, Percentual),
-    names_glue = "{Evento}_{.value}")
+    values_from = c(`(n)`, `(%)`),
+    names_glue = "{Evento} {.value}")
 
 AUX <- AUX[c(1, 12, 16:22, 2:11, 13, 14, 15, 23), c(1, 2, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17, 8, 18, 9, 19, 10, 20, 11, 21, 12, 22)]
+
+c( "Nascidos", "Nº Anomalias", "Anomalias 
+Prioritárias", "Tubo 
+Neural", "Microcefalia",
+  "Cardiopatias", "Fendas 
+Orais", "Genito-
+-urinárias", "Membros", 
+  "Parede 
+Abdominal", "Sindrome 
+de Down")
+
+PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_18_21 <- gt(AUX[, c(1, 2, 7:22)]) %>%
+  tab_header(
+    title = md("**Prevalência de Anomalias Congênitas Prioritárias por Regional de Saúde**"),
+    subtitle = md("Paraná, 2018 – 2021")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "Tubo Neural",
+              columns = c(3:4),
+              id = "Tubo Neural") %>%
+  tab_spanner(label = "Microcefalia",
+              columns = c(5:6),
+              id = "Microcefalia") %>%
+  tab_spanner(label = "Cardíacas",
+              columns = c(7:8),
+              id = "Cardíacas") %>%
+  tab_spanner(label = "Fendas Orais",
+              columns = c(9:10),
+              id = "Fendas Orais") %>%
+  tab_spanner(label = "Urinárias",
+              columns = c(11:12),
+              id = "Urinárias") %>%
+  tab_spanner(label = "Membros",
+              columns = c(13:14),
+              id = "Membros") %>%
+  tab_spanner(label = "Parede Abd.",
+              columns = c(15:16),
+              id = "Parede Abd.") %>%
+  tab_spanner(label = "Síndrome de Down",
+              columns = c(17:18),
+              id = "Síndrome de Down") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:18) %>%
+  cols_label(
+    Nascidos = "Nascidos (N)",
+    contains("(n)") ~ "n",
+    contains("(%)") ~ "Prev."
+  ) %>%
+  tab_footnote(
+    footnote = "Prevalência calculada por 1.000 nascidos vivos (NV).",
+    locations = cells_column_labels(columns = contains("(%)"))
+  ) %>%
+  tab_footnote(
+    footnote = "Uma mesma ficha (DN) pode conter o registro de múltiplas anomalias.",
+    locations = cells_column_labels(columns = contains("(n)"))
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  opt_row_striping()
+
+### Gráfico de municípios da 22ªRS
+
+AUX <- bind_rows(AUX2018 %>% mutate(Ano = 2018),
+                 AUX2019 %>% mutate(Ano = 2019),
+                 AUX2020 %>% mutate(Ano = 2020),
+                 AUX2021 %>% mutate(Ano = 2021))
+
+colnames(AUX)[c(5:15)] <- c("Nascidos", "Nº Anomalias", "Anomalias 
+Prioritárias", "Tubo 
+Neural", "Microcefalia",
+                "Cardiopatias", "Fendas 
+Orais", "Urinárias", "Membros", 
+                "Parede 
+Abdominal", "Sindrome 
+de Down")
+
+AUX01 <- AUX[, c(1, 3, 5, 7:ncol(AUX))] %>%
+  filter(RS == 22) %>%
+  group_by(Município_sem_Código) %>%
+  summarise(across(2:12, \(x) sum(x, na.rm = TRUE)))
+
+AUX01 <- AUX01[, c(-ncol(AUX01))]
+
+AUX01 <- AUX01 %>%
+  pivot_longer(
+    cols = 3:11, 
+    names_to = "Evento", 
+    values_to = "Absoluto") %>%
+  mutate(Percentual = round((Absoluto / Nascidos) * 1000, 2))
+
+#######   Criando função theme exclusiva para os gráficos de anomalias
+
+Theme_Mun <- function(){ 
+  theme_minimal(base_size = 10) %+replace%  
+    theme(
+      axis.text.x = element_text(face = "bold"),
+      panel.grid.major = element_line(color = "#C0C0C0"),
+      panel.grid.minor = element_blank(),
+      panel.background = element_rect(fill = "#F5F5F5"),
+      plot.title = element_text(face = "bold", 
+                                hjust = 0,
+                                size = 18),
+      plot.caption = element_text(size = 12,
+                                  hjust = 0),
+    )
+}
+
+AUX01$Evento <- factor(AUX01$Evento,
+                  levels = sort(unique(AUX01$Evento)))
+
+max_global <- max(AUX01$Percentual, na.rm = TRUE) * 1.1 
+
+######   Criando o conjunto de gráficos dos histogramas via Lapply.  ######
+
+AUX_LIST <- AUX01 %>%
+  mutate(
+    Município_sem_Código = gsub("_", " ", Município_sem_Código)
+  ) %>%
+  group_split(Município_sem_Código) %>% 
+  lapply(function(dados) {
+    nome_mun <- unique(dados$Município_sem_Código)
+    
+    ggplot(dados, aes(x = Evento, y = Percentual)) + 
+      geom_col(color = "black", fill = "#8FBC8F") + 
+      geom_label(aes(label = Percentual), 
+                 hjust = -0.1, # Ajustado para aparecer ao lado da barra
+                 size = 3) +
+      labs(x = "Tipo de Anomalia", 
+           y = "Anomalias/1000 Nascimentos",
+           title = paste0(nome_mun, " - Prioritárias")) +
+      coord_flip() +
+      # Correção das escalas:
+      scale_y_continuous(limits = c(0, max_global), 
+                         expand = expansion(mult = c(0, 0.1))) + 
+      Theme_Mun()
+  })
+RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun <- wrap_plots(AUX_LIST, ncol = 2) +
+  plot_annotation(caption = Fonte,
+                  theme = theme(
+                    plot.caption = element_text(
+                      size = 16,       
+                      hjust = 0,      
+                      face = "italic",  
+                      margin = margin(t = 20) 
+                    ) 
+                  )
+  )
 
 #### Tabela ANomalias Regionais 2022 - 2025
 # 
@@ -1230,21 +1391,82 @@ AUX01 <- AUX %>%
   group_by(RS) %>%
   summarise(across(4:14, \(x) sum(x, na.rm = TRUE)))
 
-#   
-#   
-#   as.data.frame(apply(PR_PEVASPEA_SINASC_Serie_Historica[c(7, 8, 9, 10),3:13], 2, sum))
-# 
-# colnames(AUX) <- "Valores"
-# 
-# AUX$Evento <- c("Nascidos", "Nº Anomalias", "Anomalias 
-# Prioritárias", "Tubo 
-# Neural", "Microcefalia",
-#                 "Cardiopatias", "Fendas 
-# Orais", "Genito-
-# -urinárias", "Membros", 
-#                 "Parede 
-# Abdominal", "Sindrome 
-# de Down")
+AUX <- AUX01 %>%
+  pivot_longer(
+    cols = Anomalia_Detectada:last_col(), 
+    names_to = "Evento", 
+    values_to = "Absoluto"
+  ) %>%
+  mutate(Percentual = round((Absoluto / Nascidos) * 1000, 2)
+  ) %>%
+  rename(`(n)` = Absoluto, `(%)` = Percentual) %>% 
+  pivot_wider(names_from = Evento, 
+              values_from = c(`(n)`, `(%)`),
+              names_glue = "{Evento} {.value}")
+
+AUX <- AUX[c(1, 12, 16:22, 2:11, 13, 14, 15, 23), c(1, 2, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17, 8, 18, 9, 19, 10, 20, 11, 21, 12, 22)]
+
+PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_22_25 <- gt(AUX[, c(1, 2, 7:22)]) %>%
+  tab_header(
+    title = md("**Prevalência de Anomalias Congênitas Prioritárias por Regional de Saúde**"),
+    subtitle = md("Paraná, 2018 – 2021")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "Tubo Neural",
+              columns = c(3:4),
+              id = "Tubo Neural") %>%
+  tab_spanner(label = "Microcefalia",
+              columns = c(5:6),
+              id = "Microcefalia") %>%
+  tab_spanner(label = "Cardíacas",
+              columns = c(7:8),
+              id = "Cardíacas") %>%
+  tab_spanner(label = "Fendas Orais",
+              columns = c(9:10),
+              id = "Fendas Orais") %>%
+  tab_spanner(label = "Urinárias",
+              columns = c(11:12),
+              id = "Urinárias") %>%
+  tab_spanner(label = "Membros",
+              columns = c(13:14),
+              id = "Membros") %>%
+  tab_spanner(label = "Parede Abd.",
+              columns = c(15:16),
+              id = "Parede Abd.") %>%
+  tab_spanner(label = "Síndrome de Down",
+              columns = c(17:18),
+              id = "Síndrome de Down") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:18) %>%
+  cols_label(
+    Nascidos = "Nascidos (N)",
+    contains("(n)") ~ "n",
+    contains("(%)") ~ "Prev."
+  ) %>%
+  tab_footnote(
+    footnote = "Prevalência calculada por 1.000 nascidos vivos (NV).",
+    locations = cells_column_labels(columns = contains("(%)"))
+  ) %>%
+  tab_footnote(
+    footnote = "Uma mesma ficha (DN) pode conter o registro de múltiplas anomalias.",
+    locations = cells_column_labels(columns = contains("(n)"))
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  opt_row_striping()
 
 ####  Salvando os gráficos, mapas e tabelas
 
@@ -1325,6 +1547,12 @@ ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVA
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Taxa_Mun.png",
        RS_PEVASPEA_SINASC_GRAF_Taxa_Mun,
+       width = 38,
+       height = 46,
+       units = "cm",)
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun.png",
+       RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun,
        width = 38,
        height = 46,
        units = "cm",)
