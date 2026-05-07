@@ -121,11 +121,8 @@ Filter_Culturas <- c("SOJA SAFRA NORMAL",
                      "CEBOLA",
                      "ARROZ IRRIGADO",
                      "ARROZ SEQUEIRO",
-                     "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO",
                      "MACA",
                      "CEVADA",
-                     "MADEIRAS - EM TORA P/LAMINADORA - PINUS", 
-                     "MADEIRAS - EM TORA P/SERRARIA - PINUS",
                      "AZEVEM GRAOS",
                      "MELANCIA",
                      "BANANA",
@@ -140,7 +137,7 @@ AUX <- VBP_2016 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -169,11 +166,8 @@ AUX <- VBP_2016 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -183,8 +177,8 @@ AUX <- VBP_2016 %>%
            CULTURA == "PIMENTAO" |
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
-    group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  group_by(MUNICIPIO) %>%
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
@@ -205,11 +199,10 @@ colnames(PR_DERAL_2016_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2016$AREA_HA[VBP_2016$AREA_HA == ""] <- NA
 
 AUX <- VBP_2016 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "SOJA SAFRA NORMAL" |
+  filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -238,11 +231,8 @@ AUX <- VBP_2016 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -253,7 +243,7 @@ AUX <- VBP_2016 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-    summarise(sum(AREA_HA))
+    summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2016_SIMPLIFICADO <- left_join(PR_DERAL_2016_SIMPLIFICADO,
                                    AUX,
@@ -266,7 +256,7 @@ colnames(PR_DERAL_2016_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2016 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "SOJA SAFRINHA" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (espiga)" |
+                 
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
@@ -295,11 +285,8 @@ AUX <- VBP_2016 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "CEBOLA" |
                             CULTURA == "ARROZ IRRIGADO" |
                             CULTURA == "ARROZ SEQUEIRO" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "CEVADA" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -321,7 +308,7 @@ PR_DERAL_2016_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2016 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2016_SIMPLIFICADO <- left_join(PR_DERAL_2016_SIMPLIFICADO,
                                    AUX,
@@ -354,6 +341,65 @@ PR_DERAL_2016_SIMPLIFICADO <- left_join(PR_DERAL_2016_SIMPLIFICADO,
                                         by = c("Município_sem_Código" = "Município"))
 
 colnames(PR_DERAL_2016_SIMPLIFICADO)[8] <- "TON_AGRO_2016"
+
+#VBP_2016$PRODUCAO[VBP_2016$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2016 %>%
+  filter( CULTURA == "SOJA SAFRA NORMAL" |
+           CULTURA == "SOJA SAFRINHA" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+
+           CULTURA == "MILHO SAFRA NORMAL" |
+           CULTURA == "MILHO SAFRINHA" |
+           CULTURA == "TRIGO" |
+           CULTURA == "FEIJAO SAFRA DA SECA" |
+           CULTURA == "FEIJAO SAFRA DAS AGUAS" |
+           CULTURA == "FEIJAO SAFRA DE INVERNO" |
+           CULTURA == "FEIJAO-VAGEM" |
+            CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "BATATA DA SECA" |
+           CULTURA == "BATATA DAS AGUAS" |
+           CULTURA == "CANA-DE-ACUCAR" |
+           CULTURA == "FUMO" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA VINIFERA" |
+           CULTURA == "TOMATE SAFRAO" |
+           CULTURA == "CAFE" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
+           CULTURA == "MANDIOCA INDUSTRIA" |
+           CULTURA == "AVEIA BRANCA" |
+           CULTURA == "AVEIA PRETA (GRAO)" |
+           CULTURA == "CEBOLA" |
+           CULTURA == "ARROZ IRRIGADO" |
+           CULTURA == "ARROZ SEQUEIRO" |
+           CULTURA == "MACA" |
+           CULTURA == "CEVADA" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "AMENDOIM SAFRA DAS AGUAS" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (moranguinho)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2016_SIMPLIFICADO <- left_join(PR_DERAL_2016_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2016_SIMPLIFICADO)[9] <- "PRODUCAO"
 
 #### Incluindo a RS no data frame de cultivos dos municípios
 
@@ -396,7 +442,7 @@ AUX <- VBP_2017 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -425,11 +471,8 @@ AUX <- VBP_2017 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -440,7 +483,7 @@ AUX <- VBP_2017 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
@@ -461,11 +504,10 @@ colnames(PR_DERAL_2017_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2017$AREA_HA[VBP_2017$AREA_HA == ""] <- NA
 
 AUX <- VBP_2017 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "SOJA SAFRA NORMAL" |
+  filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -494,11 +536,8 @@ AUX <- VBP_2017 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -509,7 +548,7 @@ AUX <- VBP_2017 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2017_SIMPLIFICADO <- left_join(PR_DERAL_2017_SIMPLIFICADO,
                                         AUX,
@@ -522,7 +561,7 @@ colnames(PR_DERAL_2017_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2017 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "SOJA SAFRINHA" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (espiga)" |
+                 
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
@@ -551,11 +590,8 @@ AUX <- VBP_2017 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "CEBOLA" |
                             CULTURA == "ARROZ IRRIGADO" |
                             CULTURA == "ARROZ SEQUEIRO" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "CEVADA" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -577,7 +613,7 @@ PR_DERAL_2017_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2017 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2017_SIMPLIFICADO <- left_join(PR_DERAL_2017_SIMPLIFICADO,
                                         AUX,
@@ -610,6 +646,65 @@ PR_DERAL_2017_SIMPLIFICADO <- left_join(PR_DERAL_2017_SIMPLIFICADO,
                                         by = c("Município_sem_Código" = "Município"))
 
 colnames(PR_DERAL_2017_SIMPLIFICADO)[8] <- "TON_AGRO_2017"
+
+#VBP_2017$PRODUCAO[VBP_2017$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2017 %>%
+  filter( CULTURA == "SOJA SAFRA NORMAL" |
+           CULTURA == "SOJA SAFRINHA" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+
+           CULTURA == "MILHO SAFRA NORMAL" |
+           CULTURA == "MILHO SAFRINHA" |
+           CULTURA == "TRIGO" |
+           CULTURA == "FEIJAO SAFRA DA SECA" |
+           CULTURA == "FEIJAO SAFRA DAS AGUAS" |
+           CULTURA == "FEIJAO SAFRA DE INVERNO" |
+           CULTURA == "FEIJAO-VAGEM" |
+            CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "BATATA DA SECA" |
+           CULTURA == "BATATA DAS AGUAS" |
+           CULTURA == "CANA-DE-ACUCAR" |
+           CULTURA == "FUMO" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA VINIFERA" |
+           CULTURA == "TOMATE SAFRAO" |
+           CULTURA == "CAFE" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
+           CULTURA == "MANDIOCA INDUSTRIA" |
+           CULTURA == "AVEIA BRANCA" |
+           CULTURA == "AVEIA PRETA (GRAO)" |
+           CULTURA == "CEBOLA" |
+           CULTURA == "ARROZ IRRIGADO" |
+           CULTURA == "ARROZ SEQUEIRO" |
+           CULTURA == "MACA" |
+           CULTURA == "CEVADA" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "AMENDOIM SAFRA DAS AGUAS" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (moranguinho)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2017_SIMPLIFICADO <- left_join(PR_DERAL_2017_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2017_SIMPLIFICADO)[9] <- "PRODUCAO"
 
 for (i in PR_DERAL_2017_SIMPLIFICADO[, 3]){
   PR_DERAL_2017_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2017_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 9] <-  PR_DERAL_2017_SIMPLIFICADO[which(PR_DERAL_2017_SIMPLIFICADO$Município_sem_Código == i), 1]
@@ -650,7 +745,7 @@ AUX <- VBP_2018 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -679,11 +774,8 @@ AUX <- VBP_2018 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -694,7 +786,7 @@ AUX <- VBP_2018 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
@@ -715,11 +807,10 @@ colnames(PR_DERAL_2018_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2018$AREA_HA[VBP_2018$AREA_HA == ""] <- NA
 
 AUX <- VBP_2018 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "SOJA SAFRA NORMAL" |
+  filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -748,11 +839,8 @@ AUX <- VBP_2018 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -763,7 +851,7 @@ AUX <- VBP_2018 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2018_SIMPLIFICADO <- left_join(PR_DERAL_2018_SIMPLIFICADO,
                                         AUX,
@@ -776,7 +864,7 @@ colnames(PR_DERAL_2018_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2018 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "SOJA SAFRINHA" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (espiga)" |
+                 
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
@@ -805,11 +893,8 @@ AUX <- VBP_2018 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "CEBOLA" |
                             CULTURA == "ARROZ IRRIGADO" |
                             CULTURA == "ARROZ SEQUEIRO" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "CEVADA" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -831,7 +916,7 @@ PR_DERAL_2018_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2018 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2018_SIMPLIFICADO <- left_join(PR_DERAL_2018_SIMPLIFICADO,
                                         AUX,
@@ -864,6 +949,65 @@ PR_DERAL_2018_SIMPLIFICADO <- left_join(PR_DERAL_2018_SIMPLIFICADO,
                                         by = c("Município_sem_Código" = "Município"))
 
 colnames(PR_DERAL_2018_SIMPLIFICADO)[8] <- "TON_AGRO_2018"
+
+#VBP_2018$PRODUCAO[VBP_2018$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2018 %>%
+  filter(CULTURA == "SOJA SAFRA NORMAL" |
+           CULTURA == "SOJA SAFRINHA" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+
+           CULTURA == "MILHO SAFRA NORMAL" |
+           CULTURA == "MILHO SAFRINHA" |
+           CULTURA == "TRIGO" |
+           CULTURA == "FEIJAO SAFRA DA SECA" |
+           CULTURA == "FEIJAO SAFRA DAS AGUAS" |
+           CULTURA == "FEIJAO SAFRA DE INVERNO" |
+           CULTURA == "FEIJAO-VAGEM" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "BATATA DA SECA" |
+           CULTURA == "BATATA DAS AGUAS" |
+           CULTURA == "CANA-DE-ACUCAR" |
+           CULTURA == "FUMO" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA VINIFERA" |
+           CULTURA == "TOMATE SAFRAO" |
+           CULTURA == "CAFE" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
+           CULTURA == "MANDIOCA INDUSTRIA" |
+           CULTURA == "AVEIA BRANCA" |
+           CULTURA == "AVEIA PRETA (GRAO)" |
+           CULTURA == "CEBOLA" |
+           CULTURA == "ARROZ IRRIGADO" |
+           CULTURA == "ARROZ SEQUEIRO" |
+           CULTURA == "MACA" |
+           CULTURA == "CEVADA" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "AMENDOIM SAFRA DAS AGUAS" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (moranguinho)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2018_SIMPLIFICADO <- left_join(PR_DERAL_2018_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2018_SIMPLIFICADO)[9] <- "PRODUCAO"
 
 for (i in PR_DERAL_2018_SIMPLIFICADO[, 3]){
   PR_DERAL_2018_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2018_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 9] <-  PR_DERAL_2018_SIMPLIFICADO[which(PR_DERAL_2018_SIMPLIFICADO$Município_sem_Código == i), 1]
@@ -905,7 +1049,7 @@ AUX <- VBP_2019 %>%
   filter(CULTURA == "Soja (1ª safra)" |
            CULTURA == "Soja (2ª safra)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
@@ -935,11 +1079,8 @@ AUX <- VBP_2019 %>%
            CULTURA == "Cebola" |
            CULTURA == "Arroz irrigado" |
            CULTURA == "Arroz de sequeiro" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "Cevada" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -950,15 +1091,11 @@ AUX <- VBP_2019 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
 PR_DERAL_2019_SIMPLIFICADO <- BASE_IBGE[, c(1, 2, 3, 5)]
-
-# PR_DERAL_2019_SIMPLIFICADO$Município_sem_Código <- iconv(PR_DERAL_2019_SIMPLIFICADO$Município_sem_Código,
-#                                                          from = "UTF-8", 
-#                                                          to = "ASCII//TRANSLIT")
 
 PR_DERAL_2019_SIMPLIFICADO <- left_join(PR_DERAL_2019_SIMPLIFICADO,
                                         AUX,
@@ -971,11 +1108,10 @@ colnames(PR_DERAL_2019_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2019$AREA_HA[VBP_2019$AREA_HA == ""] <- NA
 
 AUX <- VBP_2019 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "Soja (1ª safra)" |
+  filter(CULTURA == "Soja (1ª safra)" |
            CULTURA == "Soja (2ª safra)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
@@ -1005,11 +1141,8 @@ AUX <- VBP_2019 %>%
            CULTURA == "Cebola" |
            CULTURA == "Arroz irrigado" |
            CULTURA == "Arroz de sequeiro" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "Cevada" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -1020,7 +1153,7 @@ AUX <- VBP_2019 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2019_SIMPLIFICADO <- left_join(PR_DERAL_2019_SIMPLIFICADO,
                                         AUX,
@@ -1033,7 +1166,7 @@ colnames(PR_DERAL_2019_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2019 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Soja (2ª safra)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (espiga)" |
+                 
                             CULTURA == "Milho (1ª safra)" |
                             CULTURA == "Milho (2ª safra)" |
                             CULTURA == "Trigo" |
@@ -1063,11 +1196,8 @@ AUX <- VBP_2019 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Cebola" |
                             CULTURA == "Arroz irrigado" |
                             CULTURA == "Arroz de sequeiro" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "Cevada" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -1089,7 +1219,7 @@ PR_DERAL_2019_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2019 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2019_SIMPLIFICADO <- left_join(PR_DERAL_2019_SIMPLIFICADO,
                                         AUX,
@@ -1135,6 +1265,66 @@ PR_DERAL_2019_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2019_CULTIVOS_MUNI
                                                          from = "UTF-8",
                                                          to = "ASCII//TRANSLIT")
 
+#VBP_2019$PRODUCAO[VBP_2019$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2019 %>%
+  filter(CULTURA == "Soja (1ª safra)" |
+           CULTURA == "Soja (2ª safra)" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+
+           CULTURA == "Milho (1ª safra)" |
+           CULTURA == "Milho (2ª safra)" |
+           CULTURA == "Trigo" |
+           CULTURA == "Feijão (1ª safra)" |
+           CULTURA == "Feijão (2ª safra)" |
+           CULTURA == "Feijão (3ª safra)" |
+           CULTURA == "FEIJAO-VAGEM" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "Batata (1ª safra)" |
+           CULTURA == "Batata (2ª safra)" |
+           CULTURA == "Cana-de-açúcar" |
+           CULTURA == "Fumo" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA VINIFERA" |
+           CULTURA == "Tomate (1ª safra)" |
+           CULTURA == "Tomate (2ª safra)" |
+           CULTURA == "Café" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "Mandioca Consumo Humano" |
+           CULTURA == "Mandioca  Indústria/Consumo Animal" |
+           CULTURA == "Aveia branca" |
+           CULTURA == "Aveia preta" |
+           CULTURA == "Cebola" |
+           CULTURA == "Arroz irrigado" |
+           CULTURA == "Arroz de sequeiro" |
+           CULTURA == "MACA" |
+           CULTURA == "Cevada" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "Amendoim (1ª safra)" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (moranguinho)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2019_SIMPLIFICADO <- left_join(PR_DERAL_2019_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2019_SIMPLIFICADO)[9] <- "PRODUCAO"
+
 for (i in PR_DERAL_2019_SIMPLIFICADO[, 3]){
   PR_DERAL_2019_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2019_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 13] <-  PR_DERAL_2019_SIMPLIFICADO[which(PR_DERAL_2019_SIMPLIFICADO$Município_sem_Código == i), 1]
   
@@ -1175,7 +1365,7 @@ AUX <- VBP_2020 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -1204,11 +1394,8 @@ AUX <- VBP_2020 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -1219,7 +1406,7 @@ AUX <- VBP_2020 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
@@ -1236,11 +1423,10 @@ colnames(PR_DERAL_2020_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2020$AREA_HA[VBP_2020$AREA_HA == ""] <- NA
 
 AUX <- VBP_2020 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "SOJA SAFRA NORMAL" |
+  filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -1269,11 +1455,8 @@ AUX <- VBP_2020 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -1284,7 +1467,7 @@ AUX <- VBP_2020 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2020_SIMPLIFICADO <- left_join(PR_DERAL_2020_SIMPLIFICADO,
                                         AUX,
@@ -1297,7 +1480,7 @@ colnames(PR_DERAL_2020_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2020 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "SOJA SAFRINHA" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (espiga)" |
+                 
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
@@ -1326,11 +1509,8 @@ AUX <- VBP_2020 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "CEBOLA" |
                             CULTURA == "ARROZ IRRIGADO" |
                             CULTURA == "ARROZ SEQUEIRO" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "CEVADA" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -1352,7 +1532,7 @@ PR_DERAL_2020_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2020 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2020_SIMPLIFICADO <- left_join(PR_DERAL_2020_SIMPLIFICADO,
                                         AUX,
@@ -1397,6 +1577,64 @@ PR_DERAL_2020_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2020_CULTIVOS_MUNI
                                                          from = "UTF-8",
                                                          to = "ASCII//TRANSLIT")
 
+#VBP_2020$PRODUCAO[VBP_2020$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2020 %>%
+  filter(CULTURA == "SOJA SAFRA NORMAL" |
+           CULTURA == "SOJA SAFRINHA" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "MILHO SAFRA NORMAL" |
+           CULTURA == "MILHO SAFRINHA" |
+           CULTURA == "TRIGO" |
+           CULTURA == "FEIJAO SAFRA DA SECA" |
+           CULTURA == "FEIJAO SAFRA DAS AGUAS" |
+           CULTURA == "FEIJAO SAFRA DE INVERNO" |
+           CULTURA == "FEIJAO-VAGEM" |
+           CULTURA == "BATATA DA SECA" |
+           CULTURA == "BATATA DAS AGUAS" |
+           CULTURA == "CANA-DE-ACUCAR" |
+           CULTURA == "FUMO" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA VINIFERA" |
+           CULTURA == "TOMATE SAFRAO" |
+           CULTURA == "CAFE" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "MANDIOCA CONSUMO (HUMANO)" |
+           CULTURA == "MANDIOCA INDUSTRIA" |
+           CULTURA == "AVEIA BRANCA" |
+           CULTURA == "AVEIA PRETA (GRAO)" |
+           CULTURA == "CEBOLA" |
+           CULTURA == "ARROZ IRRIGADO" |
+           CULTURA == "ARROZ SEQUEIRO" |
+           CULTURA == "MACA" |
+           CULTURA == "CEVADA" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "AMENDOIM SAFRA DAS AGUAS" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (moranguinho)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2020_SIMPLIFICADO <- left_join(PR_DERAL_2020_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2020_SIMPLIFICADO)[9] <- "PRODUCAO"
+
 for (i in PR_DERAL_2020_SIMPLIFICADO[, 3]){
   PR_DERAL_2020_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2020_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 15] <-  PR_DERAL_2020_SIMPLIFICADO[which(PR_DERAL_2020_SIMPLIFICADO$Município_sem_Código == i), 1]
   
@@ -1437,7 +1675,7 @@ AUX <- VBP_2021 %>%
   filter(CULTURA == "Soja (1ª safra)" |
            CULTURA == "Soja (2ª safra)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
@@ -1445,7 +1683,6 @@ AUX <- VBP_2021 %>%
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
            CULTURA == "FEIJAO-VAGEM" |
-           CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "Batata (1ª safra)" |
            CULTURA == "Batata (2ª safra)" |
            CULTURA == "Cana-de-açúcar" |
@@ -1467,11 +1704,8 @@ AUX <- VBP_2021 %>%
            CULTURA == "Cebola" |
            CULTURA == "Arroz irrigado" |
            CULTURA == "Arroz de sequeiro" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "Cevada" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -1482,7 +1716,7 @@ AUX <- VBP_2021 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
@@ -1503,11 +1737,10 @@ colnames(PR_DERAL_2021_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2021$AREA_HA[VBP_2021$AREA_HA == ""] <- NA
 
 AUX <- VBP_2021 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "Soja (1ª safra)" |
+  filter( CULTURA == "Soja (1ª safra)" |
            CULTURA == "Soja (2ª safra)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (espiga)" |
+
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
@@ -1515,7 +1748,7 @@ AUX <- VBP_2021 %>%
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
            CULTURA == "FEIJAO-VAGEM" |
-           CULTURA == "PASTAGENS E FORRAGENS" |
+            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "Batata (1ª safra)" |
            CULTURA == "Batata (2ª safra)" |
            CULTURA == "Cana-de-açúcar" |
@@ -1537,11 +1770,8 @@ AUX <- VBP_2021 %>%
            CULTURA == "Cebola" |
            CULTURA == "Arroz irrigado" |
            CULTURA == "Arroz de sequeiro" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "Cevada" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -1552,7 +1782,7 @@ AUX <- VBP_2021 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (moranguinho)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2021_SIMPLIFICADO <- left_join(PR_DERAL_2021_SIMPLIFICADO,
                                         AUX,
@@ -1565,7 +1795,7 @@ colnames(PR_DERAL_2021_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Soja (2ª safra)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (espiga)" |
+                            CULTURA == "PASTAGENS E FORRAGENS" |
                             CULTURA == "Milho (1ª safra)" |
                             CULTURA == "Milho (2ª safra)" |
                             CULTURA == "Trigo" |
@@ -1573,7 +1803,6 @@ AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Feijão (2ª safra)" |
                             CULTURA == "Feijão (3ª safra)" |
                             CULTURA == "FEIJAO-VAGEM" |
-                            CULTURA == "PASTAGENS E FORRAGENS" |
                             CULTURA == "Batata (1ª safra)" |
                             CULTURA == "Batata (2ª safra)" |
                             CULTURA == "Cana-de-açúcar" |
@@ -1595,11 +1824,8 @@ AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Cebola" |
                             CULTURA == "Arroz irrigado" |
                             CULTURA == "Arroz de sequeiro" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "Cevada" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -1621,7 +1847,7 @@ PR_DERAL_2021_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2021 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2021_SIMPLIFICADO <- left_join(PR_DERAL_2021_SIMPLIFICADO,
                                         AUX,
@@ -1665,6 +1891,66 @@ PR_DERAL_2021_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2021_CULTIVOS_MUNI
                        from = "UTF-8", 
                        to = "ASCII//TRANSLIT")
 
+#VBP_2021$PRODUCAO[VBP_2021$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2021 %>%
+  filter( CULTURA == "Soja (1ª safra)" |
+           CULTURA == "Soja (2ª safra)" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+
+           CULTURA == "Milho (1ª safra)" |
+           CULTURA == "Milho (2ª safra)" |
+           CULTURA == "Trigo" |
+           CULTURA == "Feijão (1ª safra)" |
+           CULTURA == "Feijão (2ª safra)" |
+           CULTURA == "Feijão (3ª safra)" |
+           CULTURA == "FEIJAO-VAGEM" |
+            CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "Batata (1ª safra)" |
+           CULTURA == "Batata (2ª safra)" |
+           CULTURA == "Cana-de-açúcar" |
+           CULTURA == "Fumo" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA VINIFERA" |
+           CULTURA == "Tomate (1ª safra)" |
+           CULTURA == "Tomate (2ª safra)" |
+           CULTURA == "Café" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "Mandioca Consumo Humano" |
+           CULTURA == "Mandioca  Indústria/Consumo Animal" |
+           CULTURA == "Aveia branca" |
+           CULTURA == "Aveia preta" |
+           CULTURA == "Cebola" |
+           CULTURA == "Arroz irrigado" |
+           CULTURA == "Arroz de sequeiro" |
+           CULTURA == "MACA" |
+           CULTURA == "Cevada" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "Amendoim (1ª safra)" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (moranguinho)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2021_SIMPLIFICADO <- left_join(PR_DERAL_2021_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2021_SIMPLIFICADO)[9] <- "PRODUCAO"
+
 for (i in PR_DERAL_2021_SIMPLIFICADO[, 3]){
   PR_DERAL_2021_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2021_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 17] <-  PR_DERAL_2021_SIMPLIFICADO[which(PR_DERAL_2021_SIMPLIFICADO$Município_sem_Código == i), 1]
   
@@ -1705,7 +1991,7 @@ AUX <- VBP_2022 %>%
   filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (ESPIGA)" |
+
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -1735,11 +2021,8 @@ AUX <- VBP_2022 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ DE SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -1750,7 +2033,7 @@ AUX <- VBP_2022 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (MORANGUINHO)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
@@ -1767,11 +2050,10 @@ colnames(PR_DERAL_2022_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2022$AREA_HA[VBP_2022$AREA_HA == ""] <- NA
 
 AUX <- VBP_2022 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "SOJA (1ª SAFRA)" |
+  filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (ESPIGA)" |
+
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -1801,11 +2083,8 @@ AUX <- VBP_2022 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ DE SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -1816,7 +2095,7 @@ AUX <- VBP_2022 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (MORANGUINHO)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2022_SIMPLIFICADO <- left_join(PR_DERAL_2022_SIMPLIFICADO,
                                         AUX,
@@ -1829,7 +2108,7 @@ colnames(PR_DERAL_2022_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2022 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "SOJA (2ª SAFRA)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (ESPIGA)" |
+                 
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |
@@ -1859,11 +2138,8 @@ AUX <- VBP_2022 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "CEBOLA" |
                             CULTURA == "ARROZ IRRIGADO" |
                             CULTURA == "ARROZ DE SEQUEIRO" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "CEVADA" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -1885,7 +2161,7 @@ PR_DERAL_2022_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2022 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2022_SIMPLIFICADO <- left_join(PR_DERAL_2022_SIMPLIFICADO,
                                         AUX,
@@ -1929,6 +2205,66 @@ PR_DERAL_2022_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2022_CULTIVOS_MUNI
                        from = "UTF-8", 
                        to = "ASCII//TRANSLIT")
 
+#VBP_2022$PRODUCAO[VBP_2022$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2022 %>%
+  filter(CULTURA == "SOJA (1ª SAFRA)" |
+           CULTURA == "SOJA (2ª SAFRA)" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+
+           CULTURA == "MILHO (1ª SAFRA)" |
+           CULTURA == "MILHO (2ª SAFRA)" |
+           CULTURA == "TRIGO" |
+           CULTURA == "FEIJÃO (1ª SAFRA)" |
+           CULTURA == "FEIJÃO (2ª SAFRA)" |
+           CULTURA == "FEIJÃO (3ª SAFRA)" |
+           CULTURA == "FEIJAO-VAGEM" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "BATATA (1ª SAFRA)" |
+           CULTURA == "BATATA (2ª SAFRA)" |
+           CULTURA == "CANA-DE-AÇÚCAR" |
+           CULTURA == "FUMO" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA VINIFERA" |
+           CULTURA == "TOMATE (1ª SAFRA)" |
+           CULTURA == "TOMATE (2ª SAFRA)" |
+           CULTURA == "CAFÉ" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "MANDIOCA CONSUMO HUMANO" |
+           CULTURA == "MANDIOCA  INDÚSTRIA/CONSUMO ANIMAL" |
+           CULTURA == "AVEIA BRANCA" |
+           CULTURA == "AVEIA PRETA" |
+           CULTURA == "CEBOLA" |
+           CULTURA == "ARROZ IRRIGADO" |
+           CULTURA == "ARROZ DE SEQUEIRO" |
+           CULTURA == "MACA" |
+           CULTURA == "CEVADA" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "AMENDOIM (1ª SAFRA)" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (MORANGUINHO)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2022_SIMPLIFICADO <- left_join(PR_DERAL_2022_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2022_SIMPLIFICADO)[9] <- "PRODUCAO"
+
 for (i in PR_DERAL_2022_SIMPLIFICADO[, 3]){
   PR_DERAL_2022_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2022_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 18] <-  PR_DERAL_2022_SIMPLIFICADO[which(PR_DERAL_2022_SIMPLIFICADO$Município_sem_Código == i), 1]
   
@@ -1969,7 +2305,7 @@ AUX <- VBP_2023 %>%
   filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (ESPIGA)" |
+
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -1999,11 +2335,8 @@ AUX <- VBP_2023 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ DE SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -2014,7 +2347,7 @@ AUX <- VBP_2023 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (MORANGUINHO)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
@@ -2031,11 +2364,10 @@ colnames(PR_DERAL_2023_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2023$AREA_HA[VBP_2023$AREA_HA == ""] <- NA
 
 AUX <- VBP_2023 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "SOJA (1ª SAFRA)" |
+  filter( CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (ESPIGA)" |
+
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2043,7 +2375,7 @@ AUX <- VBP_2023 %>%
            CULTURA == "FEIJÃO (2ª SAFRA)" |
            CULTURA == "FEIJÃO (3ª SAFRA)" |
            CULTURA == "FEIJAO-VAGEM" |
-           CULTURA == "PASTAGENS E FORRAGENS" |
+            CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "BATATA (1ª SAFRA)" |
            CULTURA == "BATATA (2ª SAFRA)" |
            CULTURA == "CANA-DE-AÇÚCAR" |
@@ -2065,11 +2397,8 @@ AUX <- VBP_2023 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ DE SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -2080,7 +2409,7 @@ AUX <- VBP_2023 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (MORANGUINHO)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2023_SIMPLIFICADO <- left_join(PR_DERAL_2023_SIMPLIFICADO,
                                         AUX,
@@ -2093,7 +2422,7 @@ colnames(PR_DERAL_2023_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2023 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "SOJA (2ª SAFRA)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (ESPIGA)" |
+                 
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |
@@ -2123,11 +2452,8 @@ AUX <- VBP_2023 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "CEBOLA" |
                             CULTURA == "ARROZ IRRIGADO" |
                             CULTURA == "ARROZ DE SEQUEIRO" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "CEVADA" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -2149,7 +2475,7 @@ PR_DERAL_2023_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2023 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2023_SIMPLIFICADO <- left_join(PR_DERAL_2023_SIMPLIFICADO,
                                         AUX,
@@ -2193,6 +2519,66 @@ PR_DERAL_2023_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2023_CULTIVOS_MUNI
                        from = "UTF-8", 
                        to = "ASCII//TRANSLIT")
 
+#VBP_2023$PRODUCAO[VBP_2023$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2023 %>%
+  filter(CULTURA == "SOJA (1ª SAFRA)" |
+           CULTURA == "SOJA (2ª SAFRA)" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+
+           CULTURA == "MILHO (1ª SAFRA)" |
+           CULTURA == "MILHO (2ª SAFRA)" |
+           CULTURA == "TRIGO" |
+           CULTURA == "FEIJÃO (1ª SAFRA)" |
+           CULTURA == "FEIJÃO (2ª SAFRA)" |
+           CULTURA == "FEIJÃO (3ª SAFRA)" |
+           CULTURA == "FEIJAO-VAGEM" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "BATATA (1ª SAFRA)" |
+           CULTURA == "BATATA (2ª SAFRA)" |
+           CULTURA == "CANA-DE-AÇÚCAR" |
+           CULTURA == "FUMO" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA TRANSFORMAÇÃO" |
+           CULTURA == "TOMATE (1ª SAFRA)" |
+           CULTURA == "TOMATE (2ª SAFRA)" |
+           CULTURA == "CAFÉ" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "MANDIOCA CONSUMO HUMANO" |
+           CULTURA == "MANDIOCA  INDÚSTRIA/CONSUMO ANIMAL" |
+           CULTURA == "AVEIA BRANCA" |
+           CULTURA == "AVEIA PRETA" |
+           CULTURA == "CEBOLA" |
+           CULTURA == "ARROZ IRRIGADO" |
+           CULTURA == "ARROZ DE SEQUEIRO" |
+           CULTURA == "MACA" |
+           CULTURA == "CEVADA" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "AMENDOIM (1ª SAFRA)" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (MORANGUINHO)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2023_SIMPLIFICADO <- left_join(PR_DERAL_2023_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2023_SIMPLIFICADO)[9] <- "PRODUCAO"
+
 for (i in PR_DERAL_2023_SIMPLIFICADO[, 3]){
   PR_DERAL_2023_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2023_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 18] <-  PR_DERAL_2023_SIMPLIFICADO[which(PR_DERAL_2023_SIMPLIFICADO$Município_sem_Código == i), 1]
   
@@ -2233,7 +2619,7 @@ AUX <- VBP_2024 %>%
   filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (ESPIGA)" |
+
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2263,11 +2649,8 @@ AUX <- VBP_2024 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ DE SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -2278,7 +2661,7 @@ AUX <- VBP_2024 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (MORANGUINHO)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(VALOR_Reais))
+  summarise(sum(VALOR_Reais, na.rm = TRUE))
 
 ### Criando um objeto com os dados do DERAL/SIAGRO
 
@@ -2295,11 +2678,10 @@ colnames(PR_DERAL_2024_SIMPLIFICADO)[5] <- "VALOR_REAIS"
 VBP_2024$AREA_HA[VBP_2024$AREA_HA == ""] <- NA
 
 AUX <- VBP_2024 %>%
-  filter(!is.na(AREA_HA),
-         CULTURA == "SOJA (1ª SAFRA)" |
+  filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-           CULTURA == "MILHO VERDE (ESPIGA)" |
+
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2329,11 +2711,8 @@ AUX <- VBP_2024 %>%
            CULTURA == "CEBOLA" |
            CULTURA == "ARROZ IRRIGADO" |
            CULTURA == "ARROZ DE SEQUEIRO" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MACA" |
            CULTURA == "CEVADA" |
-           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
            CULTURA == "AZEVEM GRAOS" |
            CULTURA == "MELANCIA" |
            CULTURA == "BANANA" |
@@ -2344,7 +2723,7 @@ AUX <- VBP_2024 %>%
            CULTURA == "REPOLHO" |
            CULTURA == "MORANGO (MORANGUINHO)") %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2024_SIMPLIFICADO <- left_join(PR_DERAL_2024_SIMPLIFICADO,
                                         AUX,
@@ -2357,7 +2736,7 @@ colnames(PR_DERAL_2024_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2024 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "SOJA (2ª SAFRA)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                            CULTURA == "MILHO VERDE (ESPIGA)" |
+                 
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |
@@ -2387,11 +2766,8 @@ AUX <- VBP_2024 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "CEBOLA" |
                             CULTURA == "ARROZ IRRIGADO" |
                             CULTURA == "ARROZ DE SEQUEIRO" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MACA" |
                             CULTURA == "CEVADA" |
-                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
-                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
                             CULTURA == "AZEVEM GRAOS" |
                             CULTURA == "MELANCIA" |
                             CULTURA == "BANANA" |
@@ -2413,7 +2789,7 @@ PR_DERAL_2024_CULTIVOS_MUNICIPIOS <- AUX
 
 AUX <- VBP_2024 %>%filter(CULTURA == "MATA NATIVA" ) %>%
   group_by(MUNICIPIO) %>%
-  summarise(sum(AREA_HA))
+  summarise(sum(AREA_HA, na.rm = TRUE))
 
 PR_DERAL_2024_SIMPLIFICADO <- left_join(PR_DERAL_2024_SIMPLIFICADO,
                                         AUX,
@@ -2457,6 +2833,66 @@ PR_DERAL_2024_CULTIVOS_MUNICIPIOS$MUNICIPIO <- iconv(PR_DERAL_2024_CULTIVOS_MUNI
                        from = "UTF-8", 
                        to = "ASCII//TRANSLIT")
 
+#VBP_2024$PRODUCAO[VBP_2024$PRODUCAO == ""] <- NA
+
+AUX <- VBP_2024 %>%
+  filter(CULTURA == "SOJA (1ª SAFRA)" |
+           CULTURA == "SOJA (2ª SAFRA)" |
+           CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+
+           CULTURA == "MILHO (1ª SAFRA)" |
+           CULTURA == "MILHO (2ª SAFRA)" |
+           CULTURA == "TRIGO" |
+           CULTURA == "FEIJÃO (1ª SAFRA)" |
+           CULTURA == "FEIJÃO (2ª SAFRA)" |
+           CULTURA == "FEIJÃO (3ª SAFRA)" |
+           CULTURA == "FEIJAO-VAGEM" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "BATATA (1ª SAFRA)" |
+           CULTURA == "BATATA (2ª SAFRA)" |
+           CULTURA == "CANA-DE-AÇÚCAR" |
+           CULTURA == "FUMO" |
+           CULTURA == "UVA DE MESA" |
+           CULTURA == "UVA TRANSFORMAÇÃO" |
+           CULTURA == "TOMATE (1ª SAFRA)" |
+           CULTURA == "TOMATE (2ª SAFRA)" |
+           CULTURA == "CAFÉ" |
+           CULTURA == "LARANJA" |
+           CULTURA == "LIMAO" |
+           CULTURA == "TANGERINA MONTENEGRINA" |
+           CULTURA == "TANGERINA PONKAN" |
+           CULTURA == "TANGERINA MURCOTE" |
+           CULTURA == "MANDIOCA CONSUMO HUMANO" |
+           CULTURA == "MANDIOCA  INDÚSTRIA/CONSUMO ANIMAL" |
+           CULTURA == "AVEIA BRANCA" |
+           CULTURA == "AVEIA PRETA" |
+           CULTURA == "CEBOLA" |
+           CULTURA == "ARROZ IRRIGADO" |
+           CULTURA == "ARROZ DE SEQUEIRO" |
+           CULTURA == "MACA" |
+           CULTURA == "CEVADA" |
+           CULTURA == "AZEVEM GRAOS" |
+           CULTURA == "MELANCIA" |
+           CULTURA == "BANANA" |
+           CULTURA == "PEPINO" |
+           CULTURA == "AMENDOIM (1ª SAFRA)" |
+           CULTURA == "PESSEGO" |
+           CULTURA == "PIMENTAO" |
+           CULTURA == "REPOLHO" |
+           CULTURA == "MORANGO (MORANGUINHO)") %>%
+  group_by(MUNICIPIO) %>%
+  summarise(sum(PRODUCAO, na.rm = TRUE))
+
+AUX$MUNICIPIO <- iconv(AUX$MUNICIPIO,
+                       from = "UTF-8", 
+                       to = "ASCII//TRANSLIT")
+
+PR_DERAL_2024_SIMPLIFICADO <- left_join(PR_DERAL_2024_SIMPLIFICADO,
+                                        AUX,
+                                        by = c("Município_sem_Código" = "MUNICIPIO"))
+
+colnames(PR_DERAL_2024_SIMPLIFICADO)[9] <- "PRODUCAO"
+
 for (i in PR_DERAL_2024_SIMPLIFICADO[, 3]){
   PR_DERAL_2024_CULTIVOS_MUNICIPIOS[which(PR_DERAL_2024_CULTIVOS_MUNICIPIOS$MUNICIPIO == i), 18] <-  PR_DERAL_2024_SIMPLIFICADO[which(PR_DERAL_2024_SIMPLIFICADO$Município_sem_Código == i), 1]
   
@@ -2470,6 +2906,7 @@ rm(VBP_2024,
    SIAGRO_2025)
 
 ####### Consumo Agrotóxico/HA
+
 PR_DERAL_2016_SIMPLIFICADO$TON_AGRO_2016 <- as.numeric(gsub(",", ".", PR_DERAL_2016_SIMPLIFICADO$TON_AGRO_2016))
 PR_DERAL_2016_SIMPLIFICADO$AGRO_HA <- PR_DERAL_2016_SIMPLIFICADO$TON_AGRO_2016/PR_DERAL_2016_SIMPLIFICADO$AREA_HA
 
@@ -2509,8 +2946,94 @@ PR_DERAL_2023_SIMPLIFICADO$AGRO_HA <- PR_DERAL_2023_SIMPLIFICADO$TON_AGRO_2023/P
 PR_DERAL_2024_SIMPLIFICADO$TON_AGRO_2024 <- as.numeric(gsub(",", ".", PR_DERAL_2024_SIMPLIFICADO$TON_AGRO_2024))
 PR_DERAL_2024_SIMPLIFICADO$AGRO_HA <- PR_DERAL_2024_SIMPLIFICADO$TON_AGRO_2024/PR_DERAL_2024_SIMPLIFICADO$AREA_HA
 
+#######   Criando tabela geral
+
+PR_DERAL_GERAL <- PR_DERAL_2016_SIMPLIFICADO[, c(1, 2, 3)]
+PR_DERAL_GERAL$AREA_HA_2016 <- PR_DERAL_2016_SIMPLIFICADO$AREA_HA
+PR_DERAL_GERAL$MATA_NATIVA_2016 <- PR_DERAL_2016_SIMPLIFICADO$MATA_NATIVA
+PR_DERAL_GERAL$TON_AGRO_2016 <- PR_DERAL_2016_SIMPLIFICADO$TON_AGRO_2016
+PR_DERAL_GERAL$AGRO_HA_2016 <- PR_DERAL_2016_SIMPLIFICADO$AGRO_HA
+PR_DERAL_GERAL$VALOR_2016 <- PR_DERAL_2016_SIMPLIFICADO$VALOR_REAIS
+PR_DERAL_GERAL$PRODUCAO_2016 <- PR_DERAL_2016_SIMPLIFICADO$PRODUCAO
+
+AUX <- PR_DERAL_2017_SIMPLIFICADO[, c(3, 6, 7, 8, 10, 5, 9)]
+
+colnames(AUX)[c(2:7)] <- c("AREA_HA_2017", "MATA_NATIVA_2017", "TON_AGRO_2017", "AGRO_HA_2017", 
+                           "VALOR_2017", "PRODUCAO_2017")
+
+PR_DERAL_GERAL <- left_join(PR_DERAL_GERAL,
+                            AUX,
+                            by = c("Município_sem_Código" = "Município_sem_Código"))
+
+AUX <- PR_DERAL_2018_SIMPLIFICADO[, c(3, 6, 7, 8, 10, 5, 9)]
+
+colnames(AUX)[c(2:7)] <- c("AREA_HA_2018", "MATA_NATIVA_2018", "TON_AGRO_2018", "AGRO_HA_2018", 
+                           "VALOR_2018", "PRODUCAO_2018")
+
+PR_DERAL_GERAL <- left_join(PR_DERAL_GERAL,
+                            AUX,
+                            by = c("Município_sem_Código" = "Município_sem_Código"))
+
+AUX <- PR_DERAL_2019_SIMPLIFICADO[, c(3, 6, 7, 8, 10, 5, 9)]
+
+colnames(AUX)[c(2:7)] <- c("AREA_HA_2019", "MATA_NATIVA_2019", "TON_AGRO_2019", "AGRO_HA_2019", 
+                           "VALOR_2019", "PRODUCAO_2019")
+
+PR_DERAL_GERAL <- left_join(PR_DERAL_GERAL,
+                            AUX,
+                            by = c("Município_sem_Código" = "Município_sem_Código"))
+
+AUX <- PR_DERAL_2020_SIMPLIFICADO[, c(3, 6, 7, 8, 10, 5, 9)]
+
+colnames(AUX)[c(2:7)] <- c("AREA_HA_2020", "MATA_NATIVA_2020", "TON_AGRO_2020", "AGRO_HA_2020", 
+                           "VALOR_2020", "PRODUCAO_2020")
+
+PR_DERAL_GERAL <- left_join(PR_DERAL_GERAL,
+                            AUX,
+                            by = c("Município_sem_Código" = "Município_sem_Código"))
+
+AUX <- PR_DERAL_2021_SIMPLIFICADO[, c(3, 6, 7, 8, 10, 5, 9)]
+
+colnames(AUX)[c(2:7)] <- c("AREA_HA_2021", "MATA_NATIVA_2021", "TON_AGRO_2021", "AGRO_HA_2021", 
+                           "VALOR_2021", "PRODUCAO_2021")
+
+PR_DERAL_GERAL <- left_join(PR_DERAL_GERAL,
+                            AUX,
+                            by = c("Município_sem_Código" = "Município_sem_Código"))
+
+AUX <- PR_DERAL_2022_SIMPLIFICADO[, c(3, 6, 7, 8, 10, 5, 9)]
+
+colnames(AUX)[c(2:7)] <- c("AREA_HA_2022", "MATA_NATIVA_2022", "TON_AGRO_2022", "AGRO_HA_2022", 
+                           "VALOR_2022", "PRODUCAO_2022")
+
+PR_DERAL_GERAL <- left_join(PR_DERAL_GERAL,
+                            AUX,
+                            by = c("Município_sem_Código" = "Município_sem_Código"))
+
+AUX <- PR_DERAL_2023_SIMPLIFICADO[, c(3, 6, 7, 8, 10, 5, 9)]
+
+colnames(AUX)[c(2:7)] <- c("AREA_HA_2023", "MATA_NATIVA_2023", "TON_AGRO_2023", "AGRO_HA_2023", 
+                           "VALOR_2023", "PRODUCAO_2023")
+
+PR_DERAL_GERAL <- left_join(PR_DERAL_GERAL,
+                            AUX,
+                            by = c("Município_sem_Código" = "Município_sem_Código"))
+
+AUX <- PR_DERAL_2024_SIMPLIFICADO[, c(3, 6, 7, 8, 10, 5, 9)]
+
+colnames(AUX)[c(2:7)] <- c("AREA_HA_2024", "MATA_NATIVA_2024", "TON_AGRO_2024", "AGRO_HA_2024", 
+                           "VALOR_2024", "PRODUCAO_2024")
+
+PR_DERAL_GERAL <- left_join(PR_DERAL_GERAL,
+                            AUX,
+                            by = c("Município_sem_Código" = "Município_sem_Código"))
+
 
 ####### Salvando arquivos
+
+write.csv(PR_DERAL_GERAL, 
+          "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_GERAL.csv",
+          row.names = FALSE)
 
 write.csv(PR_DERAL_2016_CULTIVOS_MUNICIPIOS, 
           "/home/gustavo/Área de trabalho/Análise_de_Dados/Tabulacoes_R/DERAL/PR_DERAL_2016_CULTIVOS_MUNICIPIOS.csv",
