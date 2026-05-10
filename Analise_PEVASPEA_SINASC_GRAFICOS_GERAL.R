@@ -1734,7 +1734,8 @@ AUX <- PR_DERAL_GERAL %>%
   summarise(
     across(
       c(AREA_HA_2021, AREA_HA_2022, AREA_HA_2023, AREA_HA_2024,
-        TON_AGRO_2021, TON_AGRO_2022, TON_AGRO_2023, TON_AGRO_2024),
+        TON_AGRO_2021, TON_AGRO_2022, TON_AGRO_2023, TON_AGRO_2024,
+        PRODUCAO_2021, PRODUCAO_2022, PRODUCAO_2023, PRODUCAO_2024),
       ~ sum(.x, na.rm = TRUE)
     )
   )   
@@ -1852,5 +1853,28 @@ AUX$RS <- str_pad(AUX$RS,
 MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS, 
                              AUX, 
                              by = c("RS" = "RS"))
+
+######  Municípios
+
+AUX <- PR_DERAL_GERAL %>%
+  group_by(Município_sem_Código) %>%
+  summarise(across(c(AREA_HA_2021, AREA_HA_2022, AREA_HA_2023, AREA_HA_2024,
+                     AREA_HA_2017, AREA_HA_2018, AREA_HA_2019, AREA_HA_2020,
+                     TON_AGRO_2021, TON_AGRO_2022, TON_AGRO_2023, TON_AGRO_2024,
+                     TON_AGRO_2017, TON_AGRO_2018, TON_AGRO_2019, TON_AGRO_2020,
+                     PRODUCAO_2021, PRODUCAO_2022, PRODUCAO_2023, PRODUCAO_2024,
+                     PRODUCAO_2017, PRODUCAO_2018, PRODUCAO_2019, PRODUCAO_2020),
+      ~ sum(.x, na.rm = TRUE)
+    ))
+
+AUX$AGRO_HA_21_24 <- ((AUX$TON_AGRO_2021 + AUX$TON_AGRO_2022 + AUX$TON_AGRO_2023 + AUX$TON_AGRO_2024)/
+                        (AUX$AREA_HA_2021 + AUX$AREA_HA_2022 + AUX$AREA_HA_2023 + AUX$AREA_HA_2024)) *1000
+
+
+AUX$AGRO_HA_17_20 <- ((AUX$TON_AGRO_2017 + AUX$TON_AGRO_2018 + AUX$TON_AGRO_2019 + AUX$TON_AGRO_2020)/
+                        (AUX$AREA_HA_2017 + AUX$AREA_HA_2018 + AUX$AREA_HA_2019 + AUX$AREA_HA_2020)) *1000
+
+
+  
 
 
