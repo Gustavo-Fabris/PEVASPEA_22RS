@@ -96,6 +96,7 @@ Filter_Culturas <- c("SOJA SAFRA NORMAL",
                      "MILHO SAFRA NORMAL", 
                      "MILHO SAFRINHA",
                      "TRIGO", 
+                     
                      "FEIJAO SAFRA DA SECA",
                      "FEIJAO SAFRA DAS AGUAS",
                      "FEIJAO SAFRA DE INVERNO",
@@ -111,6 +112,9 @@ Filter_Culturas <- c("SOJA SAFRA NORMAL",
                      "CAFE",
                      "LARANJA",
                      "LIMAO",
+                     "MADEIRAS - EM TORA P/LAMINADORA - PINUS",
+                     "MADEIRAS - EM TORA P/SERRARIA - PINUS",
+                     "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO",
                      "TANGERINA MONTENEGRINA",
                      "TANGERINA PONKAN", 
                      "TANGERINA MURCOTE", 
@@ -137,10 +141,12 @@ AUX <- VBP_2016 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "FEIJAO SAFRA DA SECA" |
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
@@ -202,7 +208,9 @@ AUX <- VBP_2016 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -256,7 +264,9 @@ colnames(PR_DERAL_2016_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2016 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "SOJA SAFRINHA" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                 
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
@@ -356,7 +366,7 @@ AUX <- VBP_2016 %>%
            CULTURA == "FEIJAO SAFRA DAS AGUAS" |
            CULTURA == "FEIJAO SAFRA DE INVERNO" |
            CULTURA == "FEIJAO-VAGEM" |
-            CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "BATATA DA SECA" |
            CULTURA == "BATATA DAS AGUAS" |
            CULTURA == "CANA-DE-ACUCAR" |
@@ -442,7 +452,9 @@ AUX <- VBP_2017 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -507,7 +519,9 @@ AUX <- VBP_2017 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -561,7 +575,9 @@ colnames(PR_DERAL_2017_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2017 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "SOJA SAFRINHA" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                 
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
@@ -745,7 +761,9 @@ AUX <- VBP_2018 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -810,7 +828,9 @@ AUX <- VBP_2018 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -864,7 +884,9 @@ colnames(PR_DERAL_2018_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2018 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "SOJA SAFRINHA" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                 
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
@@ -1049,7 +1071,9 @@ AUX <- VBP_2019 %>%
   filter(CULTURA == "Soja (1ª safra)" |
            CULTURA == "Soja (2ª safra)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
@@ -1111,7 +1135,9 @@ AUX <- VBP_2019 %>%
   filter(CULTURA == "Soja (1ª safra)" |
            CULTURA == "Soja (2ª safra)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
@@ -1166,7 +1192,9 @@ colnames(PR_DERAL_2019_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2019 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Soja (2ª safra)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                 
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "Milho (1ª safra)" |
                             CULTURA == "Milho (2ª safra)" |
                             CULTURA == "Trigo" |
@@ -1365,7 +1393,9 @@ AUX <- VBP_2020 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -1426,7 +1456,9 @@ AUX <- VBP_2020 %>%
   filter(CULTURA == "SOJA SAFRA NORMAL" |
            CULTURA == "SOJA SAFRINHA" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO SAFRA NORMAL" |
            CULTURA == "MILHO SAFRINHA" |
            CULTURA == "TRIGO" |
@@ -1480,7 +1512,9 @@ colnames(PR_DERAL_2020_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2020 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
                             CULTURA == "SOJA SAFRINHA" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                 
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MILHO SAFRA NORMAL" |
                             CULTURA == "MILHO SAFRINHA" |
                             CULTURA == "TRIGO" |
@@ -1676,6 +1710,9 @@ AUX <- VBP_2021 %>%
            CULTURA == "Soja (2ª safra)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
            CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
@@ -1740,7 +1777,9 @@ AUX <- VBP_2021 %>%
   filter( CULTURA == "Soja (1ª safra)" |
            CULTURA == "Soja (2ª safra)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "Milho (1ª safra)" |
            CULTURA == "Milho (2ª safra)" |
            CULTURA == "Trigo" |
@@ -1795,6 +1834,9 @@ colnames(PR_DERAL_2021_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
                             CULTURA == "Soja (2ª safra)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "PASTAGENS E FORRAGENS" |
                             CULTURA == "Milho (1ª safra)" |
                             CULTURA == "Milho (2ª safra)" |
@@ -1905,7 +1947,7 @@ AUX <- VBP_2021 %>%
            CULTURA == "Feijão (2ª safra)" |
            CULTURA == "Feijão (3ª safra)" |
            CULTURA == "FEIJAO-VAGEM" |
-            CULTURA == "PASTAGENS E FORRAGENS" |
+           CULTURA == "PASTAGENS E FORRAGENS" |
            CULTURA == "Batata (1ª safra)" |
            CULTURA == "Batata (2ª safra)" |
            CULTURA == "Cana-de-açúcar" |
@@ -1991,7 +2033,9 @@ AUX <- VBP_2022 %>%
   filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2053,7 +2097,9 @@ AUX <- VBP_2022 %>%
   filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2108,7 +2154,9 @@ colnames(PR_DERAL_2022_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2022 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "SOJA (2ª SAFRA)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                 
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |
@@ -2305,7 +2353,9 @@ AUX <- VBP_2023 %>%
   filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2367,7 +2417,9 @@ AUX <- VBP_2023 %>%
   filter( CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2422,7 +2474,9 @@ colnames(PR_DERAL_2023_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2023 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "SOJA (2ª SAFRA)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                 
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |
@@ -2619,7 +2673,9 @@ AUX <- VBP_2024 %>%
   filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2681,7 +2737,9 @@ AUX <- VBP_2024 %>%
   filter(CULTURA == "SOJA (1ª SAFRA)" |
            CULTURA == "SOJA (2ª SAFRA)" |
            CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-
+           CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+           CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
            CULTURA == "MILHO (1ª SAFRA)" |
            CULTURA == "MILHO (2ª SAFRA)" |
            CULTURA == "TRIGO" |
@@ -2736,7 +2794,9 @@ colnames(PR_DERAL_2024_SIMPLIFICADO)[6] <- "AREA_HA"
 AUX <- VBP_2024 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
                             CULTURA == "SOJA (2ª SAFRA)" |
                             CULTURA == "SILAGEM DE MILHO E/OU SORGO" |
-                 
+                            CULTURA == "MADEIRAS - EM TORA P/LAMINADORA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - PINUS" |
+                            CULTURA == "MADEIRAS - EM TORA P/SERRARIA - EUCALIPTO" |
                             CULTURA == "MILHO (1ª SAFRA)" |
                             CULTURA == "MILHO (2ª SAFRA)" |
                             CULTURA == "TRIGO" |

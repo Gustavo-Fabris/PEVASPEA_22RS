@@ -135,7 +135,7 @@ PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_22_25 <- ggplot(AUX01,
          subtitle = "Período: 2022-2025",
          x = NULL,
          y = "Anomalias/1.000 Nascidos Vivos",
-         caption = "Fonte: SINASC/PR. Nota: Taxas calculadas sobre o total de nascidos no período."
+         caption = Fonte
   ) +
   Theme()
 
@@ -173,7 +173,7 @@ PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_18_21 <- ggplot(AUX01,
        subtitle = "Período: 2018-2021",
        x = NULL,
        y = "Anomalias/1.000 Nascidos Vivos",
-       caption = "Fonte: SINASC/PR. Nota: Taxas calculadas sobre o total de nascidos no período."
+       caption = Fonte
   ) +
   Theme()
 
@@ -214,7 +214,7 @@ PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc <- ggplot(PR_PEVASPEA_SINASC_NASC_SE_GER
               linetype = "dashed", 
               linewidth = 0.5, 
               se = FALSE, 
-              span = 0.2) +
+              span = 0.5) +
   scale_color_manual(values = Legenda,
                      name = NULL) +
   scale_x_continuous(breaks = quebras_anos, 
@@ -227,7 +227,10 @@ PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc <- ggplot(PR_PEVASPEA_SINASC_NASC_SE_GER
        x = NULL,
        title = "Série Temporal - Nascidos Vivos (2016 a 2025)",
        subtitle = "Número de nascimentos agrupados por semana epidemiológica") +
-  Theme()
+  Theme() + 
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal",
+        legend.box = "horizontal")
   
 ## Anomalias
 
@@ -275,7 +278,7 @@ PR_PEVASPEA_SINASC_GRAF_Serie_Temp_ANOMAL <- ggplot(PR_PEVASPEA_SINASC_GRAF_Seri
             alpha = 0.8) +
   geom_line(aes(y = Media_Suave, 
                 color = "Média Móvel (5 sem.)"), 
-            size = 1) +
+            linewidth = 1) +
   geom_smooth(aes(y = Casos, 
                   color = "LOESS"), 
               method = "loess", 
@@ -289,79 +292,72 @@ PR_PEVASPEA_SINASC_GRAF_Serie_Temp_ANOMAL <- ggplot(PR_PEVASPEA_SINASC_GRAF_Seri
   scale_y_continuous(limits = c(8, NA)) + 
   labs(caption = Fonte, 
        y = "Ocorrências de Anomalias Congênitas",
-       x = "Anos",
+       x = NULL,
        title = "Série Temporal - Anomalias Congênitas (2016 a 2025)",
        subtitle = "Anomalias congênitas agrupadas por semana epidemiológica") +
-  Theme()
+  Theme() + 
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal",
+        legend.box = "horizontal")
 
 #### Série Histórica RS
 
 AUX <- RS22_PEVASPEA_SINASC_Serie_historica[, c(1:4)]
 
-AUX <- mutate(AUX, 
-              Taxa_Anomalias = (AUX[, 4]/AUX[, 3]) *1000)
+AUX <- AUX %>%
+  mutate(Taxa_Anomalias = (.[, 4] / .[, 3]) * 1000)
 
-AUX$Taxa_Anomalias <- format(round(AUX[, 5], 2))
+AUX$RS <- as.numeric(as.character(AUX$RS))
 
-AUX$RS <- as.factor(AUX$RS)
-
-RS_SINASC_GRAF_SERIE_HIST_ANOMAL <- ggplot(AUX, aes(x = RS,
+RS_SINASC_GRAF_SERIE_HIST_ANOMAL <- ggplot(AUX, aes(x = RS, 
                                                     y = Taxa_Anomalias, 
-                                                    group = 1)
-) +
-  geom_line(linewidth = 1.3,
+                                                    group = 1)) +
+  geom_line(linewidth = 1.3, 
             colour = "black") +
-  geom_point(fill = "grey",
-             size = 7,
+  geom_point(fill = "grey", 
+             size = 5, 
              shape = 21) +
+  geom_text(aes(label = round(Taxa_Anomalias, 2)), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold") +
+  scale_y_continuous(limits = c(0, 20), 
+                     breaks = seq(0, 16, 2)) +
+  scale_x_continuous(breaks = 2016:2025) +
   labs(caption = Fonte, 
-       y = "Anomalias/1000 Nascimentos",
-       x = NULL,
-       title = "Série Histórica Regional - Anomalias Congênitas (2016 a 2025)",
-       subtitle = "Notificações referentes ao município de residência") +
-  geom_label(aes(label = Taxa_Anomalias), 
-             size = 6, 
-             alpha = 0.5,
-             vjust = -0.5)  +
-  scale_y_discrete(expand = expansion(mult = c(0.1, 0.2),
-  )
-  ) +
+       y = "Anomalias / 1.000 Nascimentos",
+       x = "Ano",
+       title = "Série Histórica 22ª Regional de Saúde - Ivaiporã",
+       subtitle = "Anomalias Congênitas (2016-2025). Dados por município de residência.") +
   Theme() 
 
 ######## Série Histórica Paraná
 
 AUX <- PR_PEVASPEA_SINASC_Serie_Historica[, c(1:4)]
 
-AUX <- mutate(AUX, 
-              Taxa_Anomalias = (AUX[, 4]/AUX[, 3]) *1000)
+AUX <- AUX %>%
+  mutate(Taxa_Anomalias = (.[, 4] / .[, 3]) * 1000)
 
-AUX$Taxa_Anomalias <- format(round(AUX[, 5], 2))
+AUX$RS <- as.numeric(as.character(AUX$RS))
 
-AUX$RS <- as.factor(AUX$RS)
-
-
-PR_SINASC_GRAF_SERIE_HIST_ANOMAL <- ggplot(AUX, aes(x = RS,
-                                                    y = Taxa_Anomalias, 
-                                                    group = 1)
-) +
-  geom_line(linewidth = 1.3,
+PR_SINASC_GRAF_SERIE_HIST_ANOMAL <- ggplot(AUX, 
+                                           aes(x = RS, 
+                                               y = Taxa_Anomalias, 
+                                               group = 1)) +
+  geom_line(linewidth = 1.3, 
             colour = "black") +
-  geom_point(fill = "grey",
-             size = 7,
+  geom_point(fill = "grey", 
+             size = 5, 
              shape = 21) +
-  labs(caption = Fonte, 
-       y = "Anomalias/1000 Nascimentos",
-       x = NULL,
-       title = "Série Histórica Paraná - Anomalias Congênitas (2016 a 2025)",
-       subtitle = "Notificações referentes ao município de residência") +
-  geom_label(aes(label = Taxa_Anomalias), 
-             size = 6, 
-             alpha = 0.5,
-             vjust = -0.5)  +
-  scale_y_discrete(expand = expansion(mult = c(0.1, 0.2),
-  )
-  ) +
-  Theme() 
+  geom_text(aes(label = round(Taxa_Anomalias, 2)), 
+            vjust = -1.5, 
+            size = 4) + 
+  scale_y_continuous(limits = c(0, 20), 
+                     breaks = seq(0, 16, 2)) +
+  scale_x_continuous(breaks = 2016:2025) +
+  labs(title = "Série Histórica Paraná - Anomalias Congênitas",
+       y = "Taxa por 1.000 nascimentos", x = "Ano") +
+  Theme()
 
 ###### Série Histórica 05 maiores regionais
 
@@ -379,7 +375,8 @@ AUX <- AUX01 %>%
 AUX <- pivot_longer(AUX, 
                     2:11, 
                     names_to = "Ano", 
-                    values_to = "Taxa_1000")
+                    values_to = "Taxa_1000") %>%
+  mutate(Taxa_1000 = as.numeric(as.character(Taxa_1000)))
 
 PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_I <- ggplot(AUX, aes(x = Ano, 
                                                          y = Taxa_1000)) +
@@ -391,12 +388,12 @@ PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_I <- ggplot(AUX, aes(x = Ano,
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(caption = Fonte, 
-       y = "Número de Casos",
+  labs(y = "Anomalias/
+1000 Nascimentos",
        x = NULL,
-       title = "Comparativo de Séries Históricas - 04 RS (2016 a 2025)",
-       subtitle = "Taxa de Anomalias/1000 nascimentos - Regionais com maior Taxa em 2025 (excluindo 22ª RS") +
-   scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
+       title = "04ª Regional de Saúde (2016 a 2025)") +
+  scale_y_continuous(limits = c(0, 20), 
+                     breaks = seq(0, 16, 2)) +
   Theme()
 
 #### 01 RS
@@ -407,24 +404,25 @@ AUX <- AUX01 %>%
 AUX <- pivot_longer(AUX, 
                     2:11, 
                     names_to = "Ano", 
-                    values_to = "Taxa_1000")
+                    values_to = "Taxa_1000") %>%
+  mutate(Taxa_1000 = as.numeric(as.character(Taxa_1000))) 
 
 PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_II <- ggplot(AUX, aes(x = Ano, 
                                                           y = Taxa_1000)) +
   geom_line(aes(x = Ano,
                 y = Taxa_1000,
-                colour = RS,
                 group = RS),
+            colour = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(caption = Fonte, 
-       y = "Número de Casos",
+  labs(y = "Anomalias/
+1000 Nascimentos",
        x = NULL,
-       title = "Comparativo de Séries Históricas - 01 RS (2016 a 2025)",
-       subtitle = "Taxa de Anomalias/1000 nascimentos - Regionais com maior Taxa em 2025 (excluindo 22ª RS)") +
-   scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
+       title = "01ª Regional de Saúde (2016 a 2025)") +
+  scale_y_continuous(limits = c(0, 18), 
+                     breaks = seq(0, 16, 2)) +
   Theme()
 
 ####  20 RS
@@ -435,27 +433,28 @@ AUX <- AUX01 %>%
 AUX <- pivot_longer(AUX, 
                     2:11, 
                     names_to = "Ano", 
-                    values_to = "Taxa_1000")
+                    values_to = "Taxa_1000") %>%
+  mutate(Taxa_1000 = as.numeric(as.character(Taxa_1000)))
 
 PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_III <- ggplot(AUX, aes(x = Ano, 
                                                            y = Taxa_1000)) +
   geom_line(aes(x = Ano,
                 y = Taxa_1000,
-                colour = RS,
                 group = RS),
-            linewidth = 1.3) +
+            colour = "black",
+            linewidth = 1.3)  +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(caption = Fonte, 
-       y = "Número de Casos",
+  labs(y = "Anomalias/
+1000 Nascimentos",
        x = NULL,
-       title = "Comparativo de Séries Históricas - 20 RS (2016 a 2025)",
-       subtitle = "Taxa de Anomalias/1000 nascimentos - Regionais com maior Taxa em 2025 (excluindo 22ª RS)") +
-  scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
+       title = "20ª Regional de Saúde (2016 a 2025)") +
+  scale_y_continuous(limits = c(0, 20), 
+                     breaks = seq(0, 16, 2)) +
   Theme()
 
-####  20 RS
+####  17 RS
 
 AUX <- AUX01 %>% 
   filter(RS == 17)
@@ -463,24 +462,25 @@ AUX <- AUX01 %>%
 AUX <- pivot_longer(AUX, 
                     2:11, 
                     names_to = "Ano", 
-                    values_to = "Taxa_1000")
+                    values_to = "Taxa_1000") %>%
+  mutate(Taxa_1000 = as.numeric(as.character(Taxa_1000)))
 
 PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_IV <- ggplot(AUX, aes(x = Ano, 
                                                           y = Taxa_1000)) +
   geom_line(aes(x = Ano,
                 y = Taxa_1000,
-                colour = RS,
                 group = RS),
+            colour = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(caption = Fonte, 
-       y = "Número de Casos",
+  labs(y = "Anomalias/
+1000 Nascimentos",
        x = NULL,
-       title = "Comparativo de Séries Históricas - 17 RS (2016 a 2025)",
-       subtitle = "Taxa de Anomalias/1000 nascimentos - Regionais com maior Taxa em 2025 (excluindo 22ª RS)") +
-  scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
+       title = "17ª Regional de Saúde (2016 a 2025)") +
+  scale_y_continuous(limits = c(0, 20), 
+                     breaks = seq(0, 16, 2)) +
   Theme()
 
 ####  02 RS
@@ -491,24 +491,25 @@ AUX <- AUX01 %>%
 AUX <- pivot_longer(AUX, 
                     2:11, 
                     names_to = "Ano", 
-                    values_to = "Taxa_1000")
+                    values_to = "Taxa_1000") %>%
+  mutate(Taxa_1000 = as.numeric(as.character(Taxa_1000)))
 
 PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_V <- ggplot(AUX, aes(x = Ano, 
                                                          y = Taxa_1000)) +
   geom_line(aes(x = Ano,
                 y = Taxa_1000,
-                colour = RS,
                 group = RS),
-            linewidth = 1.3) +
+            colour = "black",
+            linewidth = 1.3)  +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(caption = Fonte, 
-       y = "Número de Casos",
+  labs(y = "Anomalias/
+1000 Nascimentos",
        x = NULL,
-       title = "Comparativo de Séries Históricas - 02 RS (2016 a 2025)",
-       subtitle = "Taxa de Anomalias/1000 nascimentos - Regionais com maior Taxa em 2025 (excluindo 22ª RS)") +
-  scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
+       title = "02ª Regional de Saúde (2016 a 2025)") +
+  scale_y_continuous(limits = c(0, 20), 
+                     breaks = seq(0, 16, 2)) +
   Theme()
 
 AUX_LIST <- list(PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_I,
@@ -517,7 +518,26 @@ AUX_LIST <- list(PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_I,
                  PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_IV,
                  PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_V)
 
-PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS <- wrap_plots(AUX_LIST, ncol = 1)
+PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS <- wrap_plots(AUX_LIST, 
+                                                       ncol = 1)  + 
+  plot_annotation(
+    title = 'Regionais de Saúde com Maior Taxa de Anomalias/1000 Nascidos Vivos em 2025',
+    subtitle = 'Taxa de Anomalias Congênitas por 1.000 nascidos vivos (2016-2025)',
+    caption =  Fonte,
+    theme = theme(
+      plot.title = element_text(size = 18, 
+                                face = "bold"),
+      plot.subtitle = element_text(size = 14),
+      plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+    )
+  )
+
+ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS.png",
+  plot = PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS,
+  width = 21,
+  height = 29.7,
+  units = "cm",
+  dpi = 300) 
 
 #### Série Histórica Municipal
 
@@ -581,7 +601,8 @@ AUX_LIST <- AUX %>%
                  vjust = 0.1,
                  size = 4) +
       labs(x = "Ano",
-           y = "Anomalias/1000 Nascimentos",
+           y = "Anomalias/
+1000 Nascimentos",
            title = titulo
       ) +
       scale_y_continuous(limits = c(0, max_global), 
@@ -603,22 +624,36 @@ RS_PEVASPEA_SINASC_GRAF_Taxa_Mun <- wrap_plots(AUX_LIST, ncol = 2) +
 
 ###    MAPAS      ###
 
-Theme <- function(){
-  theme(panel.grid.major = element_line(color = "#C0C0C0"),
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "#F5F5F5"),
-        legend.position = "bottom",
-        legend.title = element_text(face = "bold",
-                                    size = 14), 
-        legend.text = element_text(size = 14), 
-        plot.subtitle = element_text(hjust = 0,
-                                     size = 12),
-        plot.caption = element_text(size = 12,
-                                    hjust = 0),
-        plot.title = element_text(hjust = 0, 
-                                  face = "bold",
-                                  size = 24)
-  )
+Theme <- function(base_size = 12){
+  theme_minimal(base_size = base_size) + 
+    theme(panel.background = element_rect(fill = "white", 
+                                          color = NA),
+          panel.grid.major = element_line(color = "grey90", 
+                                          linewidth = 0.2),
+          panel.grid.minor = element_blank(),
+          legend.position = "bottom",
+          legend.title = element_text(face = "bold",
+                                      size = 12), 
+          legend.text = element_text(size = 11),
+          legend.box.margin = margin(t = 10),
+          plot.title = element_text(face = "bold", 
+                                    size = 18, 
+                                    hjust = 0, 
+                                    margin = margin(b = 10)),
+          plot.subtitle = element_text(size = 12, 
+                                       hjust = 0, 
+                                       color = "grey30", 
+                                       margin = margin(b = 15)),
+          plot.caption = element_text(size = 10, 
+                                      hjust = 0, 
+                                      face = "italic", 
+                                      margin = margin(t = 15)),
+          axis.title = element_text(face = "bold", 
+                                    size = 11),
+          axis.text = element_text(size = 10,
+                                   color = "black"),
+          plot.margin = margin(20, 20, 20, 20)
+    )
 }
 
 MAPA_BASE <- SHAPEFILE_ESTADUAL
@@ -714,8 +749,8 @@ PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21 <- ggplot() +
   annotation_scale(location = "br") +
   annotation_north_arrow(location = "tr", 
                          which_north = "true") +
-  scale_fill_viridis_d(option = "viridis", 
-                       name = "Casos/1000 \nNascidos Vivos",
+  scale_fill_viridis_d(option = "inferno", 
+                       name = "Anomalias/1000 \nNascidos Vivos",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -727,7 +762,11 @@ PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21 <- ggplot() +
        title = "Taxa Anomalias/1000 Nascidos Vivos (2018 - 2021) - 
 Paraná",
        subtitle = "Referente ao Município de Residência")  +
-  Theme()
+  Theme() +
+  theme(panel.background = element_blank(),
+                axis.text = element_blank(),
+                axis.ticks = element_blank(),
+                panel.grid = element_blank())
 
 ############  Taxa 04 anos (22 - 25) municípios estado
 
@@ -772,7 +811,7 @@ PR_SINASC_MAP_TAXA_4A_ANOMAL_22_25 <- ggplot() +
   annotation_scale(location = "br") +
   annotation_north_arrow(location = "tr", 
                          which_north = "true") +
-  scale_fill_viridis_d(option = "viridis", 
+  scale_fill_viridis_d(option = "inferno", 
                        name = "Casos/1000 \nNascidos Vivos",
                        direction = -1,
                        begin = 0.1,       
@@ -785,7 +824,11 @@ PR_SINASC_MAP_TAXA_4A_ANOMAL_22_25 <- ggplot() +
        title = "Taxa Anomalias/1000 Nascidos Vivos (2022 - 2025) - 
 Paraná",
        subtitle = "Referente ao Município de Residência")  +
-  Theme()
+  Theme() +
+  theme(panel.background = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
 
 #############   Taxa Anomalias/1000 nascimentos 18 - 21 somados
 #############   por Regionais de Saúde
@@ -823,9 +866,9 @@ MAPA_BASE_RS <- MAPA_BASE_RS[, c(1, 42, 43, 44)]
 
 MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, 
                          cut(x = TAXA_4a_18_21,
-                             breaks = c(-Inf, 0, 3, 5, 7, 9, 11, 14, 20, 1000),
-                             labels = c("0", "1 - 3", "4 - 5", "6 - 7", 
-                                        "8 - 9", "10 - 11", "12 - 14", "15 - 20", "> 20"),
+                             breaks = c(0, 5, 7, 9, 11, 13, 15, 20, Inf),
+                             labels = c("Até 5", "5.1 - 7", "7.1 - 9", "9.1 - 11", 
+                                        "11.1 - 13", "13.1 - 15", "15.1 - 20", "> 20"),
                              right = FALSE))
 
 MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
@@ -837,7 +880,7 @@ PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS <- ggplot() +
   annotation_scale(location = "br") +
   annotation_north_arrow(location = "tr", 
                          which_north = "true") +
-  scale_fill_viridis_d(option = "viridis", 
+  scale_fill_viridis_d(option = "inferno", 
                        name = "Casos/1000 \nNascidos Vivos",
                        direction = -1,
                        begin = 0.1,       
@@ -850,7 +893,11 @@ PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS <- ggplot() +
        title = "Taxa Anomalias/1000 Nascidos Vivos em 2018 - 2021 - 
 Regionais Paraná",
        subtitle = "Referente ao Município de Residência") + 
-  Theme()
+  Theme() +
+  theme(panel.background = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
 
 #############   Taxa Anomalias/1000 nascimentos nos últimos 04 anos somados
 #############   por Regionais de Saúde
@@ -888,9 +935,9 @@ MAPA_BASE_RS <- MAPA_BASE_RS[, c(1, 42, 43, 44)]
 
 MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, 
                          cut(x = TAXA_4a_22_25,
-                             breaks = c(-Inf, 0, 3, 5, 7, 9, 11, 14, 20, 1000),
-                             labels = c("0", "1 - 3", "4 - 5", "6 - 7", 
-                                        "8 - 9", "10 - 11", "12 - 14", "15 - 20", "> 20"),
+                             breaks = c(0, 5, 7, 9, 11, 13, 15, 20, Inf),
+                             labels = c("Até 5", "5.1 - 7", "7.1 - 9", "9.1 - 11", 
+                                        "11.1 - 13", "13.1 - 15", "15.1 - 20", "> 20"),
                              right = FALSE))
 
 MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
@@ -902,7 +949,7 @@ PR_SINASC_MAP_TAXA_4_ANOS_22_25_ANOMAL_RS <- ggplot() +
   annotation_scale(location = "br") +
   annotation_north_arrow(location = "tr", 
                          which_north = "true") +
-  scale_fill_viridis_d(option = "viridis", 
+  scale_fill_viridis_d(option = "inferno", 
                        name = "Casos/1000 \nNascidos Vivos",
                        direction = -1,
                        begin = 0.1,       
@@ -912,10 +959,29 @@ PR_SINASC_MAP_TAXA_4_ANOS_22_25_ANOMAL_RS <- ggplot() +
   labs(x = NULL,
        y = NULL,
        caption = Fonte, 
-       title = "Taxa Anomalias/1000 Nascidos Vivos em 2022 - 2025 - 
+       title = "Taxa Anomalias/1000 Nascidos Vivos (2022 - 2025) - 
 Regionais Paraná",
        subtitle = "Referente ao Município de Residência") + 
-  Theme()
+  Theme() +
+  theme(panel.background = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
+
+PR_SINASC_MAP_TAXA_4_ANOS_18_21_22_25_ANOMAL_RS <- PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS + 
+  PR_SINASC_MAP_TAXA_4_ANOS_22_25_ANOMAL_RS + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial das Anomalias Congênitas no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025 (Taxa por 1.000 nasc.)',
+                  caption =  Fonte,
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom"
+                  )
+  )
 
 ##### Trabalhando Global Moran/LISA
 
@@ -1123,7 +1189,6 @@ Paraná (2022 - 2025)",
 ################################################################################
 ################################################################################
 
-
 #### Tabela ANomalias Regionais 2018 - 2021
 # 
 AUX2018 <- read.csv (file = "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2018.csv",
@@ -1236,7 +1301,14 @@ PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_18_21 <- gt(AUX[, c(1, 2, 7:22)]) %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels(everything())
   ) %>%
-  opt_row_striping()
+  opt_row_striping() %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "yellow", alpha = 0.2),
+      cell_text(weight = "bold")
+    ),
+    locations = cells_body(rows = RS == "22")
+  )
 
 ### Gráfico de municípios da 22ªRS
 
@@ -1268,7 +1340,7 @@ AUX01 <- AUX01 %>%
 #######   Criando função theme exclusiva para os gráficos de anomalias
 
 Theme_Mun <- function(){ 
-  theme_minimal(base_size = 10) %+replace%  
+  theme_minimal(base_size = 8) %+replace%  
     theme(
       axis.text.x = element_text(face = "bold"),
       panel.grid.major = element_line(color = "#C0C0C0"),
@@ -1314,15 +1386,20 @@ AUX_LIST <- AUX01 %>%
   })
 
 RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun <- wrap_plots(AUX_LIST, ncol = 2) +
-  plot_annotation(caption = Fonte,
-                  theme = theme(
-                    plot.caption = element_text(
-                      size = 16,       
-                      hjust = 0,      
-                      face = "italic",  
-                      margin = margin(t = 20) 
-                    ) 
-                  )
+  plot_annotation( title = 'Perfil Epidemiológico de Anomalias Congênitas na 22ª RS',
+                   subtitle = 'Taxa por 1.000 nascidos vivos por município de residência (2018-2021)',
+                   caption = Fonte, 
+                   theme = theme(
+                     plot.title = element_text(size = 22, 
+                                               face = "bold",
+                                               hjust = 0.5),
+                     plot.subtitle = element_text(size = 16, 
+                                                  hjust = 0.5, 
+                                                  margin = margin(b = 20)),
+                     plot.caption = element_text(size = 12, 
+                                                 face = "italic", 
+                                                 hjust = 0)
+                   )
   )
 
 #### Tabela ANomalias Regionais 2022 - 2025
@@ -1370,7 +1447,7 @@ AUX <- AUX[c(1, 12, 16:22, 2:11, 13, 14, 15, 23), c(1, 2, 3, 13, 4, 14, 5, 15, 6
 PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_22_25 <- gt(AUX[, c(1, 2, 7:22)]) %>%
   tab_header(
     title = md("**Prevalência de Anomalias Congênitas Prioritárias por Regional de Saúde**"),
-    subtitle = md("Paraná, 2018 – 2021")
+    subtitle = md("Paraná, 2022 – 2025")
   ) %>%
   tab_options(
     heading.align = "left",
@@ -1427,7 +1504,14 @@ PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_22_25 <- gt(AUX[, c(1, 2, 7:22)]) %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels(everything())
   ) %>%
-  opt_row_striping()
+  opt_row_striping() %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "yellow", alpha = 0.2),
+      cell_text(weight = "bold")
+    ),
+    locations = cells_body(rows = RS == "22")
+  )
 
 ### Gráfico de municípios da 22ªRS
 
@@ -1488,34 +1572,32 @@ AUX_LIST <- AUX01 %>%
   })
 
 RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II <- wrap_plots(AUX_LIST, ncol = 2) +
-  plot_annotation(caption = Fonte,
-                  theme = theme(
-                    plot.caption = element_text(
-                      size = 16,       
-                      hjust = 0,      
-                      face = "italic",  
-                      margin = margin(t = 20) 
-                    ) 
-                  )
+  plot_annotation( title = 'Perfil Epidemiológico de Anomalias Congênitas na 22ª RS',
+                   subtitle = 'Taxa por 1.000 nascidos vivos por município de residência (2022-2025)',
+                   caption = Fonte, 
+                   theme = theme(
+                     plot.title = element_text(size = 22, 
+                                               face = "bold",
+                                               hjust = 0.5),
+                     plot.subtitle = element_text(size = 16, 
+                                                  hjust = 0.5, 
+                                                  margin = margin(b = 20)),
+                     plot.caption = element_text(size = 12, 
+                                                 face = "italic", 
+                                                 hjust = 0)
+                   )
   )
 
 
-####  Salvando os gráficos, mapas e tabelas
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_22_25.png",
-       PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_22_25,
-       width = 18, 
-       height = 12, 
-       units = "cm", 
-       dpi = 300,
-       bg = "white")
 
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_18_21.png",
-       PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_18_21,
-       width = 18, 
-       height = 12, 
-       units = "cm", 
-       dpi = 300,
-       bg = "white")
+####  Salvando os gráficos, mapas e tabelas
+ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS.png",
+       plot = PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS,
+       width = 26,
+       height = 25.7,
+       units = "cm",
+       dpi = 300) 
+
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc.png",
        PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc,
@@ -1535,81 +1617,79 @@ ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVA
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_SINASC_GRAF_SERIE_HIST_ANOMAL.png",
        RS_SINASC_GRAF_SERIE_HIST_ANOMAL,
-       width = 56,
-       height = 46,
+       width = 18,
+       height = 10,
        units = "cm",
        bg = "white")
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_SINASC_GRAF_SERIE_HIST_ANOMAL.png",
        PR_SINASC_GRAF_SERIE_HIST_ANOMAL,
-       width = 56,
-       height = 46,
+       width = 18,
+       height = 10,
        units = "cm",
        bg = "white")
 
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Taxa_Mun.png",
-       RS_PEVASPEA_SINASC_GRAF_Taxa_Mun,
-       width = 38,
-       height = 46,
-       units = "cm",
-       bg = "white")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21.png",
-       PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21,
-       width = 56,
-       height = 46,
-       units = "cm")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_SINASC_MAP_TAXA_4A_ANOMAL_22_25.png",
-       PR_SINASC_MAP_TAXA_4A_ANOMAL_22_25,
-       width = 56,
-       height = 46,
-       units = "cm")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS.png",
-       PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS,
-       width = 56,
-       height = 46,
-       units = "cm")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_SINASC_MAP_TAXA_4_ANOS_22_25_ANOMAL_RS.png",
-       PR_SINASC_MAP_TAXA_4_ANOS_22_25_ANOMAL_RS,
-       width = 56,
-       height = 46,
-       units = "cm")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_MAP_MAPA_VIZINHANCA.png",
-       PR_PEVASPEA_SINASC_MAP_MAPA_VIZINHANCA,
-       width = 56,
-       height = 46,
-       units = "cm")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21.png",
-       PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21,
-       width = 56,
-       height = 46,
-       units = "cm")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_LOCAL_MORAN_22_25.png",
-       PR_PEVASPEA_SINASC_LOCAL_MORAN_22_25,
-       width = 56,
-       height = 46,
-       units = "cm")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun.png",
-       RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun,
-       width = 56,
-       height = 46,
-       units = "cm",
-       bg = "white")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS.png",
-       PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS,
-       width = 30,   
-       height = 40,  
-       units = "cm",
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_18_21.png",
+       PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_18_21,
+       width = 20, 
+       height = 12, 
+       units = "cm", 
        dpi = 300,
-       limitsize = FALSE)
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_22_25.png",
+       PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_22_25,
+       width = 20, 
+       height = 12, 
+       units = "cm", 
+       dpi = 300,
+       bg = "white")
+
+ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Taxa_Mun.png",
+       plot = RS_PEVASPEA_SINASC_GRAF_Taxa_Mun,
+       width = 26,
+       height = 35.7,
+       units = "cm",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun.png",
+       plot = RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun,
+       width = 38,
+       height = 50.7,
+       units = "cm",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II.png",
+       plot = RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II,
+       width = 38,
+       height = 50.7,
+       units = "cm",
+       dpi = 300) 
+
+ggsave(filename = "Tabulacoes_R/Mapas/Mapa_Regionais_Taxa_Anomalias_PR.png",
+       plot = PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS,
+       width = 21,    
+       height = 16, 
+       units = "cm",
+       dpi = 300,     
+       bg = "white")
+
+ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4_ANOS_18_21_22_25_ANOMAL_RS.png",
+       plot = PR_SINASC_MAP_TAXA_4_ANOS_18_21_22_25_ANOMAL_RS,
+       width = 35,        
+       height = 18,       
+       units = "cm",
+       dpi = 300,         
+       bg = "white"
+)
+
+#########  Tabelas
+
+gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_18_21,
+  filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_18_21.pdf")
+
+gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_22_25,
+       filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_22_25.pdf")
 
 ###############################################################################################
 ###############################################################################################
@@ -1626,12 +1706,14 @@ AUX <- PR_DERAL_GERAL %>%
   pivot_longer(everything(), 
                names_to = "Variavel", 
                values_to = "Total") %>%
-  mutate(Total = round(Total, 2))
+  mutate(Total = round(Total, 2)) 
+         
 
 ###### Área total em HA no Estado
 
 AUX01 <- AUX %>%
-  filter(row_number() %in% seq(1, n(), by = 6))
+  filter(row_number() %in% seq(1, n(), by = 6)) %>%
+  mutate(Variavel = gsub("AREA_HA_", "", Variavel))
 
 ##### Gráfico de linhas
 
@@ -1643,12 +1725,12 @@ PR_DERAL_GRAF_HA_CULTIVADO <- ggplot(AUX01, aes(x = Variavel,
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(caption = "Fonte", 
+  labs(caption = Fonte1, 
        y = "Hectares Cultivados",
        x = NULL,
-       title = "Total de Hectares Cultivados no Paraná - (2018 - 2024)",
+       title = "Total de Hectares Cultivados no Paraná - (2016 - 2024)",
        subtitle = "Cultivos de interesse") +
-  scale_y_continuous(limits = c(13000000, 17000000), 
+  scale_y_continuous(limits = c(0, 17000000), 
                      labels = label_number(decimal.mark = ",", 
                                            big.mark = "."),
                      expand = expansion(mult = c(0.2, 0.2))) +
@@ -1657,9 +1739,10 @@ PR_DERAL_GRAF_HA_CULTIVADO <- ggplot(AUX01, aes(x = Variavel,
 ##############  Toneladas de Agrotóxico
 
 AUX01 <- AUX %>%
-  filter(row_number() %in% seq(3, n(), by = 6))
+  filter(row_number() %in% seq(3, n(), by = 6)) %>%
+  mutate(Variavel = gsub("TON_AGRO_", "", Variavel))
 
-ggplot(AUX01, aes(x = Variavel, 
+PR_DERAL_GRAF_TON_AGRO <- ggplot(AUX01, aes(x = Variavel, 
                   y = Total,
                   group = 1)) +
   geom_line(color = "black",
@@ -1670,9 +1753,12 @@ ggplot(AUX01, aes(x = Variavel,
   labs(caption = Fonte, 
        y = "Hectares Cultivados",
        x = NULL,
-       title = "Consumo Agrotóxico (Kg) no Paraná - (2016 - 2024)",
-       subtitle = "Cultivos de interesse") +
-  scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
+       title = "Consumo Agrotóxico (TON) no Paraná - (2016 - 2024)",
+       subtitle = "Consumo em Toneladas") +
+  scale_y_continuous(limits = c(0, 180000), 
+labels = label_number(decimal.mark = ",", 
+                      big.mark = "."),
+expand = expansion(mult = c(0.2, 0.2))) +
   Theme()
 
 ##############  Agrotóxico/HA
@@ -1697,12 +1783,14 @@ ggplot(AUX02, aes(x = Ano,
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(caption = Fonte, 
+  labs(caption = Fonte1, 
        y = "Hectares Cultivados",
        x = NULL,
        title = "Relação Agrotóxico/HA (Kg) no Paraná - (2016 - 2024)",
-       subtitle = "Cultivos de interesse") +
-  scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
+       subtitle = "Kg de Agrotóxico/HA") +
+  scale_y_continuous(limits = c(0, 12), 
+                     labels = label_number(decimal.mark = ","),
+                     expand = expansion(mult = c(0.2, 0.2))) +
   Theme()
 
 ################  Producao

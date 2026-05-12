@@ -465,6 +465,48 @@ write.csv (assign(paste0("PR_PEVASPEA_SINASC_2016"), AUX),
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2016.csv"), 
            row.names = FALSE)
 
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2016$QTDFILMORT <- as.numeric(as.character(DNPR2016$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2016 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2016 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2016 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2016"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2016.csv"), 
+           row.names = FALSE)
+
 rm(DNPR2016)
 
 ##############################################################
@@ -890,6 +932,48 @@ AUX[nrow(AUX), 1] <- "Total"
 
 write.csv (assign(paste0("PR_PEVASPEA_SINASC_2017"), AUX), 
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2017.csv"), 
+           row.names = FALSE)
+
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2017$QTDFILMORT <- as.numeric(as.character(DNPR2017$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2017 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2017 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2017 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2017"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2017.csv"), 
            row.names = FALSE)
 
 rm(DNPR2017) 
@@ -1318,6 +1402,48 @@ AUX[nrow(AUX), 1] <- "Total"
 
 write.csv (assign(paste0("PR_PEVASPEA_SINASC_2018"), AUX), 
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2018.csv"), 
+           row.names = FALSE)
+
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2018$QTDFILMORT <- as.numeric(as.character(DNPR2018$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2018 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2018 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2018 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2018"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2018.csv"), 
            row.names = FALSE)
 
 rm(DNPR2018)
@@ -1749,6 +1875,48 @@ write.csv (assign(paste0("PR_PEVASPEA_SINASC_2019"), AUX),
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2019.csv"), 
            row.names = FALSE)
 
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2019$QTDFILMORT <- as.numeric(as.character(DNPR2019$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2019 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2019 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2019 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2019"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2019.csv"), 
+           row.names = FALSE)
+
 rm(DNPR2019)
 
 ##############################################################
@@ -2174,6 +2342,48 @@ AUX[nrow(AUX), 1] <- "Total"
 
 write.csv (assign(paste0("PR_PEVASPEA_SINASC_2020"), AUX), 
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2020.csv"), 
+           row.names = FALSE)
+
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2020$QTDFILMORT <- as.numeric(as.character(DNPR2020$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2020 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2020 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2020 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2020"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2020.csv"), 
            row.names = FALSE)
 
 rm(DNPR2020)
@@ -2603,6 +2813,48 @@ write.csv (assign(paste0("PR_PEVASPEA_SINASC_2021"), AUX),
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2021.csv"), 
            row.names = FALSE)
 
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2021$QTDFILMORT <- as.numeric(as.character(DNPR2021$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2021 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2021 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2021 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2021"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2021.csv"), 
+           row.names = FALSE)
+
 rm(DNPR2021)
 
 ##############################################################
@@ -3028,6 +3280,48 @@ AUX[nrow(AUX), 1] <- "Total"
 
 write.csv (assign(paste0("PR_PEVASPEA_SINASC_2022"), AUX), 
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2022.csv"), 
+           row.names = FALSE)
+
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2022$QTDFILMORT <- as.numeric(as.character(DNPR2022$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2022 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2022 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2022 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2022"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2022.csv"), 
            row.names = FALSE)
 
 rm(DNPR2022)
@@ -3457,6 +3751,48 @@ write.csv (assign(paste0("PR_PEVASPEA_SINASC_2023"), AUX),
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2023.csv"), 
            row.names = FALSE)
 
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2023$QTDFILMORT <- as.numeric(as.character(DNPR2023$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2023 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2023 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2023 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2023"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2023.csv"), 
+           row.names = FALSE)
+
 rm(DNPR2023)
 
 ##############################################################
@@ -3884,6 +4220,48 @@ write.csv (assign(paste0("PR_PEVASPEA_SINASC_2024"), AUX),
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2024.csv"), 
            row.names = FALSE)
 
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2024$QTDFILMORT <- as.numeric(as.character(DNPR2024$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2024 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2024 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2024 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2024"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2024.csv"), 
+           row.names = FALSE)
+
 rm(DNPR2024)
 
 ##############################################################
@@ -4309,6 +4687,48 @@ AUX[nrow(AUX), 1] <- "Total"
 
 write.csv (assign(paste0("PR_PEVASPEA_SINASC_2025"), AUX), 
            paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_2025.csv"), 
+           row.names = FALSE)
+
+##### Criando o objeto com os dados de nascidos mortos anteriores
+
+AUX <- BASE_IBGE[,-c(4,6)]
+
+AUX$Nascidos <- NA
+
+AUX$QTDFILMORT_GERAL <- NA
+
+AUX$QTDFILMORT_ANOMALIA <- NA
+
+DNPR2025$QTDFILMORT <- as.numeric(as.character(DNPR2025$QTDFILMORT))
+
+for(i in BASE_IBGE[, 2]){
+  
+  AUX[which(AUX$Código_IBGE == i), 5] <-  as.integer(DNPR2025 %>% 
+                                                       filter(CODMUNRES == i) %>%   
+                                                       count()
+  )
+  AUX[which(AUX$Código_IBGE == i), 6] <-  as.integer(DNPR2025 %>% 
+                                                       filter(CODMUNRES == i,
+                                                              !is.na(QTDFILMORT),
+                                                              QTDFILMORT < 90,
+                                                              QTDFILMORT >= 1) %>%   
+                                                       count()
+  )  
+  
+  AUX[which(AUX$Código_IBGE == i), 7] <- as.integer(DNPR2025 %>% 
+                                                      filter(CODMUNRES == i,
+                                                             IDANOMAL == 1,
+                                                             QTDFILMORT >= 1) %>%   
+                                                      count()
+  )
+}
+
+AUX[(nrow(AUX) +1), 4:7] <- apply(AUX[, 4:7], 2, sum)
+
+AUX[nrow(AUX), 1] <- "Total"
+
+write.csv (assign(paste0("PR_PEVASPEA_SINASC_QTDFILMORT_2025"), AUX), 
+           paste0("Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2025.csv"), 
            row.names = FALSE)
 
 rm(DNPR2025)
