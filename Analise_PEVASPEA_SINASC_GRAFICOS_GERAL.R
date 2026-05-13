@@ -1036,7 +1036,7 @@ moran.plot(MAPA_BASE_PR$TAXA_EST_18_21,
 
 #### Calculando o Local Moran
 ### Travando o local moran
-set.seed(123)
+set.seed(321)
 
 Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_18_21, 
                         Matriz_Viz_Pesos, 
@@ -1135,7 +1135,7 @@ moran.plot(MAPA_BASE_PR$TAXA_EST_22_25,
 
 #### Calculando o Local Moran
 #### Travando o local moran
-set.seed(123)
+set.seed(321)
 
 Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_22_25, 
                         Matriz_Viz_Pesos, 
@@ -1188,7 +1188,7 @@ PR_PEVASPEA_SINASC_LOCAL_MORAN_22_25 <- ggplot(MAPA_BASE_PR,
   labs(x = NULL,
        y = NULL,
        title = "2022 - 2025",
-       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001)") +
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001) \n999 Permutações") +
   Theme() +
   theme(legend.key.width = unit(1.5, "cm")) +
   theme(legend.position = "bottom")
@@ -1836,7 +1836,7 @@ PR_DERAL_GRAF_AGRO_HA <- ggplot(AUX02, aes(x = Ano,
        x = NULL,
        title = "Relação Agrotóxico/HA (Kg) no Paraná - (2016 - 2024)",
        subtitle = "Kg de Agrotóxico/HA") +
-  scale_y_continuous(limits = c(0, 12), 
+  scale_y_continuous(limits = c(3, 11), 
                      labels = label_number(decimal.mark = ","),
                      expand = expansion(mult = c(0.2, 0.2))) +
   Theme()
@@ -1861,7 +1861,7 @@ PR_DERAL_GRAF_PRODUCAO <- ggplot(AUX01, aes(x = Variavel,
        x = NULL,
        title = "Produção em Toneladas no Paraná - (2016 - 2024)",
        subtitle = "Cultivos de interesse") +
-  scale_y_continuous(limits = c(0, 120000000), 
+  scale_y_continuous(limits = c(50000000, 120000000), 
                      labels = label_number(decimal.mark = ",", 
                                            big.mark = "."),
                      expand = expansion(mult = c(0.2, 0.2))) +
@@ -2215,3 +2215,529 @@ AUX$TON_AGRO_17_20 <- (AUX$TON_AGRO_2017 + AUX$TON_AGRO_2018 + AUX$TON_AGRO_2019
 AUX$HA_21_24 <- (AUX$AREA_HA_2021 + AUX$AREA_HA_2022 + AUX$AREA_HA_2023 + AUX$AREA_HA_2024)
 
 AUX$HA_17_20 <- (AUX$AREA_HA_2017 + AUX$AREA_HA_2018 + AUX$AREA_HA_2019 + AUX$AREA_HA_2020)
+
+MAPA_BASE_Mun <- SHAPEFILE_ESTADUAL
+
+MAPA_BASE_Mun$NM_MUN <- toupper(MAPA_BASE$NM_MUN)
+
+MAPA_BASE_Mun$NM_MUN <- iconv(MAPA_BASE_Mun$NM_MUN,
+                              from = "UTF-8", 
+                              to = "ASCII//TRANSLIT")
+
+AUX[34, 1] <- "BELA VISTA DA CAROBA"
+AUX[99, 1] <- "DIAMANTE D'OESTE"
+AUX[161, 1] <- "ITAPEJARA D'OESTE"
+AUX[228, 1] <- "MUNHOZ DE MELO"
+AUX[265, 1] <- "PEROLA D'OESTE"
+AUX[299, 1] <- "RANCHO ALEGRE D'OESTE"
+AUX[323, 1] <- "SANTA CRUZ DE MONTE CASTELO"
+AUX[349, 1] <- "SAO JORGE D'OESTE"
+
+###### Fazendo o left-join do shapefile com os dados do estado
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun, 
+                           AUX, 
+                           by = c("NM_MUN" = "Município_sem_Código"))
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = AGRO_HA_17_20,
+                                             breaks = c(0, 1.5, 3.0, 4.5, 6.0, 7.5, 9.0, 10.5, Inf),
+                                             labels = c("Até 1,5", 
+                                                        "1,5 - 3,0", 
+                                                        "3,0 - 4,5", 
+                                                        "4,5 - 6,0", 
+                                                        "6,0 - 7,5", 
+                                                        "7,5 - 9,0", 
+                                                        "9,0 - 10,5", 
+                                                        "Acima de 10,5"), 
+                                             right = FALSE
+                                             ))
+
+PR_DERAL_MAP_Mun_AGRO_HA_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "Kg/HA", 
+       title = "2017 - 2020")  +
+  Theme()
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = AGRO_HA_21_24,
+                                             breaks = c(0, 1.5, 3.0, 4.5, 6.0, 7.5, 9.0, 10.5, Inf),
+                                             labels = c("Até 1,5", 
+                                                        "1,5 - 3,0", 
+                                                        "3,0 - 4,5", 
+                                                        "4,5 - 6,0", 
+                                                        "6,0 - 7,5", 
+                                                        "7,5 - 9,0", 
+                                                        "9,0 - 10,5", 
+                                                        "Acima de 10,5"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_AGRO_HA_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "Kg/HA", 
+       title = "2021 - 2024")  +
+  Theme()
+
+PR_DERAL_MAP_AGRO_HA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_AGRO_HA_17_20 + 
+  PR_DERAL_MAP_Mun_AGRO_HA_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial do Consumo de Agrotóxico/Hectare no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (Kg/HA)',
+                  caption =  Fonte3,
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+                  ))
+
+##### TON DE AGRO
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = TON_AGRO_17_20,
+                                                 breaks = c(0, 250, 500, 750, 1000, 1750, 3500, 5500, Inf),
+                                                 labels = c("Até 250", 
+                                                            "250 - 500",
+                                                            "500 - 750",    
+                                                            "750 - 1.000", 
+                                                            "1.000 - 1.750", 
+                                                            "1.750 - 3.500", 
+                                                            "3.500 - 5.500", 
+                                                            "Acima de 5.500"),
+                                                 right = FALSE
+                                                 ))
+
+PR_DERAL_MAP_Mun_TON_AGRO_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "TONELADAS", 
+       title = "2017 - 2020")  +
+  Theme()
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = TON_AGRO_21_24,
+                                             breaks = c(0, 250, 500, 750, 1000, 1750, 3500, 5500, Inf),
+                                             labels = c("Até 250", 
+                                                        "250 - 500",
+                                                        "500 - 750",    
+                                                        "750 - 1.000", 
+                                                        "1.000 - 1.750", 
+                                                        "1.750 - 3.500", 
+                                                        "3.500 - 5.500", 
+                                                        "Acima de 5.500"),
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_TON_AGRO_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "TONELADAS", 
+       title = "2021 - 2024")  +
+  Theme()
+
+PR_DERAL_MAP_TON_AGRO_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_TON_AGRO_17_20 + 
+  PR_DERAL_MAP_Mun_TON_AGRO_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial do Consumo de Agrotóxico no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (TONELADAS)',
+                  caption =  Fonte3) &
+                  theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+                  )
+#### HA cultivado
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = HA_17_20,
+                                                      breaks = c(0, 25000, 50000, 100000, 150000, 200000, 300000, 500000, Inf),
+                                                      labels = c("Até 25.000", 
+                                                                 "25.000 - 50.000", 
+                                                                 "50.000 - 100.000", 
+                                                                 "100.000 - 150.000", 
+                                                                 "150.000 - 200.000", 
+                                                                 "200.000 - 300.000", 
+                                                                 "300.000 - 500.000", 
+                                                                 "Acima de 500.000"), 
+                                                      right = FALSE
+                                                      ))
+PR_DERAL_MAP_Mun_HA_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2017 - 2020")  +
+  Theme()
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = HA_21_24,
+                                             breaks = c(0, 25000, 50000, 100000, 150000, 200000, 300000, 500000, Inf),
+                                             labels = c("Até 25.000", 
+                                                        "25.000 - 50.000", 
+                                                        "50.000 - 100.000", 
+                                                        "100.000 - 150.000", 
+                                                        "150.000 - 200.000", 
+                                                        "200.000 - 300.000", 
+                                                        "300.000 - 500.000", 
+                                                        "Acima de 500.000"), 
+                                             right = FALSE
+))
+PR_DERAL_MAP_Mun_HA_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2021 - 2024")  +
+  Theme()
+
+PR_DERAL_MAP_HA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_17_20 + 
+  PR_DERAL_MAP_Mun_HA_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Área Cultivada no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (TONELADAS)',
+                  caption =  Fonte3) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+################ Global MOran AGRO/HA
+
+### Criando Matriz de vizinhança (QUEEN) Verificar se o queen é padrão no spdep
+
+Matriz_Viz_MAPA_BASE_Mun <- poly2nb(MAPA_BASE_Mun,
+                                   queen = TRUE)
+
+### Verificando a malha queen
+
+Centroides_Matriz_VIZ <- st_centroid(MAPA_BASE_Mun)
+
+Centroides_Matriz_VIZ_coordenadas <- st_coordinates(Centroides_Matriz_VIZ)
+
+Matriz_VIZ_Linhas <- nb2lines(nb = Matriz_Viz_MAPA_BASE_Mun,
+                              coords = Centroides_Matriz_VIZ_coordenadas) %>%
+  st_as_sf()
+
+st_crs(Matriz_VIZ_Linhas) <- st_crs(MAPA_BASE_Mun)
+
+PR_PEVASPEA_DERAL_MAP_MAPA_VIZINHANCA <-ggplot(MAPA_BASE_Mun, 
+                                                aes(geometry = geometry)) +
+  geom_sf(fill = "lightblue") +
+  geom_sf(data = Matriz_VIZ_Linhas, 
+          aes(geometry = geometry)) +
+  ggtitle("Matriz de Vizinhança Queen, Paraná.") +
+  theme_void()
+
+### Explicação do Gemini para usar o style = "W"
+
+# 3. style = "W" (A Padronização por Linha)
+# Este é o ponto mais importante. O estilo "W" (Row-standardized) faz o seguinte:
+#   Atribui pesos iguais para todos os vizinhos de uma unidade, de modo 
+# que a soma dos pesos de cada linha seja igual a 1.
+# Na prática: Se um município tem 4 vizinhos, cada um recebe peso 0, 25. 
+# Se outro tem 10 vizinhos, cada um recebe peso 0,1
+# Por que usar? Isso é padrão para o Índice de Moran Global pois 
+# permite comparar regiões com diferentes números de vizinhos de 
+# forma justa (evita que municípios muito "conectados" distorçam o 
+# resultado apenas por terem mais fronteiras).
+
+Matriz_Viz_Pesos <- Matriz_Viz_MAPA_BASE_Mun %>% 
+  nb2listw(style = "W")
+
+#####  Análise Global e Local Moran
+
+#### 2017 a 2020 INÍCIO
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2022 - 2025
+# 
+# Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_Mun$TON_AGRO_17_20,
+#                           ni = MAPA_BASE_Mun$HA_17_20,
+#                           nb = Matriz_Viz_MAPA_BASE_PR)
+# 
+# MAPA_BASE_Mun$TAXA_RAW_17_20 <- Taxa_Suavizada$raw * 1000
+# 
+# MAPA_BASE_Mun$TAXA_EST_17_20 <- Taxa_Suavizada$est * 1000
+
+Global_Moran_17_20 <- moran.test(MAPA_BASE_Mun$AGRO_HA_17_20,
+                                 Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_Mun$AGRO_HA_17_20, 
+           Matriz_Viz_Pesos, 
+           labels = FALSE, 
+           pch = 15, 
+           col = "blue", 
+           xlab = "Variável Original", 
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+### Travando o local moran
+set.seed(321)
+
+Lisa <- localmoran_perm(MAPA_BASE_Mun$AGRO_HA_17_20, 
+                        Matriz_Viz_Pesos, 
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_Mun$local_I_17_20 <- Lisa[,1]
+
+MAPA_BASE_Mun$local_I_p_valor_17_20 <- Lisa[,5]
+
+ggplot(MAPA_BASE_Mun, 
+       aes(geometry = geometry)) +
+  geom_sf(aes(fill = local_I_17_20)) +
+  scale_fill_gradient2(low = "blue", high = "red", 
+                       mid = "white", 
+                       midpoint = 0,
+                       name = "I local") +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(1.5, "cm"))
+
+quadrantes <- attr(Lisa, 
+                   "quadr")$mean
+
+MAPA_BASE_Mun$quadrante_17_20 <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                          quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                          quadrantes == "High-Low" ~ "Alto-Baixo",
+                                          quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_Mun <- MAPA_BASE_Mun %>%
+  mutate(Lisa_resultado_17_20 = case_when(
+    local_I_p_valor_17_20 < 0.05 ~ quadrante_17_20,
+    local_I_p_valor_17_20 >= 0.05 ~ "Não significativo"
+  ))
+
+Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não significativo")
+
+MAPA_BASE_Mun$Lisa_resultado_17_20 <- factor(MAPA_BASE_Mun$Lisa_resultado_17_20, levels = Niveis_LISA)
+
+PR_PEVASPEA_DERAL_LOCAL_MORAN_17_20 <- ggplot(MAPA_BASE_Mun, 
+                                               aes(geometry = geometry)) +
+  geom_sf(color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Lisa_resultado_17_20)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",        
+                               "Baixo-Baixo" = "blue",      
+                               "Alto-Baixo" = "pink",       
+                               "Baixo-Alto" = "lightblue",  
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2017 - 2020",
+       subtitle = "Global Moran I = 0.159 (p < 0.001)") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+########  2021 - 2024
+
+Global_Moran_21_24 <- moran.test(MAPA_BASE_Mun$AGRO_HA_21_24,
+                                 Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_Mun$AGRO_HA_21_24, 
+           Matriz_Viz_Pesos, 
+           labels = FALSE, 
+           pch = 15, 
+           col = "blue", 
+           xlab = "Variável Original", 
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+### Travando o local moran
+set.seed(321)
+
+Lisa <- localmoran_perm(MAPA_BASE_Mun$AGRO_HA_21_24, 
+                        Matriz_Viz_Pesos, 
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_Mun$local_I_21_24 <- Lisa[,1]
+
+MAPA_BASE_Mun$local_I_p_valor_21_24 <- Lisa[,5]
+
+ggplot(MAPA_BASE_Mun, 
+       aes(geometry = geometry)) +
+  geom_sf(aes(fill = local_I_21_24)) +
+  scale_fill_gradient2(low = "blue", high = "red", 
+                       mid = "white", 
+                       midpoint = 0,
+                       name = "I local") +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(1.5, "cm"))
+
+quadrantes <- attr(Lisa, 
+                   "quadr")$mean
+
+MAPA_BASE_Mun$quadrante_21_24 <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                           quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                           quadrantes == "High-Low" ~ "Alto-Baixo",
+                                           quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_Mun <- MAPA_BASE_Mun %>%
+  mutate(Lisa_resultado_21_24 = case_when(
+    local_I_p_valor_21_24 < 0.05 ~ quadrante_21_24,
+    local_I_p_valor_21_24 >= 0.05 ~ "Não significativo"
+  ))
+
+Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não significativo")
+
+MAPA_BASE_Mun$Lisa_resultado_21_24 <- factor(MAPA_BASE_Mun$Lisa_resultado_21_24, levels = Niveis_LISA)
+
+PR_PEVASPEA_DERAL_LOCAL_MORAN_21_24 <- ggplot(MAPA_BASE_Mun, 
+                                               aes(geometry = geometry)) +
+  geom_sf(color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Lisa_resultado_21_24)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",        
+                               "Baixo-Baixo" = "blue",      
+                               "Alto-Baixo" = "pink",       
+                               "Baixo-Alto" = "lightblue",  
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2021 - 2024",
+       subtitle = "Global Moran I = 0.249 (p < 0.001)") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+PR_PEVASPEA_DERAL_LOCAL_MORAN_18_21_22_25 <- PR_PEVASPEA_DERAL_LOCAL_MORAN_17_20 + 
+  PR_PEVASPEA_DERAL_LOCAL_MORAN_21_24 + 
+  plot_layout(ncol = 2, guides = "collect") + 
+  plot_annotation(
+    title = "Progressão de Agrupamentos do Consumo de Agrotóxico/Hectare no Paraná",
+    subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025',
+    caption = Fonte  
+  ) & 
+  theme(
+    plot.title = element_text(size = 16, 
+                              face = "bold", 
+                              hjust = 0), 
+    plot.subtitle = element_text(size = 12, 
+                                 hjust = 0),
+    plot.caption = element_text(hjust = 0, 
+                                face = "italic", 
+                                size = 10),
+    legend.position = "bottom",        
+    legend.box = "horizontal",
+    legend.box.just = "center",
+    legend.justification = "center",
+    legend.key.width = unit(1.2, "cm")   
+  )
+
+
