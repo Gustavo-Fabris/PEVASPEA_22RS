@@ -290,23 +290,22 @@ CID_MAL_DEFINIDAS <- "C7[6-9]|C80"
 CID_LINFATICO     <- "C8[1-9]|C9[0-6]"
 
 AUX <- DOPR2016 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+ mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+    Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+    Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+    Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+    Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+    Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+    Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+    Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+    Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+    Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+    Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+    Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+    Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+    Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+    Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -326,23 +325,22 @@ AUX <- DOPR2016 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -367,7 +365,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -378,21 +376,20 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
       TRUE ~ NA_character_ 
     )
   ) %>%
@@ -413,7 +410,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -424,24 +421,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -589,26 +584,6 @@ AUX[nrow(AUX), 1] <- "Total"
 
 assign("PR_PEVASPEA_SIM_Congenitas_Geral_2017", AUX)
 
-### Estabelecendo Objetos com REGEX para simplificar busca de CID
-
-CID_Prioritaria <- "Q00|Q01|Q02|Q05|Q2|Q35|Q36|Q37|Q54|Q56|Q66|Q69|Q71|Q72|Q73|Q743|Q792|Q793|Q90"
-
-CID_Tubo_Neural <- "Q00|Q01|Q05"
-
-CID_Microcefalia <- "Q02"
-
-CID_Cardiopatia <- "Q2"
-
-CID_Fenda <- "Q35|Q36|Q37"
-
-CID_Genitais <- "Q54|Q56"
-
-CID_Membros <- "Q66|Q69|Q71|Q72|Q73|Q743"
-
-CID_Abd <- "Q792|Q793"
-
-CID_Down <- "Q90"
-
 ##### Prioritárias Fetal
 
 DOPR2017_ESTRATIFICADA <- DOPR2017 %>%
@@ -710,39 +685,23 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2017", AUX_FINAL)
 
 ####### Câncer
 
-CID_LABIO         <- "C0[0-9]|C1[0-4]"
-CID_DIGESTIVO     <- "C1[5-9]|C2[0-6]"
-CID_RESPIRATORIO  <- "C3[0-9]"
-CID_OSSOS         <- "C4[0-1]"
-CID_PELE          <- "C4[3-4]"
-CID_TEC_MOLE      <- "C4[5-9]"
-CID_MAMA          <- "C50"
-CID_GEN_FEM       <- "C5[1-8]"
-CID_GEN_MASC      <- "C6[0-3]"
-CID_VIA_URINARIA  <- "C6[4-8]"
-CID_CEREBRO       <- "C69|C7[0-2]"
-CID_TIREOIDE      <- "C7[3-5]"
-CID_MAL_DEFINIDAS <- "C7[6-9]|C80"
-CID_LINFATICO     <- "C8[1-9]|C9[0-6]"
-
 AUX <- DOPR2017 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -762,24 +721,24 @@ AUX <- DOPR2017 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
+
 
 RESUMO_MUNICIPAL <- AUX %>%
   group_by(CODMUNRES, SEXO_LABEL) %>%
@@ -803,7 +762,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 <- DOPR2017 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -814,22 +773,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 <- DOPR2017 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -849,7 +807,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 <- DOPR2017 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -860,24 +818,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 <- DOPR2017 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    )) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -1148,39 +1104,23 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2018", AUX_FINAL)
 
 ####### Câncer
 
-CID_LABIO         <- "C0[0-9]|C1[0-4]"
-CID_DIGESTIVO     <- "C1[5-9]|C2[0-6]"
-CID_RESPIRATORIO  <- "C3[0-9]"
-CID_OSSOS         <- "C4[0-1]"
-CID_PELE          <- "C4[3-4]"
-CID_TEC_MOLE      <- "C4[5-9]"
-CID_MAMA          <- "C50"
-CID_GEN_FEM       <- "C5[1-8]"
-CID_GEN_MASC      <- "C6[0-3]"
-CID_VIA_URINARIA  <- "C6[4-8]"
-CID_CEREBRO       <- "C69|C7[0-2]"
-CID_TIREOIDE      <- "C7[3-5]"
-CID_MAL_DEFINIDAS <- "C7[6-9]|C80"
-CID_LINFATICO     <- "C8[1-9]|C9[0-6]"
-
 AUX <- DOPR2018 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -1200,23 +1140,22 @@ AUX <- DOPR2018 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -1241,7 +1180,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 <- DOPR2018 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -1252,22 +1191,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 <- DOPR2018 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -1287,7 +1225,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 <- DOPR2018 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -1298,24 +1236,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 <- DOPR2018 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -1584,39 +1520,23 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2019", AUX_FINAL)
 
 ####### Câncer
 
-CID_LABIO         <- "C0[0-9]|C1[0-4]"
-CID_DIGESTIVO     <- "C1[5-9]|C2[0-6]"
-CID_RESPIRATORIO  <- "C3[0-9]"
-CID_OSSOS         <- "C4[0-1]"
-CID_PELE          <- "C4[3-4]"
-CID_TEC_MOLE      <- "C4[5-9]"
-CID_MAMA          <- "C50"
-CID_GEN_FEM       <- "C5[1-8]"
-CID_GEN_MASC      <- "C6[0-3]"
-CID_VIA_URINARIA  <- "C6[4-8]"
-CID_CEREBRO       <- "C69|C7[0-2]"
-CID_TIREOIDE      <- "C7[3-5]"
-CID_MAL_DEFINIDAS <- "C7[6-9]|C80"
-CID_LINFATICO     <- "C8[1-9]|C9[0-6]"
-
 AUX <- DOPR2019 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -1636,23 +1556,22 @@ AUX <- DOPR2019 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -1677,7 +1596,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 <- DOPR2019 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -1688,22 +1607,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 <- DOPR2019 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -1723,7 +1641,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 <- DOPR2019 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -1734,24 +1652,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 <- DOPR2019 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -2021,39 +1937,23 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2020", AUX_FINAL)
 
 ####### Câncer
 
-CID_LABIO         <- "C0[0-9]|C1[0-4]"
-CID_DIGESTIVO     <- "C1[5-9]|C2[0-6]"
-CID_RESPIRATORIO  <- "C3[0-9]"
-CID_OSSOS         <- "C4[0-1]"
-CID_PELE          <- "C4[3-4]"
-CID_TEC_MOLE      <- "C4[5-9]"
-CID_MAMA          <- "C50"
-CID_GEN_FEM       <- "C5[1-8]"
-CID_GEN_MASC      <- "C6[0-3]"
-CID_VIA_URINARIA  <- "C6[4-8]"
-CID_CEREBRO       <- "C69|C7[0-2]"
-CID_TIREOIDE      <- "C7[3-5]"
-CID_MAL_DEFINIDAS <- "C7[6-9]|C80"
-CID_LINFATICO     <- "C8[1-9]|C9[0-6]"
-
 AUX <- DOPR2020 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -2073,23 +1973,22 @@ AUX <- DOPR2020 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -2114,7 +2013,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 <- DOPR2020 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -2125,22 +2024,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 <- DOPR2020 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -2160,7 +2058,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 <- DOPR2020 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -2171,24 +2069,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 <- DOPR2020 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -2460,23 +2356,22 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2021", AUX)
 ####### Câncer
 
 AUX <- DOPR2021 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -2496,23 +2391,22 @@ AUX <- DOPR2021 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -2537,7 +2431,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 <- DOPR2021 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -2548,22 +2442,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 <- DOPR2021 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -2583,7 +2476,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 <- DOPR2021 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -2594,24 +2487,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 <- DOPR2021 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -2881,23 +2772,22 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2022", AUX_FINAL)
 ####### Câncer
 
 AUX <- DOPR2022 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -2917,23 +2807,22 @@ AUX <- DOPR2022 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -2958,7 +2847,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 <- DOPR2022 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -2969,22 +2858,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 <- DOPR2022 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -3004,7 +2892,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 <- DOPR2022 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -3015,24 +2903,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 <- DOPR2022 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -3303,23 +3189,22 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2023", AUX_FINAL)
 ####### Câncer
 
 AUX <- DOPR2023 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -3339,23 +3224,22 @@ AUX <- DOPR2023 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -3380,7 +3264,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 <- DOPR2023 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -3391,22 +3275,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 <- DOPR2023 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -3426,7 +3309,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 <- DOPR2023 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -3437,24 +3320,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 <- DOPR2023 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -3724,23 +3605,22 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2024", AUX_FINAL)
 ####### Câncer
 
 AUX <- DOPR2024 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -3760,23 +3640,22 @@ AUX <- DOPR2024 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -3801,7 +3680,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 <- DOPR2024 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -3812,22 +3691,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 <- DOPR2024 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -3847,7 +3725,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 <- DOPR2024 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -3858,24 +3736,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 <- DOPR2024 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -4145,23 +4021,22 @@ assign("PR_PEVASPEA_SIM_Prioritarias_Infantil_2025", AUX_FINAL)
 ####### Câncer
 
 AUX <- DOPR2025 %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -4181,23 +4056,22 @@ AUX <- DOPR2025 %>%
     SEXO == "M" ~ "MASC",
     SEXO == "F" ~ "FEM"
   )) %>%
-  mutate(across(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), as.character)) %>%
-  mutate(
-    NEOPLASIAS    = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., "C")), 1, 0, missing = 0),
-    Labio_Cav_Oral = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)), 1, 0, missing = 0),
-    Digestivo      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)), 1, 0, missing = 0),
-    Respiratorio   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)), 1, 0, missing = 0),
-    Ossos          = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)), 1, 0, missing = 0),
-    Pele           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)), 1, 0, missing = 0),
-    Tec_Mole       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)), 1, 0, missing = 0),
-    Mama           = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)), 1, 0, missing = 0),
-    Gen_Fem        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)), 1, 0, missing = 0),
-    Gen_Masc       = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)), 1, 0, missing = 0),
-    Via_Urinaria   = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)), 1, 0, missing = 0),
-    Cerebro        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)), 1, 0, missing = 0),
-    Tireoide_Endo  = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)), 1, 0, missing = 0),
-    Mal_Def        = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)), 1, 0, missing = 0),
-    Linfatico      = if_else(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)), 1, 0, missing = 0)
+  mutate(CAUSABAS = as.character(CAUSABAS)) %>%
+  mutate(NEOPLASIAS     = if_else(str_detect(CAUSABAS, "C"), 1, 0, missing = 0),
+         Labio_Cav_Oral      = if_else(str_detect(CAUSABAS, CID_LABIO), 1, 0, missing = 0),
+         Digestivo           = if_else(str_detect(CAUSABAS, CID_DIGESTIVO), 1, 0, missing = 0),
+         Respiratorio   = if_else(str_detect(CAUSABAS, CID_RESPIRATORIO), 1, 0, missing = 0),
+         Ossos          = if_else(str_detect(CAUSABAS, CID_OSSOS), 1, 0, missing = 0),
+         Pele           = if_else(str_detect(CAUSABAS, CID_PELE), 1, 0, missing = 0),
+         Tec_Mole       = if_else(str_detect(CAUSABAS, CID_TEC_MOLE), 1, 0, missing = 0),
+         Mama           = if_else(str_detect(CAUSABAS, CID_MAMA), 1, 0, missing = 0),
+         Gen_Fem        = if_else(str_detect(CAUSABAS, CID_GEN_FEM), 1, 0, missing = 0),
+         Gen_Masc       = if_else(str_detect(CAUSABAS, CID_GEN_MASC), 1, 0, missing = 0),
+         Via_Urinaria   = if_else(str_detect(CAUSABAS, CID_VIA_URINARIA), 1, 0, missing = 0),
+         Cerebro        = if_else(str_detect(CAUSABAS, CID_CEREBRO), 1, 0, missing = 0),
+         Tireoide_Endo  = if_else(str_detect(CAUSABAS, CID_TIREOIDE), 1, 0, missing = 0),
+         Mal_Def        = if_else(str_detect(CAUSABAS, CID_MAL_DEFINIDAS), 1, 0, missing = 0),
+         Linfatico      = if_else(str_detect(CAUSABAS,CID_LINFATICO), 1, 0, missing = 0)
   )
 
 RESUMO_MUNICIPAL <- AUX %>%
@@ -4222,7 +4096,7 @@ rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 <- DOPR2025 %>%
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -4233,22 +4107,21 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 <- DOPR2025 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
     )
   ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
@@ -4268,7 +4141,7 @@ Municipios_22RS <- BASE_IBGE %>%
 
 RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 <- DOPR2025 %>%
   filter(CODMUNRES %in% Municipios_22RS) %>% 
-  filter(if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~ str_detect(., "C"))) %>%
+  filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
     unidade = as.numeric(substr(IDADE, 1, 1)),
     valor   = as.numeric(substr(IDADE, 2, 3)),
@@ -4279,24 +4152,22 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 <- DOPR2025 %>%
       TRUE         ~ NA_real_
     ),
     Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
-    Grupo_CID = case_when(
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LINFATICO)) ~ "Linfatico_Hematologico",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_CEREBRO)) ~ "Cerebro_SNC",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_DIGESTIVO)) ~ "Digestivo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_RESPIRATORIO)) ~ "Respiratorio",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_FEM)) ~ "Gen_Fem",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_GEN_MASC)) ~ "Gen_Masc",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAMA)) ~ "Mama",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_VIA_URINARIA)) ~ "Via_Urinaria",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_PELE)) ~ "Pele",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_LABIO)) ~ "Labio_Oral",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_OSSOS)) ~ "Ossos",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TEC_MOLE)) ~ "Tec_Mole",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_TIREOIDE)) ~ "Tireoide_Endo",
-      if_any(c(CAUSABAS, LINHAA, LINHAB, LINHAC, LINHAD, LINHAII), ~str_detect(., CID_MAL_DEFINIDAS)) ~ "Mal_Definidas",
-      TRUE ~ NA_character_ 
-    )
-  ) %>%
+    Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
+                          str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
+                          str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
+                          str_detect(CAUSABAS, CID_RESPIRATORIO) ~ "Respiratorio",
+                          str_detect(CAUSABAS, CID_GEN_FEM) ~ "Gen_Fem",
+                          str_detect(CAUSABAS, CID_GEN_MASC) ~ "Gen_Masc",
+                          str_detect(CAUSABAS, CID_MAMA) ~ "Mama",
+                          str_detect(CAUSABAS, CID_VIA_URINARIA) ~ "Via_Urinaria",
+                          str_detect(CAUSABAS, CID_PELE) ~ "Pele",
+                          str_detect(CAUSABAS, CID_LABIO) ~ "Labio_Oral",
+                          str_detect(CAUSABAS, CID_OSSOS) ~ "Ossos",
+                          str_detect(CAUSABAS, CID_TEC_MOLE) ~ "Tec_Mole",
+                          str_detect(CAUSABAS, CID_TIREOIDE) ~ "Tireoide_Endo",
+                          str_detect(CAUSABAS, CID_MAL_DEFINIDAS) ~ "Mal_Definidas",
+                          TRUE ~ NA_character_ 
+    ) ) %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
@@ -4335,7 +4206,7 @@ write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025,
 
 #### Série Histórica PR Congênitas Geral
 
-AUX <- PR_PEVASPEA_SIM_Congenitas_Geral_2016[nrow(PR_PEVASPEA_SIM_Congenitas_Geral_2016),]
+AUX <- PR_PEVASPEA_SIM_Congenitas_Geral_2016[nrow(PR_PEVASPEA_SIM_Congenitas_Geral_2016), ]
 AUX[1, 1] <- "2016"
 AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Congenitas_Geral_2017[nrow(PR_PEVASPEA_SIM_Congenitas_Geral_2017),]
 AUX[2, 1] <- "2017"
@@ -4419,23 +4290,23 @@ write.csv (AUX,
 
 AUX <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2016[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2016),]
 AUX[1, 1] <- "2016"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2017[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2017),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2017[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2017), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2017)]
 AUX[2, 1] <- "2017"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2018[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2018),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2018[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2018), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2018)]
 AUX[3, 1] <- "2018"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2019[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2019),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2019[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2019), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2019)]
 AUX[4, 1] <- "2019"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2020[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2020),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2020[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2020), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2020)]
 AUX[5, 1] <- "2020"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2021[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2021),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2021[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2021), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2021)]
 AUX[6, 1] <- "2021"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2022[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2022),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2022[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2022), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2022)]
 AUX[7, 1] <- "2022"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2023[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2023),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2023[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2023), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2023)]
 AUX[8, 1] <- "2023"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2024[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2024),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2024[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2024), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2024)]
 AUX[9, 1] <- "2024"
-AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2025[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2025),]
+AUX[nrow(AUX) +1, ] <- PR_PEVASPEA_SIM_Prioritarias_Fetal_2025[nrow(PR_PEVASPEA_SIM_Prioritarias_Fetal_2025), -ncol(PR_PEVASPEA_SIM_Prioritarias_Fetal_2025)]
 AUX[10, 1] <- "2025"
 
 write.csv (AUX, 

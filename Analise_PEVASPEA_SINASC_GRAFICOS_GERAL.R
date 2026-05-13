@@ -57,6 +57,8 @@ PR_DERAL_2024_SIMPLIFICADO <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2024
 Fonte <- "Fonte: SINASC. Base DBF acessada em 10/04/2026"
 Fonte1 <- "Fonte: SIAGRO. Base atualizada em 12/2025"
 Fonte2 <- "Fonte: DERAL. Acesso em 04/02/2026"
+Fonte3 <- "Fonte: DERAL. Acesso em 04/02/2026
+                  SIAGRO. Base atualizada em 12/2025"
 
 #####   SHAPEFILES
 
@@ -79,22 +81,23 @@ SHAPEFILE_ESTADUAL_RS[14, 2] <- "22"
 
 ############ Criando uma função Theme para ser utilizado por todos os gráficos     
 
-Theme <- function(){
-  theme_minimal(base_size = 12) +
-        theme(axis.text.y = element_text(face = "bold", 
-                                 color = "black", 
-                                 size = 10, 
-                                 lineheight = 0.8),
-              panel.grid.major.x = element_line(color = "grey92"),
-              panel.grid.major.y = element_line(color = "grey95"),
-              axis.line.x = element_line(color = "black"),
-              plot.title = element_text(face = "bold", 
-                                        size = 16),
-              plot.caption = element_text(hjust = 0, 
-                                          face = "italic",
-                                          margin = margin(t = 15))
+Theme <- function(base_size = 12){
+  theme_minimal(base_size = base_size) + 
+    theme(
+      panel.background = element_blank(),
+      panel.grid.major = element_line(color = "grey90", linewidth = 0.2),
+      panel.grid.minor = element_blank(),
+      legend.position = "bottom",
+      legend.title = element_text(face = "bold", size = 12), 
+      legend.text = element_text(size = 11),
+      legend.box.margin = margin(t = 10),
+      plot.title = element_text(face = "bold", size = 18, hjust = 0, margin = margin(b = 10)),
+      plot.subtitle = element_text(size = 12, hjust = 0, color = "grey30", margin = margin(b = 15)),
+      plot.caption = element_text(size = 10, hjust = 0, face = "italic", margin = margin(t = 15)),
+      axis.title = element_text(face = "bold", size = 11),
+      axis.text = element_text(size = 10, color = "black"),
+      plot.margin = margin(20, 20, 20, 20)
     )
-  
 }
 
 ################################################################################
@@ -623,38 +626,6 @@ RS_PEVASPEA_SINASC_GRAF_Taxa_Mun <- wrap_plots(AUX_LIST, ncol = 2) +
   )
 
 ###    MAPAS      ###
-
-Theme <- function(base_size = 12){
-  theme_minimal(base_size = base_size) + 
-    theme(panel.background = element_rect(fill = "white", 
-                                          color = NA),
-          panel.grid.major = element_line(color = "grey90", 
-                                          linewidth = 0.2),
-          panel.grid.minor = element_blank(),
-          legend.position = "bottom",
-          legend.title = element_text(face = "bold",
-                                      size = 12), 
-          legend.text = element_text(size = 11),
-          legend.box.margin = margin(t = 10),
-          plot.title = element_text(face = "bold", 
-                                    size = 18, 
-                                    hjust = 0, 
-                                    margin = margin(b = 10)),
-          plot.subtitle = element_text(size = 12, 
-                                       hjust = 0, 
-                                       color = "grey30", 
-                                       margin = margin(b = 15)),
-          plot.caption = element_text(size = 10, 
-                                      hjust = 0, 
-                                      face = "italic", 
-                                      margin = margin(t = 15)),
-          axis.title = element_text(face = "bold", 
-                                    size = 11),
-          axis.text = element_text(size = 10,
-                                   color = "black"),
-          plot.margin = margin(20, 20, 20, 20)
-    )
-}
 
 MAPA_BASE <- SHAPEFILE_ESTADUAL
 
@@ -1712,7 +1683,7 @@ AUX <- PR_DERAL_GERAL %>%
 ###### Área total em HA no Estado
 
 AUX01 <- AUX %>%
-  filter(row_number() %in% seq(1, n(), by = 6)) %>%
+  filter(str_detect(Variavel, "^AREA_HA_")) %>%
   mutate(Variavel = gsub("AREA_HA_", "", Variavel))
 
 ##### Gráfico de linhas
@@ -1730,7 +1701,7 @@ PR_DERAL_GRAF_HA_CULTIVADO <- ggplot(AUX01, aes(x = Variavel,
        x = NULL,
        title = "Total de Hectares Cultivados no Paraná - (2016 - 2024)",
        subtitle = "Cultivos de interesse") +
-  scale_y_continuous(limits = c(0, 17000000), 
+  scale_y_continuous(limits = c(12000000, 19000000), 
                      labels = label_number(decimal.mark = ",", 
                                            big.mark = "."),
                      expand = expansion(mult = c(0.2, 0.2))) +
@@ -1775,7 +1746,7 @@ AUX02 <- AUX01 %>%
               values_from = Total) %>%
   mutate(Consumo_HA = (Consumo / Area) * 1000) 
 
-ggplot(AUX02, aes(x = Ano, 
+PR_DERAL_GRAF_AGRO_HA <- ggplot(AUX02, aes(x = Ano, 
                   y = Consumo_HA,
                   group = 1)) +
   geom_line(color = "black",
@@ -1796,10 +1767,11 @@ ggplot(AUX02, aes(x = Ano,
 ################  Producao
 
 AUX01 <- AUX %>%
-  filter(str_detect(Variavel, "PRODUCAO") )
+  filter(str_detect(Variavel, "PRODUCAO") )  %>%
+  mutate(Variavel = gsub("PRODUCAO_", "", Variavel))
 
 
-ggplot(AUX01, aes(x = Variavel, 
+PR_DERAL_GRAF_PRODUCAO <- ggplot(AUX01, aes(x = Variavel, 
                   y = Total,
                   group = 1)) +
   geom_line(color = "black",
@@ -1812,7 +1784,10 @@ ggplot(AUX01, aes(x = Variavel,
        x = NULL,
        title = "Produção em Toneladas no Paraná - (2016 - 2024)",
        subtitle = "Cultivos de interesse") +
-  scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
+  scale_y_continuous(limits = c(0, 120000000), 
+                     labels = label_number(decimal.mark = ",", 
+                                           big.mark = "."),
+                     expand = expansion(mult = c(0.2, 0.2))) +
   Theme()
 
 #####   Regionais
@@ -1831,6 +1806,10 @@ AUX <- PR_DERAL_GERAL %>%
 AUX$AGRO_HA_21_24 <- ((AUX$TON_AGRO_2021 + AUX$TON_AGRO_2022 + AUX$TON_AGRO_2023 + AUX$TON_AGRO_2024)/
   (AUX$AREA_HA_2021 + AUX$AREA_HA_2022 + AUX$AREA_HA_2023 + AUX$AREA_HA_2024)) *1000
 
+AUX$TON_AGRO_21_24 <- (AUX$TON_AGRO_2021 + AUX$TON_AGRO_2022 + AUX$TON_AGRO_2023 + AUX$TON_AGRO_2024)
+
+AUX$HA_21_24 <- (AUX$AREA_HA_2021 + AUX$AREA_HA_2022 + AUX$AREA_HA_2023 + AUX$AREA_HA_2024)
+
 AUX$RS <- str_pad(AUX$RS, 
                   width = 2, 
                   side = "left", 
@@ -1841,20 +1820,26 @@ MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS,
                           by = c("RS" = "RS"))
 
 MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = AGRO_HA_21_24,
-                                                 breaks = c(0, 4, 6, 8, 10, 12, 14, Inf),
-                                                 labels = c("Até 4", "4 |- 6", "6 |- 8", "8 |- 10", 
-                                                            "10 |- 12", "12 |- 14", "Acima de 14"),
-                                                 right = TRUE))
+                                                 breaks = c(0, 5.5, 6.5, 7.5, 8.5, 10.0, 12.0, 14.0, Inf),
+                                                 labels = c("Até 5,5", 
+                                                            "5,5 - 6,5", 
+                                                            "6,5 - 7,5", 
+                                                            "7,5 - 8,5", 
+                                                            "8,5 - 10,0", 
+                                                            "10,0 - 12,0", 
+                                                            "12,0 - 14,0", 
+                                                            "Acima de 14,0"),
+                                                 right = FALSE))
 
 PR_DERAL_MAP_AGRO_HA_21_24 <- ggplot() + 
   geom_sf(data = MAPA_BASE_PR_RS, 
           color = "black", 
           aes(fill = Cat)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +
-  scale_fill_viridis_d(option = "viridis", 
-                       name = "Kg Agrotóxico/ \nHectare Cultivado",
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -1862,11 +1847,84 @@ PR_DERAL_MAP_AGRO_HA_21_24 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       caption = Fonte, 
-       title = "Utilização em Kg de Agrotóxicos/Hectare Cultivado (2021 - 2024) - 
-Paraná",
-       subtitle = "Referente ao Município de Residência")  +
+       fill = "Kg/HA",
+       title = "2021 - 2024",
+       subtitle = "Dados agredados por Regional de Saúde")  +
   Theme()
+
+####  Ton de agrotóxicos bruto 2021 - 2024
+
+MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = TON_AGRO_21_24,
+                                                 breaks = c(0, 1000, 5000, 10000, 18000, 26000, 35000, 45000, Inf),
+                                                 labels = c("Até 1.000", 
+                                                            "1.001 - 5.000", 
+                                                            "5.001 - 10.000", 
+                                                            "10.001 - 18.000", 
+                                                            "18.001 - 26.000", 
+                                                            "26.001 - 35.000", 
+                                                            "35.001 - 45.000", 
+                                                            "Acima de 45.000"),
+                                                 right = FALSE))
+
+PR_DERAL_MAP_TON_AGRO_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR_RS, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno", 
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "Toneladas \nAgrotóxicos",
+       title = "2017 - 2020",
+       subtitle = "Dados agregados por Regional de Saúde") +
+  Theme()
+
+##### HA Cultivado
+
+MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = HA_21_24,
+                                                 breaks = c(0, 1000000, 1800000, 2500000, 3200000, 3700000, 4600000, 5200000, Inf),
+                                                 labels = c("Até 1 Milhão", 
+                                                            "1,0 - 1,8 Milhão",
+                                                            "1,8 - 2,5 Milhões", 
+                                                            "2,5 - 3,2 Milhões", 
+                                                            "3,2 - 3,7 Milhões", 
+                                                            "3,7 - 4,6 Milhões", 
+                                                            "4,6 - 5,2 Milhões", 
+                                                            "Acima de 5,2 Milhões"),
+                                                 right = FALSE))
+
+PR_DERAL_MAP_HA_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR_RS, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(
+    title = "2021 - 2024",
+    subtitle = "Dados agregados por Regionais de Saúde",
+    fill = "Hectares\nCultivados",
+    x = NULL,
+    y = NULL
+  )  +
+  Theme() 
+  
+#################### 2017 - 2020
 
 AUX <- PR_DERAL_GERAL %>%
   group_by(RS) %>%
@@ -1881,6 +1939,10 @@ AUX <- PR_DERAL_GERAL %>%
 AUX$AGRO_HA_17_20 <- ((AUX$TON_AGRO_2017 + AUX$TON_AGRO_2018 + AUX$TON_AGRO_2019 + AUX$TON_AGRO_2020)/
                         (AUX$AREA_HA_2017 + AUX$AREA_HA_2018 + AUX$AREA_HA_2019 + AUX$AREA_HA_2020)) *1000
 
+AUX$TON_AGRO_17_20 <- (AUX$TON_AGRO_2017 + AUX$TON_AGRO_2018 + AUX$TON_AGRO_2019 + AUX$TON_AGRO_2020)
+
+AUX$HA_17_20 <- (AUX$AREA_HA_2017 + AUX$AREA_HA_2018 + AUX$AREA_HA_2019 + AUX$AREA_HA_2020)
+
 AUX$RS <- str_pad(AUX$RS, 
                   width = 2, 
                   side = "left", 
@@ -1891,20 +1953,26 @@ MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS,
                              by = c("RS" = "RS"))
 
 MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = AGRO_HA_17_20,
-                                                 breaks = c(0, 4, 6, 8, 10, 12, 14, Inf),
-                                                 labels = c("Até 4", "4 |- 6", "6 |- 8", "8 |- 10", 
-                                                            "10 |- 12", "12 |- 14", "Acima de 14"),
-                                                 right = TRUE))
+                                                 breaks = c(0, 5.5, 6.5, 7.5, 8.5, 10.0, 12.0, 14.0, Inf),
+                                                 labels = c("Até 5,5", 
+                                                            "5,5 - 6,5", 
+                                                            "6,5 - 7,5", 
+                                                            "7,5 - 8,5", 
+                                                            "8,5 - 10,0", 
+                                                            "10,0 - 12,0", 
+                                                            "12,0 - 14,0", 
+                                                            "Acima de 14,0"),
+                                                 right = FALSE))
 
 PR_DERAL_MAP_AGRO_HA_17_20 <- ggplot() + 
   geom_sf(data = MAPA_BASE_PR_RS, 
           color = "black", 
           aes(fill = Cat)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +
-  scale_fill_viridis_d(option = "viridis", 
-                       name = "Kg Agrotóxico/ \nHectare Cultivado",
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -1912,36 +1980,136 @@ PR_DERAL_MAP_AGRO_HA_17_20 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       caption = Fonte, 
-       title = "Utilização em Kg de Agrotóxicos/Hectare Cultivado (2017 - 2020) - 
-Paraná",
-       subtitle = "Referente ao Município de Residência")  +
+       fill = "Kg/HA", 
+       title = "2017 - 2020",
+       subtitle = "Dados agredados por Regional de Saúde")  +
+  Theme()
+
+####  Ton de agrotóxicos bruto 2017 - 2020
+
+MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = TON_AGRO_17_20,
+                                                 breaks = c(0, 1000, 5000, 10000, 18000, 26000, 35000, 45000, Inf),
+                                                 labels = c("Até 1.000", 
+                                                            "1.001 - 5.000", 
+                                                            "5.001 - 10.000", 
+                                                            "10.001 - 18.000", 
+                                                            "18.001 - 26.000", 
+                                                            "26.001 - 35.000", 
+                                                            "35.001 - 45.000", 
+                                                            "Acima de 45.000"),
+                                                 right = FALSE))
+
+PR_DERAL_MAP_TON_AGRO_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR_RS, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "br") +
+  annotation_north_arrow(location = "tr", 
+                         which_north = "true") +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL, 
+       fill = "Toneladas \nAgrotóxicos",
+       title = "2017 - 2020",
+       subtitle = "Dados agregados por Regional de Saúde")  +
   Theme()
 
 ####### Área Cultivada
 
-AUX <- PR_DERAL_GERAL %>%
-  group_by(RS) %>%
-  summarise(
-    across(
-      c(AREA_HA_2017, AREA_HA_2018, AREA_HA_2019, AREA_HA_2020,
-        TON_AGRO_2017, TON_AGRO_2018, TON_AGRO_2019, TON_AGRO_2020,
-        PRODUCAO_2017, PRODUCAO_2018, PRODUCAO_2019, PRODUCAO_2020),
-      ~ sum(.x, na.rm = TRUE)
-    )
-  ) 
+MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = HA_17_20,
+                                                 breaks = c(0, 1000000, 1800000, 2500000, 3200000, 3700000, 4600000, 5200000, Inf),
+                                                 labels = c("Até 1 Milhão", 
+                                                            "1,0 - 1,8 Milhão",
+                                                            "1,8 - 2,5 Milhões", 
+                                                            "2,5 - 3,2 Milhões", 
+                                                            "3,2 - 3,7 Milhões", 
+                                                            "3,7 - 4,6 Milhões", 
+                                                            "4,6 - 5,2 Milhões", 
+                                                            "Acima de 5,2 Milhões"),
+                                                 right = FALSE))
 
-AUX$TON_AGRO_17_20 <- (AUX$TON_AGRO_2017 + AUX$TON_AGRO_2018 + AUX$TON_AGRO_2019 + AUX$TON_AGRO_2020)
+PR_DERAL_MAP_HA_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR_RS, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(
+    title = "2017 - 2020",
+    subtitle = "Dados agregados por Regionais de Saúde",
+    fill = "Hectares\nCultivados", 
+    x = NULL,
+    y = NULL
+  )  +
+  Theme() 
 
-AUX$RS <- str_pad(AUX$RS, 
-                  width = 2, 
-                  side = "left", 
-                  pad = "0")
+#### Juntando os mapas 
 
-MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS, 
-                             AUX, 
-                             by = c("RS" = "RS"))
+##HA
 
+PR_DERAL_MAP_HA_17_20_21_24 <- PR_DERAL_MAP_HA_17_20 + 
+  PR_DERAL_MAP_HA_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial de Área Cultivada no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HA)',
+                  caption =  Fonte2,
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+                  ))
+
+##TON de Agro
+
+PR_DERAL_MAP_TON_AGRO_17_20_21_24 <- PR_DERAL_MAP_TON_AGRO_17_20 + 
+  PR_DERAL_MAP_TON_AGRO_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial do Uso de Agrotóxico no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (Toneladas)',
+                  caption =  paste(Fonte3),
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+                  ))
+
+
+##AGRO/HA
+
+PR_DERAL_MAP_AGRO_HA_17_20_21_24 <- PR_DERAL_MAP_AGRO_HA_17_20 + 
+  PR_DERAL_MAP_AGRO_HA_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial do Consumo de Agrotóxico no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (Kg/HA)',
+                  caption =  Fonte2,
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+                  ))
+  
 ######  Municípios
 
 AUX <- PR_DERAL_GERAL %>%
@@ -1962,7 +2130,10 @@ AUX$AGRO_HA_21_24 <- ((AUX$TON_AGRO_2021 + AUX$TON_AGRO_2022 + AUX$TON_AGRO_2023
 AUX$AGRO_HA_17_20 <- ((AUX$TON_AGRO_2017 + AUX$TON_AGRO_2018 + AUX$TON_AGRO_2019 + AUX$TON_AGRO_2020)/
                         (AUX$AREA_HA_2017 + AUX$AREA_HA_2018 + AUX$AREA_HA_2019 + AUX$AREA_HA_2020)) *1000
 
+AUX$TON_AGRO_21_24 <- (AUX$TON_AGRO_2021 + AUX$TON_AGRO_2022 + AUX$TON_AGRO_2023 + AUX$TON_AGRO_2024)
 
-  
+AUX$TON_AGRO_17_20 <- (AUX$TON_AGRO_2017 + AUX$TON_AGRO_2018 + AUX$TON_AGRO_2019 + AUX$TON_AGRO_2020)
 
+AUX$HA_21_24 <- (AUX$AREA_HA_2021 + AUX$AREA_HA_2022 + AUX$AREA_HA_2023 + AUX$AREA_HA_2024)
 
+AUX$HA_17_20 <- (AUX$AREA_HA_2017 + AUX$AREA_HA_2018 + AUX$AREA_HA_2019 + AUX$AREA_HA_2020)
