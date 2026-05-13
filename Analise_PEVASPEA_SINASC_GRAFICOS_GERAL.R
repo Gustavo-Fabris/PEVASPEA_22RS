@@ -58,7 +58,7 @@ Fonte <- "Fonte: SINASC. Base DBF acessada em 10/04/2026"
 Fonte1 <- "Fonte: SIAGRO. Base atualizada em 12/2025"
 Fonte2 <- "Fonte: DERAL. Acesso em 04/02/2026"
 Fonte3 <- "Fonte: DERAL. Acesso em 04/02/2026
-                  SIAGRO. Base atualizada em 12/2025"
+                SIAGRO. Base atualizada em 12/2025"
 
 #####   SHAPEFILES
 
@@ -704,40 +704,41 @@ AUX <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
 AUX <- AUX[-nrow(AUX),]
 
 MAPA_BASE_PR <- left_join(MAPA_BASE, 
-                          AUX, 
+                          AUX %>% 
+                            select(Município_sem_Código, 35, 36, 37),
                           by = c("NM_MUN" = "Município_sem_Código"))
 
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TAXA_4a_18_21,
-                                           breaks = c(-Inf, 0, 5, 10, 15, 20, 25, 30, 50, 1000),
-                                           labels = c("0 casos", "1 - 5", "6 - 10", "11 - 15", 
-                                                      "16 - 20", "21 - 25", "26 - 30", "31 - 50", ">50"),
-                                           right = FALSE))
+                                           breaks = c(0, 0.001, 3.5, 5.5, 7.5, 10.0, 15.0, 22.0, Inf),
+                                           labels = c("0 casos", "0,1 - 3,4", "3,5 - 5,4", "5,5 - 7,4", 
+                                                      "7,5 - 9,9", "10,0 - 14,9", "15,0 - 21,9", "Acima de 22,0"),
+                                           right = FALSE
+                                           ))
 
 PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21 <- ggplot() + 
   geom_sf(data = MAPA_BASE_PR, 
-          color = "black", 
+          color = "grey30", 
+          linewidth = 0.1, 
           aes(fill = Cat)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",    
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
   scale_fill_viridis_d(option = "inferno", 
-                       name = "Anomalias/1000 \nNascidos Vivos",
                        direction = -1,
-                       begin = 0.1,       
-                       end = 0.9,        
+                       begin = 0.05,       
+                       end = 0.95,        
                        drop = FALSE) +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       caption = Fonte, 
-       title = "Taxa Anomalias/1000 Nascidos Vivos (2018 - 2021) - 
-Paraná",
-       subtitle = "Referente ao Município de Residência")  +
-  Theme() +
-  theme(panel.background = element_blank(),
-                axis.text = element_blank(),
-                axis.ticks = element_blank(),
-                panel.grid = element_blank())
+       fill = "Anomalias/1000 \nNascimentos",
+       title = "2018 - 2021")  +
+  Theme() 
 
 ############  Taxa 04 anos (22 - 25) municípios estado
 
@@ -753,11 +754,11 @@ AUX <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
                          PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2023 +
                          PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2022 ) *
                       1000), 
-         Nascidos_4a = (PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2025 + 
+         Nascidos_4a_22_25 = (PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2025 + 
                           PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2024 +
                           PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2023 +
                           PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2022 ),
-         Anomalias_4a = (PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2025 + 
+         Anomalias_4a_22_25 = (PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2025 + 
                            PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2024 +
                            PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2023 +
                            PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2022)
@@ -766,40 +767,56 @@ AUX <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
 AUX <- AUX[-nrow(AUX),]
 
 MAPA_BASE_PR <- left_join(MAPA_BASE_PR, 
-                          AUX, 
+                          AUX %>% 
+                            select(Município_sem_Código, 35, 36, 37),
                           by = c("NM_MUN" = "Município_sem_Código"))
 
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TAXA_4a_22_25,
-                                           breaks = c(-Inf, 0, 5, 10, 15, 20, 25, 30, 50, 1000),
-                                           labels = c("0 casos", "1 - 5", "6 - 10", "11 - 15", 
-                                                      "16 - 20", "21 - 25", "26 - 30", "31 - 50", ">50"),
-                                           right = FALSE))
+                                           breaks = c(0, 0.001, 3.5, 5.5, 7.5, 10.0, 15.0, 22.0, Inf),
+                                           labels = c("0 casos", "0,1 - 3,4", "3,5 - 5,4", "5,5 - 7,4", 
+                                                      "7,5 - 9,9", "10,0 - 14,9", "15,0 - 21,9", "Acima de 22,0"),
+                                           right = FALSE
+))
 
 PR_SINASC_MAP_TAXA_4A_ANOMAL_22_25 <- ggplot() + 
   geom_sf(data = MAPA_BASE_PR, 
-          color = "black", 
+          color = "grey30", 
+          linewidth = 0.1, 
           aes(fill = Cat)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
   scale_fill_viridis_d(option = "inferno", 
-                       name = "Casos/1000 \nNascidos Vivos",
                        direction = -1,
-                       begin = 0.1,       
-                       end = 0.9,        
+                       begin = 0.05,       
+                       end = 0.95,        
                        drop = FALSE) +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       caption = Fonte, 
-       title = "Taxa Anomalias/1000 Nascidos Vivos (2022 - 2025) - 
-Paraná",
-       subtitle = "Referente ao Município de Residência")  +
-  Theme() +
-  theme(panel.background = element_blank(),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid = element_blank())
+       fill = "Anomalias/1000 \nNascimentos",
+       title = "2022 - 2025")  +
+  Theme() 
+
+PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21_22_25 <- PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21 + 
+  PR_SINASC_MAP_TAXA_4A_ANOMAL_22_25 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Taxa de Anomalias Congênitas em Municípios do Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025 (Casos/1000 Nascimentos)',
+                  caption =  Fonte,
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+                  ))
 
 #############   Taxa Anomalias/1000 nascimentos 18 - 21 somados
 #############   por Regionais de Saúde
@@ -835,40 +852,36 @@ MAPA_BASE_RS <- left_join(AUX,
 
 MAPA_BASE_RS <- MAPA_BASE_RS[, c(1, 42, 43, 44)]
 
-MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, 
-                         cut(x = TAXA_4a_18_21,
-                             breaks = c(0, 5, 7, 9, 11, 13, 15, 20, Inf),
-                             labels = c("Até 5", "5.1 - 7", "7.1 - 9", "9.1 - 11", 
-                                        "11.1 - 13", "13.1 - 15", "15.1 - 20", "> 20"),
-                             right = FALSE))
+MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = TAXA_4a_18_21,
+                                           breaks = c(0, 4.5, 5.5, 6.5, 7.5, 8.5, 10.0, 12.0, Inf),
+                                           labels = c("Até 4,5", "4,5 - 5,5", 
+                                                      "5,5 - 6,5", "6,5 - 7,5", 
+                                                      "7,5 - 8,5", "8,5 - 10,0", 
+                                                      "10,0 - 12,0", "Acima de 12,0"),
+                                           right = FALSE))
 
 MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
 
 PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS <- ggplot() +
   geom_sf(data = MAPA_BASE_RS, 
-          color = "black", 
+          color = "grey30", 
+          linewidth = 0.1, 
           aes(fill = Cat)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
   scale_fill_viridis_d(option = "inferno", 
-                       name = "Casos/1000 \nNascidos Vivos",
                        direction = -1,
-                       begin = 0.1,       
-                       end = 0.9,        
-                       drop = FALSE) +  
+                       begin = 0.05,       
+                       end = 0.95,        
+                       drop = FALSE) +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       caption = Fonte, 
-       title = "Taxa Anomalias/1000 Nascidos Vivos em 2018 - 2021 - 
-Regionais Paraná",
-       subtitle = "Referente ao Município de Residência") + 
-  Theme() +
-  theme(panel.background = element_blank(),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid = element_blank())
+       fill = "Anomalias/1000 \nNascimentos",
+       title = "2018 - 2021")  +
+  Theme() 
 
 #############   Taxa Anomalias/1000 nascimentos nos últimos 04 anos somados
 #############   por Regionais de Saúde
@@ -904,55 +917,51 @@ MAPA_BASE_RS <- left_join(AUX,
 
 MAPA_BASE_RS <- MAPA_BASE_RS[, c(1, 42, 43, 44)]
 
-MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, 
-                         cut(x = TAXA_4a_22_25,
-                             breaks = c(0, 5, 7, 9, 11, 13, 15, 20, Inf),
-                             labels = c("Até 5", "5.1 - 7", "7.1 - 9", "9.1 - 11", 
-                                        "11.1 - 13", "13.1 - 15", "15.1 - 20", "> 20"),
-                             right = FALSE))
+MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = TAXA_4a_22_25,
+                                           breaks = c(0, 4.5, 5.5, 6.5, 7.5, 8.5, 10.0, 12.0, Inf),
+                                           labels = c("Até 4,5", "4,5 - 5,5", 
+                                                      "5,5 - 6,5", "6,5 - 7,5", 
+                                                      "7,5 - 8,5", "8,5 - 10,0", 
+                                                      "10,0 - 12,0", "Acima de 12,0"),
+                                           right = FALSE))
 
 MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
 
 PR_SINASC_MAP_TAXA_4_ANOS_22_25_ANOMAL_RS <- ggplot() +
   geom_sf(data = MAPA_BASE_RS, 
-          color = "black", 
+          color = "grey30", 
+          linewidth = 0.1, 
           aes(fill = Cat)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
   scale_fill_viridis_d(option = "inferno", 
-                       name = "Casos/1000 \nNascidos Vivos",
                        direction = -1,
-                       begin = 0.1,       
-                       end = 0.9,        
-                       drop = FALSE) +  
+                       begin = 0.05,       
+                       end = 0.95,        
+                       drop = FALSE) +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       caption = Fonte, 
-       title = "Taxa Anomalias/1000 Nascidos Vivos (2022 - 2025) - 
-Regionais Paraná",
-       subtitle = "Referente ao Município de Residência") + 
-  Theme() +
-  theme(panel.background = element_blank(),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid = element_blank())
+       fill = "Anomalias/1000 \nNascimentos",
+       title = "2022 - 2025")  +
+  Theme() 
 
 PR_SINASC_MAP_TAXA_4_ANOS_18_21_22_25_ANOMAL_RS <- PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS + 
-  PR_SINASC_MAP_TAXA_4_ANOS_22_25_ANOMAL_RS + 
+  PR_SINASC_MAP_TAXA_4_ANOS_22_25_ANOMAL_RS+ 
   plot_layout(ncol = 2, 
               guides = "collect") + 
-  plot_annotation(title = 'Evolução Espacial das Anomalias Congênitas no Paraná',
-                  subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025 (Taxa por 1.000 nasc.)',
+  plot_annotation(title = 'Evolução Espacial da Taxa de Anomalias Congênitas em Regionais do Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025 (Casos/1000 Nascimentos)',
                   caption =  Fonte,
                   theme = theme(
                     plot.title = element_text(size = 20, 
                                               face = "bold"),
                     plot.subtitle = element_text(size = 14),
-                    legend.position = "bottom"
-                  )
-  )
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+                  ))
 
 ##### Trabalhando Global Moran/LISA
 
@@ -1007,11 +1016,11 @@ Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Anomalias_4a_18_21,
                           ni = MAPA_BASE_PR$Nascidos_4a_18_21,
                           nb = Matriz_Viz_MAPA_BASE_PR)
 
-MAPA_BASE_PR$TAXA_RAW_18_21 <- Taxa_Suavizada$raw
+MAPA_BASE_PR$TAXA_RAW_18_21 <- Taxa_Suavizada$raw * 1000
 
-MAPA_BASE_PR$TAXA_EST_18_21 <- Taxa_Suavizada$est
+MAPA_BASE_PR$TAXA_EST_18_21 <- Taxa_Suavizada$est * 1000
 
-Global_Moran <- moran.test(MAPA_BASE_PR$TAXA_EST_18_21,
+Global_Moran_18_21 <- moran.test(MAPA_BASE_PR$TAXA_EST_18_21,
                            Matriz_Viz_Pesos)
 
 ### Scatterplot
@@ -1026,19 +1035,21 @@ moran.plot(MAPA_BASE_PR$TAXA_EST_18_21,
            main = "Moran Scatterplot")
 
 #### Calculando o Local Moran
+### Travando o local moran
+set.seed(123)
 
 Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_18_21, 
                         Matriz_Viz_Pesos, 
                         nsim = 9999,
                         zero.policy = TRUE)
 
-MAPA_BASE_PR$local_I <- Lisa[,1]
+MAPA_BASE_PR$local_I_18_21 <- Lisa[,1]
 
-MAPA_BASE_PR$local_I_p_valor <- Lisa[,5]
+MAPA_BASE_PR$local_I_p_valor_18_21 <- Lisa[,5]
 
 ggplot(MAPA_BASE_PR, 
        aes(geometry = geometry)) +
-  geom_sf(aes(fill = local_I)) +
+  geom_sf(aes(fill = local_I_18_21)) +
   scale_fill_gradient2(low = "blue", high = "red", 
                        mid = "white", 
                        midpoint = 0,
@@ -1050,57 +1061,70 @@ ggplot(MAPA_BASE_PR,
 quadrantes <- attr(Lisa, 
                    "quadr")$mean
 
-MAPA_BASE_PR$quadrante <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+MAPA_BASE_PR$quadrante_18_21 <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
                                     quadrantes == "Low-Low" ~ "Baixo-Baixo",
                                     quadrantes == "High-Low" ~ "Alto-Baixo",
                                     quadrantes == "Low-High" ~ "Baixo-Alto")
 
 MAPA_BASE_PR <- MAPA_BASE_PR %>%
   mutate(Lisa_resultado_18_21 = case_when(
-    local_I_p_valor < 0.05 ~ quadrante,
-    local_I_p_valor >= 0.05 ~ "Não significativo"
+    local_I_p_valor_18_21 < 0.05 ~ quadrante_18_21,
+    local_I_p_valor_18_21 >= 0.05 ~ "Não significativo"
   ))
+
+Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não significativo")
+
+MAPA_BASE_PR$Lisa_resultado_18_21 <- factor(MAPA_BASE_PR$Lisa_resultado_18_21, levels = Niveis_LISA)
 
 PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21 <- ggplot(MAPA_BASE_PR, 
                                                aes(geometry = geometry)) +
-  geom_sf(aes(fill = Lisa_resultado_18_21)) +
-  scale_fill_manual(name = NULL,
+  geom_sf(color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Lisa_resultado_18_21)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
                     values = c("Alto-Alto" = "red",        
                                "Baixo-Baixo" = "blue",      
                                "Alto-Baixo" = "pink",       
                                "Baixo-Alto" = "lightblue",  
-                               "Não significativo" = "white")
-  ) + annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +  
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       caption = Fonte, 
-       title = "Local Moran Anomalias/1000 nascimentos 
-Paraná (2018 - 2021)",
-       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico") +
+       title = "2018 - 2021",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.589 (p < 0.001)") +
   Theme() +
-  theme(legend.key.width = unit(1.5, "cm"))
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
 
 #### Fim da análise Global and Local Moran 2018 - 2021
 
 ### Realizando a suavização dos dados com Método Bayesiano Empírico 2022 - 2025
 
-Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Anomalias_4a, 
-                          ni = MAPA_BASE_PR$Nascidos_4a,
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Anomalias_4a_22_25, 
+                          ni = MAPA_BASE_PR$Nascidos_4a_22_25,
                           nb = Matriz_Viz_MAPA_BASE_PR)
 
-MAPA_BASE_PR$TAXA_RAW <- Taxa_Suavizada$raw
+MAPA_BASE_PR$TAXA_RAW_22_25 <- Taxa_Suavizada$raw * 1000
 
-MAPA_BASE_PR$TAXA_EST <- Taxa_Suavizada$est
+MAPA_BASE_PR$TAXA_EST_22_25 <- Taxa_Suavizada$est * 1000
 
-Global_Moran <- moran.test(MAPA_BASE_PR$TAXA_EST,
+Global_Moran <- moran.test(MAPA_BASE_PR$TAXA_EST_22_25,
                            Matriz_Viz_Pesos)
 
 ### Scatterplot
 
-moran.plot(MAPA_BASE_PR$TAXA_EST, 
+moran.plot(MAPA_BASE_PR$TAXA_EST_22_25, 
            Matriz_Viz_Pesos, 
            labels = FALSE, 
            pch = 15, 
@@ -1110,52 +1134,88 @@ moran.plot(MAPA_BASE_PR$TAXA_EST,
            main = "Moran Scatterplot")
 
 #### Calculando o Local Moran
+#### Travando o local moran
+set.seed(123)
 
-lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST, 
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_22_25, 
                         Matriz_Viz_Pesos, 
                         nsim = 9999,
                         zero.policy = TRUE)
 
-MAPA_BASE_PR$local_I <- lisa[,1]
+MAPA_BASE_PR$local_I_22_25 <- Lisa[,1]
 
-MAPA_BASE_PR$local_I_p_valor <- lisa[,5]
+MAPA_BASE_PR$local_I_p_valor_22_25 <- Lisa[,5]
 
-quadrantes <- attr(lisa, 
+quadrantes <- attr(Lisa, 
                    "quadr")$mean
 
-MAPA_BASE_PR$quadrante <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+MAPA_BASE_PR$quadrante_22_25 <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
                                     quadrantes == "Low-Low" ~ "Baixo-Baixo",
                                     quadrantes == "High-Low" ~ "Alto-Baixo",
                                     quadrantes == "Low-High" ~ "Baixo-Alto")
 
 MAPA_BASE_PR <- MAPA_BASE_PR %>%
-  mutate(Lisa_resultado = case_when(
-    local_I_p_valor < 0.05 ~ quadrante,
-    local_I_p_valor >= 0.05 ~ "Não significativo"
+  mutate(Lisa_resultado_22_25 = case_when(
+    local_I_p_valor_22_25 < 0.05 ~ quadrante_22_25,
+    local_I_p_valor_22_25 >= 0.05 ~ "Não significativo"
   ))
+
+MAPA_BASE_PR$Lisa_resultado_22_25 <- factor(MAPA_BASE_PR$Lisa_resultado_22_25, levels = Niveis_LISA)
 
 PR_PEVASPEA_SINASC_LOCAL_MORAN_22_25 <- ggplot(MAPA_BASE_PR, 
                                                aes(geometry = geometry)) +
-  geom_sf(aes(fill = Lisa_resultado)) +
-  scale_fill_manual(name = NULL,
+  geom_sf(color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Lisa_resultado_22_25)) +
+  scale_fill_manual(name = "LISA \nClusters", 
+                    drop = FALSE,
                     values = c("Alto-Alto" = "red",        
                                "Baixo-Baixo" = "blue",      
                                "Alto-Baixo" = "pink",       
                                "Baixo-Alto" = "lightblue",  
-                               "Não significativo" = "white")
-  ) + annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +  
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       caption = Fonte, 
-       title = "Local Moran Anomalias/1000 nascimentos 
-Paraná (2022 - 2025)",
-       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico") +
+       title = "2022 - 2025",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001)") +
   Theme() +
-  theme(legend.key.width = unit(1.5, "cm"))
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
 
+PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21_22_25 <- PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21 + 
+  PR_PEVASPEA_SINASC_LOCAL_MORAN_22_25 + 
+  plot_layout(ncol = 2, guides = "collect") + 
+  plot_annotation(
+    title = "Progressão de Agrupamentos das Taxas de Anomalias/1000 Nascidos no Paraná",
+    subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025',
+    caption = Fonte  
+  ) & 
+  theme(
+    plot.title = element_text(size = 16, 
+                              face = "bold", 
+                              hjust = 0), 
+    plot.subtitle = element_text(size = 12, 
+                                 hjust = 0),
+    plot.caption = element_text(hjust = 0, 
+                                face = "italic", 
+                                size = 10),
+    legend.position = "bottom",        
+    legend.box = "horizontal",
+    legend.box.just = "center",
+    legend.justification = "center",
+    legend.key.width = unit(1.2, "cm")   
+  )
 ######  Tabelas 
 ################################################################################
 ################################################################################
@@ -1559,8 +1619,6 @@ RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II <- wrap_plots(AUX_LIST, ncol = 2) +
                    )
   )
 
-
-
 ####  Salvando os gráficos, mapas e tabelas
 ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS.png",
        plot = PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS,
@@ -1637,13 +1695,32 @@ ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II.pn
        units = "cm",
        dpi = 300) 
 
-ggsave(filename = "Tabulacoes_R/Mapas/Mapa_Regionais_Taxa_Anomalias_PR.png",
-       plot = PR_SINASC_MAP_TAXA_4_ANOS_18_21_ANOMAL_RS,
-       width = 21,    
-       height = 16, 
-       units = "cm",
-       dpi = 300,     
-       bg = "white")
+ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21_22_25.png", 
+  plot = PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21_22_25, 
+  width = 35,                               
+  height = 18,                               
+  units = "cm",                               
+  dpi = 300,                                   
+  bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21_22_25.png", 
+       plot = PR_PEVASPEA_SINASC_LOCAL_MORAN_18_21_22_25, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21_22_25.png", 
+      plot = PR_SINASC_MAP_TAXA_4A_ANOMAL_18_21_22_25, 
+      width = 35,                               
+      height = 18,                               
+      units = "cm",                               
+      dpi = 300,                                   
+      bg = "white"                                
+)
 
 ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4_ANOS_18_21_22_25_ANOMAL_RS.png",
        plot = PR_SINASC_MAP_TAXA_4_ANOS_18_21_22_25_ANOMAL_RS,
@@ -2003,9 +2080,10 @@ PR_DERAL_MAP_TON_AGRO_17_20 <- ggplot() +
   geom_sf(data = MAPA_BASE_PR_RS, 
           color = "black", 
           aes(fill = Cat)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
   scale_fill_viridis_d(option = "inferno",
                        direction = -1,
                        begin = 0.1,       
