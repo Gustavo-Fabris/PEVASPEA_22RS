@@ -31,13 +31,13 @@ BASE_IBGE_BRASIL <- read.csv (file = "Base_de_Dados/Auxiliares/Planilha_Base_IBG
 ######   Criando objeto ID_REG. Será utilizado para selecionar
 ######   RS no DBF do SINAN ONLINE.
 
-ID_REG <- as.data.frame(BASE_IBGE[which(BASE_IBGE$RS == RS), 6])
+ID_REG <- as.data.frame(BASE_IBGE[which(BASE_IBGE$RS == 22), 6])
 
 ID_REG <- as.numeric(ID_REG[1,1])
 
 ####   Estabelecendo o número de municípios em cada RS
 
-nrow <- NROW(BASE_IBGE[which(BASE_IBGE$RS == RS), 1])
+nrow <- NROW(BASE_IBGE[which(BASE_IBGE$RS == 22), 1])
 
 ##############################################################
 ##################   2016  ###################################
@@ -375,7 +375,10 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
       unidade == 5 ~ valor + 100,
       TRUE         ~ NA_real_
     ),
-    Faixa_Etaria = cut(idade_anos, breaks = quebras, labels = rotulos, right = FALSE),
+    Faixa_Etaria = cut(idade_anos,
+                       breaks = quebras, 
+                       labels = rotulos, 
+                       right = FALSE),
     Grupo_CID = case_when(str_detect(CAUSABAS, CID_LINFATICO) ~ "Linfatico_Hematologico",
                           str_detect(CAUSABAS, CID_CEREBRO) ~ "Cerebro_SNC",
                           str_detect(CAUSABAS, CID_DIGESTIVO) ~ "Digestivo",
@@ -396,7 +399,9 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
-  pivot_wider(names_from = Faixa_Etaria, values_from = Casos, values_fill = 0) %>%
+  pivot_wider(names_from = Faixa_Etaria, 
+              values_from = Casos, 
+              values_fill = 0) %>%
   rowwise() %>%
   mutate(TOTAL = sum(c_across(any_of(rotulos)))) %>%
   ungroup()
@@ -404,7 +409,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -469,6 +474,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2016,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2016, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016.csv", 
            row.names = FALSE)
 
 ##############################################################
@@ -801,7 +810,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 <- DOPR2017 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -866,6 +875,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2017,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2017, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017.csv", 
            row.names = FALSE)
 
 
@@ -1219,7 +1232,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 <- DOPR2018 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -1284,6 +1297,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2018,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2018, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018.csv", 
            row.names = FALSE)
 
 ##############################################################
@@ -1635,7 +1652,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 <- DOPR2019 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -1700,6 +1717,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2019,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2019, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019.csv", 
            row.names = FALSE)
 
 
@@ -2052,7 +2073,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 <- DOPR2020 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -2117,6 +2138,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2020,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2020, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020.csv", 
            row.names = FALSE)
 
 
@@ -2470,7 +2495,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 <- DOPR2021 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -2535,6 +2560,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2021,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2021, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021.csv", 
            row.names = FALSE)
 
 
@@ -2886,7 +2915,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 <- DOPR2022 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -2953,6 +2982,9 @@ write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022,
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022.csv", 
            row.names = FALSE)
 
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2022, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022.csv", 
+           row.names = FALSE)
 ##############################################################
 ##################   2023  ###################################
 ##############################################################
@@ -3303,7 +3335,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 <- DOPR2023 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -3368,6 +3400,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2023,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2023, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023.csv", 
            row.names = FALSE)
 
 ##############################################################
@@ -3719,7 +3755,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 <- DOPR2024 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -3784,6 +3820,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2024,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2024, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024.csv", 
            row.names = FALSE)
 
 ##############################################################
@@ -4135,7 +4175,7 @@ PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 <- DOPR2025 %>%
 #### Por Idade RS
 
 Municipios_22RS <- BASE_IBGE %>% 
-  filter(RS == RS) %>%
+  filter(RS == 22) %>%
   mutate(Código_IBGE = as.character(Código_IBGE)) %>% 
   pull(Código_IBGE)
 
@@ -4200,6 +4240,10 @@ write.csv (PR_PEVASPEA_SIM_NEOPLASIA_GERAL_SEXO_2025,
 
 write.csv (RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025, 
            "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2025, 
+           "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025.csv", 
            row.names = FALSE)
 
 #################  Criando objetos geral

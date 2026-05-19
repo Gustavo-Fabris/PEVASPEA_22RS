@@ -5230,6 +5230,45 @@ write.csv (PR_PEVASPEA_SINASC_ANOMAL_SE_2025,
            "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_ANOMAL_SE_2025.csv", 
            row.names = FALSE)
 
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2016, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2016.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2017, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2017.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2018, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2018.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2019, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2019.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2020, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2020.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2021, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2021.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2022, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2022.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2023, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2023.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2024, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2024.csv", 
+           row.names = FALSE)
+
+write.csv (PR_PEVASPEA_SINASC_QTDFILMORT_2025, 
+           "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_QTDFILMORT_2025.csv", 
+           row.names = FALSE)
 
 rm(AUX,
    AUX01,

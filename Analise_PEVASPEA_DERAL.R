@@ -309,8 +309,7 @@ AUX <- VBP_2016 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%   #### Selecionando área como fator relevante
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)  #### Selecionando 06 culturas com maior área utilizada
+  group_by(MUNICIPIO)
 
 PR_DERAL_2016_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -620,8 +619,7 @@ AUX <- VBP_2017 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  group_by(MUNICIPIO)
 
 PR_DERAL_2017_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -929,8 +927,7 @@ AUX <- VBP_2018 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  group_by(MUNICIPIO)
 
 PR_DERAL_2018_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -1238,8 +1235,7 @@ AUX <- VBP_2019 %>%filter(CULTURA == "Soja (1ª safra)" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  group_by(MUNICIPIO) 
 
 PR_DERAL_2019_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -1557,8 +1553,7 @@ AUX <- VBP_2020 %>%filter(CULTURA == "SOJA SAFRA NORMAL" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  group_by(MUNICIPIO)
 
 PR_DERAL_2020_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -1880,8 +1875,7 @@ AUX <- VBP_2021 %>%filter(CULTURA == "Soja (1ª safra)" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  group_by(MUNICIPIO)
 
 PR_DERAL_2021_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -2200,8 +2194,7 @@ AUX <- VBP_2022 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  group_by(MUNICIPIO) 
 
 PR_DERAL_2022_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -2520,8 +2513,7 @@ AUX <- VBP_2023 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  group_by(MUNICIPIO) 
 
 PR_DERAL_2023_CULTIVOS_MUNICIPIOS <- AUX
 
@@ -2840,8 +2832,7 @@ AUX <- VBP_2024 %>%filter(CULTURA == "SOJA (1ª SAFRA)" |
   group_by(MUNICIPIO) %>%
   arrange(desc(AREA_HA)) %>%
   arrange(MUNICIPIO) %>%
-  group_by(MUNICIPIO) %>%
-  slice_head(n = 6)
+  group_by(MUNICIPIO) 
 
 PR_DERAL_2024_CULTIVOS_MUNICIPIOS <- AUX
 
