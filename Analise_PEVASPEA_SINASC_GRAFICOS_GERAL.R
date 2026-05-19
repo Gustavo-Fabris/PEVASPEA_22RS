@@ -2175,7 +2175,7 @@ AUX <- AUX %>%
     Grupo_CID == "Tec_Mole" ~ "Tecidos Moles",
     Grupo_CID == "Tireoide_Endo" ~ "Tireoide e Endócrinas",
     Grupo_CID == "Mal_Definidas" ~ "Mal Definidas/Outras",
-    TRUE ~ Grupo_CID # Mantém o nome original caso algum não entre nas regras
+    TRUE ~ Grupo_CID 
   ))
 
 PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
@@ -2497,7 +2497,7 @@ AUX <- AUX %>%
     TRUE ~ Grupo_CID # Mantém o nome original caso algum não entre nas regras
   ))
 
-PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
+RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_header(
     title = md("**Incidência de Neoplasias Malignas por Localização**"),
     subtitle = md("22 ª Regional de Saúde, 2016 – 2025")
@@ -2561,6 +2561,692 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   ) %>%
   tab_footnote(
     footnote = "Nota¹:Incidência calculada por 100.000 habitantes (População Estimada IBGE)."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota³: Incidência de câncer de genitais masculinos calculada usando a população masculina do Censo de 2022."
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(4:5, 8:9, 12:13, 16:17, 20:21)) 
+  ) %>%
+  tab_options(footnotes.padding = px(1),
+              footnotes.font.size = px(10))
+
+#### Mesmo procedimento para idade de 30 a 69 anos
+
+Base_Populacional_Masculina_2022_30_69 <- Base_Populacional_Masculina_2022 %>%
+  mutate(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos, X45.a.49.anos,
+                  X50.a.54.anos, X55.a.59.anos, X60.a.64.anos, X65.a.69.anos),
+                ~ as.numeric(gsub("\\.", "", .x)))) %>%
+  mutate(
+    `30_69` = rowSums(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos,
+                               X45.a.49.anos, X50.a.54.anos, X55.a.59.anos,
+                               X60.a.64.anos, X65.a.69.anos)), na.rm = TRUE)
+  )
+
+Base_Populacional_Feminina_2022_30_69 <- Base_Populacional_Feminina_2022 %>%
+  mutate(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos, X45.a.49.anos,
+                  X50.a.54.anos, X55.a.59.anos, X60.a.64.anos, X65.a.69.anos),
+                ~ as.numeric(gsub("\\.", "", .x)))) %>%
+  mutate(
+    `30_69` = rowSums(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos,
+                               X45.a.49.anos, X50.a.54.anos, X55.a.59.anos,
+                               X60.a.64.anos, X65.a.69.anos)), na.rm = TRUE)
+  )
+
+AUX <-  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 %>%
+  mutate(Óbitos_Menores_30 = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE),
+         `2016` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)
+  ) %>%
+  select(Grupo_CID, 
+         `2016`) %>%
+  mutate(pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2016 = case_when(
+           Grupo_CID == "Mama"    ~ (`2016` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2016` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2016` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2016` / pop_limpa) * 100000),
+         Inc_2016 = round(Inc_2016, 2)) %>%
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017  %>%
+    mutate(`2017` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2017`), 
+  by = "Grupo_CID") 
+
+AUX <- AUX %>%
+  mutate(`2017` = as.numeric(`2017`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2017 = case_when(
+           Grupo_CID == "Mama"    ~ (`2017` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2017` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2017` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2017` / pop_limpa) * 100000),
+         Inc_2017 = round(Inc_2017, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 %>%
+    mutate(`2018` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2018`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2018` = as.numeric(`2018`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2018 = case_when(
+           Grupo_CID == "Mama"    ~ (`2018` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2018` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2018` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2018` / pop_limpa) * 100000),
+         Inc_2018 = round(Inc_2018, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 %>%
+    mutate(`2019` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2019`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2019` = as.numeric(`2019`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2019 = case_when(
+           Grupo_CID == "Mama"    ~ (`2019` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2019` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2019` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2019` / pop_limpa) * 100000),
+         Inc_2019 = round(Inc_2019, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 %>%
+    mutate(`2020` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2020`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2020` = as.numeric(`2020`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2020 = case_when(
+           Grupo_CID == "Mama"    ~ (`2020` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2020` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2020` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2020` / pop_limpa) * 100000),
+         Inc_2020 = round(Inc_2020, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 %>%
+    mutate(`2021` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2021`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2021` = as.numeric(`2021`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2021 = case_when(
+           Grupo_CID == "Mama"    ~ (`2021` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2021` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2021` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2021` / pop_limpa) * 100000),
+         Inc_2021 = round(Inc_2021, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 %>%
+    mutate(`2022` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2022`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2022` = as.numeric(`2022`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2022 = case_when(
+           Grupo_CID == "Mama"    ~ (`2022` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2022` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2022` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2022` / pop_limpa) * 100000),
+         Inc_2022 = round(Inc_2022, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 %>%
+    mutate(`2023` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2023`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2023` = as.numeric(`2023`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2023 = case_when(
+           Grupo_CID == "Mama"    ~ (`2023` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2023` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2023` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2023` / pop_limpa) * 100000),
+         Inc_2023 = round(Inc_2023, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 %>%
+    mutate(`2024` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2024`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2024` = as.numeric(`2024`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2024 = case_when(
+           Grupo_CID == "Mama"    ~ (`2024` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2024` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2024` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2024` / pop_limpa) * 100000),
+         Inc_2024 = round(Inc_2024, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 %>%
+    mutate(`2025` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2025`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2025` = as.numeric(`2025`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1]),
+         Inc_2025 = case_when(
+           Grupo_CID == "Mama"    ~ (`2025` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2025` / Base_Populacional_Feminina_2022_30_69$`30_69`[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2025` / Base_Populacional_Masculina_2022_30_69$`30_69`[1]) * 100000,
+           TRUE                   ~ (`2025` / pop_limpa) * 100000),
+         Inc_2025 = round(Inc_2025, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- AUX %>%
+  mutate(Grupo_CID = case_when(
+    Grupo_CID == "Cerebro_SNC" ~ "Cérebro e SNC",
+    Grupo_CID == "Linfatico_Hematologico" ~ "Linfático e Hematológico",
+    Grupo_CID == "Digestivo" ~ "Aparelho Digestivo",
+    Grupo_CID == "Respiratorio" ~ "Aparelho Respiratório",
+    Grupo_CID == "Gen_Fem" ~ "Órgãos Genitais Femininos",
+    Grupo_CID == "Gen_Masc" ~ "Órgãos Genitais Masculinos",
+    Grupo_CID == "Mama" ~ "Mama",
+    Grupo_CID == "Via_Urinaria" ~ "Vias Urinárias",
+    Grupo_CID == "Pele" ~ "Pele (Melanoma/Outros)",
+    Grupo_CID == "Labio_Oral" ~ "Lábio e Cavidade Oral",
+    Grupo_CID == "Ossos" ~ "Ossos e Cartilagens",
+    Grupo_CID == "Tec_Mole" ~ "Tecidos Moles",
+    Grupo_CID == "Tireoide_Endo" ~ "Tireoide e Endócrinas",
+    Grupo_CID == "Mal_Definidas" ~ "Mal Definidas/Outras",
+    TRUE ~ Grupo_CID 
+  ))
+
+PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
+  tab_header(
+    title = md("**Incidência de Neoplasias Malignas por Localização em  População de 30 a 69 anos**"),
+    subtitle = md("Paraná, 2016 – 2025")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "1") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "3") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "4") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "5") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "6") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "7") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "8") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "9") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "10") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21) %>%
+  cols_label(contains("Inc_")     ~ "Inc.",
+             matches("^20\\d{2}$") ~ "n"
+  ) %>%
+  fmt_number(
+    columns = contains("Inc_"),
+    decimals = 2,
+    sep_mark = ".",
+    dec_mark = ","
+  ) %>%
+  sub_missing(columns = everything(), missing_text = "-") %>%
+  tab_footnote(
+    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota³: Incidência de câncer de genitais masculinos calculada usando a população masculina do Censo de 2022."
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(4:5, 8:9, 12:13, 16:17, 20:21)) 
+  ) %>%
+  tab_options(footnotes.padding = px(1),
+              footnotes.font.size = px(10))
+
+#### Mesmo procedimento para idade de 30 a 69 anos REGIONAL
+
+Base_Populacional_Masculina_2022_30_69_RS <- Base_Populacional_Masculina_2022 %>%
+  filter(MUN_ESTADO %in% c(
+    "ARAPUÃ", "ARIRANHA DO IVAÍ", "CÂNDIDO DE ABREU", "CRUZMALTINA",
+    "GODOY MOREIRA", "IVAIPORÃ", "JARDIM ALEGRE", "LIDIANÓPOLIS",
+    "LUNARDELLI", "MANOEL RIBAS", "MATO RICO", "NOVA TEBAS",
+    "RIO BRANCO DO IVAÍ", "ROSÁRIO DO IVAÍ", "SANTA MARIA DO OESTE", 
+    "SÃO JOÃO DO IVAÍ"
+  )) %>% 
+  mutate(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos, X45.a.49.anos,
+                  X50.a.54.anos, X55.a.59.anos, X60.a.64.anos, X65.a.69.anos),
+                ~ as.numeric(gsub("\\.", "", .x)))) %>%
+  mutate(
+    `30_69` = rowSums(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos,
+                               X45.a.49.anos, X50.a.54.anos, X55.a.59.anos,
+                               X60.a.64.anos, X65.a.69.anos)), na.rm = TRUE)
+  )
+
+Base_Populacional_Masculina_2022_30_69_RS$Total <- as.numeric(gsub("\\.", "", Base_Populacional_Masculina_2022_30_69_RS$Total))
+
+linha_total_masc_regional <- Base_Populacional_Masculina_2022_30_69_RS %>%
+  summarise(
+    MUN_ESTADO = "TOTAL REGIONAL",
+    across(where(is.numeric), ~ sum(.x, na.rm = TRUE)),
+    Até.14.anos = NA,
+    X15.a.64.anos = NA
+  )
+
+Base_Populacional_Masculina_2022_30_69_RS <- bind_rows(
+  Base_Populacional_Masculina_2022_30_69_RS, 
+  linha_total_masc_regional
+)
+
+Base_Populacional_Feminina_2022_30_69_RS <- Base_Populacional_Feminina_2022 %>%
+  filter(MUN_ESTADO %in% c(
+    "ARAPUÃ", "ARIRANHA DO IVAÍ", "CÂNDIDO DE ABREU", "CRUZMALTINA",
+    "GODOY MOREIRA", "IVAIPORÃ", "JARDIM ALEGRE", "LIDIANÓPOLIS",
+    "LUNARDELLI", "MANOEL RIBAS", "MATO RICO", "NOVA TEBAS",
+    "RIO BRANCO DO IVAÍ", "ROSÁRIO DO IVAÍ", "SANTA MARIA DO OESTE", 
+    "SÃO JOÃO DO IVAÍ"
+  )) %>% 
+  mutate(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos, X45.a.49.anos,
+                  X50.a.54.anos, X55.a.59.anos, X60.a.64.anos, X65.a.69.anos),
+                ~ as.numeric(gsub("\\.", "", .x)))) %>%
+  mutate(
+    `30_69` = rowSums(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos,
+                               X45.a.49.anos, X50.a.54.anos, X55.a.59.anos,
+                               X60.a.64.anos, X65.a.69.anos)), na.rm = TRUE)
+  )
+
+Base_Populacional_Feminina_2022_30_69_RS$Total <- as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022_30_69_RS$Total))
+
+linha_total_fem_regional <- Base_Populacional_Feminina_2022_30_69_RS %>%
+  summarise(
+    MUN_ESTADO = "TOTAL REGIONAL",
+    across(where(is.numeric), ~ sum(.x, na.rm = TRUE)),
+    Até.14.anos = NA,
+    X15.a.64.anos = NA
+  )
+
+Base_Populacional_Feminina_2022_30_69_RS <- bind_rows(
+  Base_Populacional_Feminina_2022_30_69_RS, 
+  linha_total_fem_regional
+)
+
+AUX <-  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 %>%
+  mutate(`2016` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)
+  ) %>%
+  select(Grupo_CID, 
+         `2016`) %>%
+  mutate(pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2016 = case_when(
+           Grupo_CID == "Mama"    ~ (`2016` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2016` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2016` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2016` / pop_limpa) * 100000),
+         Inc_2016 = round(Inc_2016, 2)) %>%
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 %>%
+    mutate(`2017` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>% 
+    select(Grupo_CID, `2017`), 
+  by = "Grupo_CID"
+)  
+
+AUX <- AUX %>%
+  mutate(`2017` = as.numeric(`2017`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2017 = case_when(
+           Grupo_CID == "Mama"    ~ (`2017` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2017` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2017` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2017` / pop_limpa) * 100000),
+         Inc_2017 = round(Inc_2017, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 %>%
+    mutate(`2018` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>% 
+    select(Grupo_CID, `2018`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2018` = as.numeric(`2018`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2018 = case_when(
+           Grupo_CID == "Mama"    ~ (`2018` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2018` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2018` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2018` / pop_limpa) * 100000),
+         Inc_2018 = round(Inc_2018, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 %>%
+    mutate(`2019` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>%    
+    select(Grupo_CID, `2019`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2019` = as.numeric(`2019`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2019 = case_when(
+           Grupo_CID == "Mama"    ~ (`2019` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2019` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2019` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2019` / pop_limpa) * 100000),
+         Inc_2019 = round(Inc_2019, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 %>%
+    mutate(`2020` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>% 
+    select(Grupo_CID, `2020`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2020` = as.numeric(`2020`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2020 = case_when(
+           Grupo_CID == "Mama"    ~ (`2020` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2020` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2020` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2020` / pop_limpa) * 100000),
+         Inc_2020 = round(Inc_2020, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 %>%
+    mutate(`2021` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>% 
+    select(Grupo_CID, `2021`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2021` = as.numeric(`2021`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2021 = case_when(
+           Grupo_CID == "Mama"    ~ (`2021` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2021` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2021` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2021` / pop_limpa) * 100000),
+         Inc_2021 = round(Inc_2021, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 %>%
+    mutate(`2022` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2022`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2022` = as.numeric(`2022`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2022 = case_when(
+           Grupo_CID == "Mama"    ~ (`2022` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2022` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2022` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2022` / pop_limpa) * 100000),
+         Inc_2022 = round(Inc_2022, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 %>%
+    mutate(`2023` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2023`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2023` = as.numeric(`2023`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2023 = case_when(
+           Grupo_CID == "Mama"    ~ (`2023` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2023` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2023` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2023` / pop_limpa) * 100000),
+         Inc_2023 = round(Inc_2023, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 %>%
+    mutate(`2024` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2024`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2024` = as.numeric(`2024`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2024 = case_when(
+           Grupo_CID == "Mama"    ~ (`2024` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2024` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2024` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2024` / pop_limpa) * 100000),
+         Inc_2024 = round(Inc_2024, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 %>%
+    mutate(`2025` = rowSums(across(any_of(c("X30.34", "X35.39", "X40.44", "X45.49", 
+                                            "X50.54", "X55.59", "X60.64", "X65.69"))), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2025`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2025` = as.numeric(`2025`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]),
+         Inc_2025 = case_when(
+           Grupo_CID == "Mama"    ~ (`2025` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2025` / Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2025` / Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17]) * 100000,
+           TRUE                   ~ (`2025` / pop_limpa) * 100000),
+         Inc_2025 = round(Inc_2025, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- AUX %>%
+  mutate(Grupo_CID = case_when(
+    Grupo_CID == "Cerebro_SNC" ~ "Cérebro e SNC",
+    Grupo_CID == "Linfatico_Hematologico" ~ "Linfático e Hematológico",
+    Grupo_CID == "Digestivo" ~ "Aparelho Digestivo",
+    Grupo_CID == "Respiratorio" ~ "Aparelho Respiratório",
+    Grupo_CID == "Gen_Fem" ~ "Órgãos Genitais Femininos",
+    Grupo_CID == "Gen_Masc" ~ "Órgãos Genitais Masculinos",
+    Grupo_CID == "Mama" ~ "Mama",
+    Grupo_CID == "Via_Urinaria" ~ "Vias Urinárias",
+    Grupo_CID == "Pele" ~ "Pele (Melanoma/Outros)",
+    Grupo_CID == "Labio_Oral" ~ "Lábio e Cavidade Oral",
+    Grupo_CID == "Ossos" ~ "Ossos e Cartilagens",
+    Grupo_CID == "Tec_Mole" ~ "Tecidos Moles",
+    Grupo_CID == "Tireoide_Endo" ~ "Tireoide e Endócrinas",
+    Grupo_CID == "Mal_Definidas" ~ "Mal Definidas/Outras",
+    TRUE ~ Grupo_CID 
+  ))
+
+RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
+  tab_header(
+    title = md("**Incidência de Neoplasias Malignas por Localização em  População de 30 a 69 anos**"),
+    subtitle = md("22ª Regional de Saúde, 2016 – 2025")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "1") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "3") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "4") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "5") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "6") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "7") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "8") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "9") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "10") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21) %>%
+  cols_label(contains("Inc_")     ~ "Inc.",
+             matches("^20\\d{2}$") ~ "n"
+  ) %>%
+  fmt_number(
+    columns = contains("Inc_"),
+    decimals = 2,
+    sep_mark = ".",
+    dec_mark = ","
+  ) %>%
+  sub_missing(columns = everything(), missing_text = "-") %>%
+  tab_footnote(
+    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
   ) %>%
   tab_footnote(
     footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
