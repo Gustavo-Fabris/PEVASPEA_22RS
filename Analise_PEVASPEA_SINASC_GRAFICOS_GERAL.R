@@ -21,41 +21,20 @@ library(gt)
 #### Criando objetos com tabulações realizadas previamente em outros scripts
 
 Base_Populacional <- read.csv (file = "Base_de_Dados/Auxiliares/Planilha_Base_Populacional_IBGE_Estimada.csv",
-                                                header = TRUE,
-                                                sep = ",")
-
-Base_Populacional_Masculina_2022 <- read.csv (file = "Base_de_Dados/Auxiliares/Planilha_Base_Populacional_IBGE_Estimada_MASCULINA.csv",
                                header = TRUE,
                                sep = ",")
 
-Base_Populacional_Feminina_2022 <- read.csv (file = "Base_de_Dados/Auxiliares/Planilha_Base_Populacional_IBGE_Estimada_FEMININA.csv",
+Base_Populacional_Masculina_2022 <- read.csv (file = "Base_de_Dados/Auxiliares/Planilha_Base_Populacional_IBGE_Estimada_MASCULINA.csv",
                                               header = TRUE,
                                               sep = ",")
 
+Base_Populacional_Feminina_2022 <- read.csv (file = "Base_de_Dados/Auxiliares/Planilha_Base_Populacional_IBGE_Estimada_FEMININA.csv",
+                                             header = TRUE,
+                                             sep = ",")
+
 Base_IBGE <- read.csv (file = "Base_de_Dados/Auxiliares/Planilha_Base_IBGE.csv",
-                               header = TRUE,
-                               sep = ",")
-# 
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "ITAPEJARA D'OESTE", "ITAPEJARA DOESTE")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "BELA VISTA DA CAROBA", "BELA VISTA DO CAROBA")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "PÉROLA D'OESTE", "PÉROLA DOESTE")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "SÃO JORGE D'OESTE", "SÃO JORGE DOESTE")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "SANTA TEREZINHA DO ITAIPU", "SANTA TEREZINHA DE ITAIPU")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "RANCHO ALEGRE D'OESTE", "RANCHO ALEGRE DOESTE")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "SAUDADES DO IGUACU", "SAUDADE DO IGUACU")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "SANTA CRUZ DE MONTE CASTELO", "SANTA CRUZ MONTE CASTELO")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "SANTA IZABEL DO IVAI", "SANTA ISABEL DO IVAI")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "MUNHOZ DE MELO", "MUNHOZ DE MELLO")
-# Base_Populacional_Feminina_2022$MUN_ESTADO <- str_replace(Base_Populacional_Feminina_2022$MUN_ESTADO, "DIAMANTE D'OESTE", "DIAMANTE DOESTE")
-# 
-# AUX <- left_join(Base_Populacional_Feminina_2022,
-#                  Base_IBGE %>%
-#                    select(Município_sem_Código, Código_IBGE),
-#                  by = c("MUN_ESTADO" = "Município_sem_Código"))
-# 
-# write.csv (AUX, 
-#            "Base_de_Dados/Auxiliares/Planilha_Base_Populacional_IBGE_Estimada_MASCULINA.csv", 
-#            row.names = FALSE)
+                       header = TRUE,
+                       sep = ",")
 
 PR_PEVASPEA_SINASC_Serie_Historica <- read.csv (file = "Tabulacoes_R/SINASC/PR_PEVASPEA_SINASC_Serie_Historica.csv",
                                                 header = TRUE,
@@ -158,10 +137,10 @@ Theme <- function(base_size = 12){
 AUX <- colSums(PR_PEVASPEA_SINASC_Serie_Historica[c(6, 7, 8, 9, 10), 3:13], na.rm = TRUE)
 
 AUX01 <- data.frame( Evento = c("Anomalia Detectada", "Anomalias Prioritárias", "Tubo Neural", 
-             "Microcefalia", "Cardiopatias", "Fendas Orais", 
-             "Geniturinárias", "Membros", "Parede Abdominal", "Síndrome de Down"),
-             Absoluto = AUX[2:11], 
-             Nascidos = AUX[1] )
+                                "Microcefalia", "Cardiopatias", "Fendas Orais", 
+                                "Geniturinárias", "Membros", "Parede Abdominal", "Síndrome de Down"),
+                     Absoluto = AUX[2:11], 
+                     Nascidos = AUX[1] )
 
 AUX01 <- AUX01 %>%
   mutate(Taxa = round((Absoluto / Nascidos) * 1000, 2)) %>%
@@ -169,9 +148,9 @@ AUX01 <- AUX01 %>%
          Evento != "Anomalias Prioritárias")
 
 PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_21_25 <- ggplot(AUX01, 
-       aes(x = reorder(Evento, 
-                       Taxa), 
-           y = Taxa)) +
+                                                        aes(x = reorder(Evento, 
+                                                                        Taxa), 
+                                                            y = Taxa)) +
   geom_col(fill = "#8FBC8F", 
            color = "black", 
            alpha = 0.8, 
@@ -184,11 +163,11 @@ PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_21_25 <- ggplot(AUX01,
             size = 3.5) +
   coord_flip() +
   scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
-    labs(title = "Incidência de Anomalias Prioritárias no Estado do Paraná",
-         subtitle = "Período: 2021-2025",
-         x = NULL,
-         y = "Anomalias/1.000 Nascidos Vivos",
-         caption = Fonte
+  labs(title = "Incidência de Anomalias Prioritárias no Estado do Paraná",
+       subtitle = "Período: 2021-2025",
+       x = NULL,
+       y = "Anomalias/1.000 Nascidos Vivos",
+       caption = Fonte
   ) +
   Theme()
 
@@ -208,8 +187,8 @@ AUX01 <- AUX01 %>%
          Evento != "Anomalias Prioritárias")
 
 PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_16_20 <- ggplot(AUX01, 
-                                                   aes(x = reorder(Evento, Taxa), 
-                                                       y = Taxa)) +
+                                                        aes(x = reorder(Evento, Taxa), 
+                                                            y = Taxa)) +
   geom_col(fill = "#8FBC8F", 
            color = "black", 
            alpha = 0.8, 
@@ -223,7 +202,7 @@ PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_16_20 <- ggplot(AUX01,
   coord_flip() +
   scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
   labs(title = "Prevalência de Anomalias Prioritárias no Estado do Paraná",
-       subtitle = "Período: 2018-2021",
+       subtitle = "Período: 2018-2020",
        x = NULL,
        y = "Anomalias/1.000 Nascidos Vivos",
        caption = Fonte
@@ -284,7 +263,7 @@ PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc <- ggplot(PR_PEVASPEA_SINASC_NASC_SE_GER
   theme(legend.position = "bottom",
         legend.direction = "horizontal",
         legend.box = "horizontal")
-  
+
 ## Anomalias
 
 PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL <- PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL[, -54]
@@ -313,8 +292,8 @@ PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Anomal <- PR_PEVASPEA_SINASC_ANOMAL_SE_GERAL 
                                 fill = NA))
 
 Legenda <- c("Casos Brutos" = "grey70", 
-           "Média Móvel (5 sem.)" = "#2c3e50", 
-           "LOESS" = "darkred")
+             "Média Móvel (5 sem.)" = "#2c3e50", 
+             "LOESS" = "darkred")
 
 PR_PEVASPEA_SINASC_GRAF_Serie_Temp_ANOMAL <- ggplot(PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Anomal, 
                                                     aes(x = Tempo)) +
@@ -381,7 +360,7 @@ RS_SINASC_GRAF_SERIE_HIST_ANOMAL <- ggplot(AUX, aes(x = RS,
        y = "Anomalias/1.000 Nascimentos",
        x = NULL,
        title = "Série Histórica 22ª Regional de Saúde - Ivaiporã",
-       subtitle = "Anomalias Congênitas (2016-2025). Dados por município de residência.") +
+       subtitle = "Anomalias Congênitas (2016-2025).") +
   Theme() 
 
 ######## Série Histórica Paraná
@@ -601,7 +580,7 @@ AUX_LIST <- list(PR_SINASC_GRAF_SERIE_HIST_ANOMA_6RS_I,
 PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS <- wrap_plots(AUX_LIST, 
                                                        ncol = 1)  + 
   plot_annotation(
-    title = 'Regionais de Saúde com Maior Taxa de Anomalias/1000 Nascidos Vivos em 2025',
+    title = 'Série Histórica das Regionais de Saúde com Maior Incidência de Anomalias em 2025',
     subtitle = 'Taxa de Anomalias Congênitas por 1.000 nascidos vivos (2016-2025)',
     caption =  Fonte,
     theme = theme(
@@ -615,11 +594,11 @@ PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS <- wrap_plots(AUX_LIST,
   )
 
 ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS.png",
-  plot = PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS,
-  width = 29,
-  height = 37,
-  units = "cm",
-  dpi = 300) 
+       plot = PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS,
+       width = 29,
+       height = 37,
+       units = "cm",
+       dpi = 300) 
 
 #### Série Histórica Municipal
 
@@ -800,13 +779,13 @@ MAPA_BASE_PR <- left_join(MAPA_BASE,
                           by = c("NM_MUN" = "Município_sem_Código"))
 
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TAXA_4a_16_20,
-                                           breaks = c(-Inf, 0.00001, 4.23, 6.54, 7.15, 9.44, 14.00, 20.00, Inf),
+                                           breaks = c(-Inf, 0.00001, 3.50, 5.50, 7.00, 9.50, 14.00, 20.00, Inf),
                                            labels = c("0", 
-                                                      ">0 a 4,2", 
-                                                      ">4,2 a 6,5", 
-                                                      ">6,5 a 7,1",
-                                                      ">7,1 a 9,4", 
-                                                      ">9,4 a 14,0", 
+                                                      ">0 a 3,5", 
+                                                      ">3,5 a 5,5", 
+                                                      ">5,5 a 7,0", 
+                                                      ">7,0 a 9,5", 
+                                                      ">9,5 a 14,0", 
                                                       ">14,0 a 20,0", 
                                                       ">20,0"),
                                            right = FALSE
@@ -843,26 +822,26 @@ AUX <- PR_PEVASPEA_SINASC_Serie_historica_Mun[, 1]
 
 AUX <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
   mutate(TAXA_4a_21_25 = ((PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2025 + 
-                       PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2024 +
-                       PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2023 +
-                       PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2022 +
-                         PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2021)/
-                      (PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2025 + 
-                         PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2024 +
-                         PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2023 +
-                         PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2022 +
-                         PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2021) *
-                      1000), 
+                             PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2024 +
+                             PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2023 +
+                             PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2022 +
+                             PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2021)/
+                            (PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2025 + 
+                               PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2024 +
+                               PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2023 +
+                               PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2022 +
+                               PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2021) *
+                            1000), 
          Nascidos_4a_21_25 = (PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2025 + 
-                          PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2024 +
-                          PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2023 +
-                          PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2022 +
-                            PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2021),
+                                PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2024 +
+                                PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2023 +
+                                PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2022 +
+                                PR_PEVASPEA_SINASC_Serie_historica_Mun$Nascidos_2021),
          Anomalias_4a_21_25 = (PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2025 + 
-                           PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2024 +
-                           PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2023 +
-                           PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2022 +
-                             PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2021)
+                                 PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2024 +
+                                 PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2023 +
+                                 PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2022 +
+                                 PR_PEVASPEA_SINASC_Serie_historica_Mun$N_2021)
   )
 
 AUX <- AUX[-nrow(AUX),]
@@ -873,13 +852,13 @@ MAPA_BASE_PR <- left_join(MAPA_BASE_PR,
                           by = c("NM_MUN" = "Município_sem_Código"))
 
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TAXA_4a_21_25,
-                                           breaks = c(-Inf, 0.00001, 4.23, 6.54, 7.15, 9.44, 14.00, 20.00, Inf),
+                                           breaks = c(-Inf, 0.00001, 3.50, 5.50, 7.00, 9.50, 14.00, 20.00, Inf),
                                            labels = c("0", 
-                                                      ">0 a 4,2", 
-                                                      ">4,2 a 6,5", 
-                                                      ">6,5 a 7,1",
-                                                      ">7,1 a 9,4", 
-                                                      ">9,4 a 14,0", 
+                                                      ">0 a 3,5", 
+                                                      ">3,5 a 5,5", 
+                                                      ">5,5 a 7,0", 
+                                                      ">7,0 a 9,5", 
+                                                      ">9,5 a 14,0", 
                                                       ">14,0 a 20,0", 
                                                       ">20,0"),
                                            right = FALSE
@@ -1221,11 +1200,15 @@ MAPA_BASE_RS <- MAPA_BASE_RS %>%
   select(RS, contains("16_20"), "geometry")
 
 MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = TAXA_4a_16_20,
-                                           breaks = c(0, 4.8, 5.9, 6.8, 7.6, 8.5, 9.3, 10.5, Inf),
-                                           labels = c("Até 4,8", "4,8 - 5,9", 
-                                                      "5,9 - 6,8", "6,8 - 7,6", 
-                                                      "7,6 - 8,5", "8,5 - 9,3", 
-                                                      "9,3 - 10,5", "Acima de 10,5"),
+                                           breaks = c(-Inf, 4.50, 5.50, 6.50, 7.30, 8.20, 9.20, 10.50, Inf),
+                                           labels = c("Até 4,5", 
+                                                      "4,5 - 5,5", 
+                                                      "5,5 - 6,5", 
+                                                      "6,5 - 7,3", 
+                                                      "7,3 - 8,2", 
+                                                      "8,2 - 9,2", 
+                                                      "9,2 - 10,5", 
+                                                      "Acima de 10,5"),
                                            right = FALSE))
 
 MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
@@ -1233,7 +1216,7 @@ MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
 PR_SINASC_MAP_TAXA_4_ANOS_16_20_ANOMAL_RS <- ggplot() +
   geom_sf(data = MAPA_BASE_RS, 
           color = "grey30", 
-          linewidth = 0.1, 
+          linewidth = 0.5, 
           aes(fill = Cat)) +
   annotation_scale(location = "bl") + 
   annotation_north_arrow(location = "tl", 
@@ -1258,16 +1241,16 @@ AUX <- PR_PEVASPEA_SINASC_RS_Serie_Historica[, 1]
 
 AUX <- PR_PEVASPEA_SINASC_RS_Serie_Historica %>%
   mutate(TAXA_4a_21_25 = ((PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2025 + 
-                       PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2024 +
-                       PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2023 +
-                       PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2022 +
-                         PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2021)/
-                      (PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2025 + 
-                         PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2024 +
-                         PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2023 +
-                         PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2022 +
-                         PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2021) *
-                      1000)
+                             PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2024 +
+                             PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2023 +
+                             PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2022 +
+                             PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2021)/
+                            (PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2025 + 
+                               PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2024 +
+                               PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2023 +
+                               PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2022 +
+                               PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2021) *
+                            1000)
   )
 
 #### Incluindo 0 em regionais com um dígito 
@@ -1289,11 +1272,15 @@ MAPA_BASE_RS <- MAPA_BASE_RS %>%
   select(RS, contains("4a_21_25"), geometry)
 
 MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = TAXA_4a_21_25,
-                                           breaks = c(0, 4.8, 5.9, 6.8, 7.6, 8.5, 9.3, 10.5, Inf),
-                                           labels = c("Até 4,8", "4,8 - 5,9", 
-                                                      "5,9 - 6,8", "6,8 - 7,6", 
-                                                      "7,6 - 8,5", "8,5 - 9,3", 
-                                                      "9,3 - 10,5", "Acima de 10,5"),
+                                           breaks = c(-Inf, 4.50, 5.50, 6.50, 7.30, 8.20, 9.20, 10.50, Inf),
+                                           labels = c("Até 4,5", 
+                                                      "4,5 - 5,5", 
+                                                      "5,5 - 6,5", 
+                                                      "6,5 - 7,3", 
+                                                      "7,3 - 8,2", 
+                                                      "8,2 - 9,2", 
+                                                      "9,2 - 10,5", 
+                                                      "Acima de 10,5"),
                                            right = FALSE))
 
 MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
@@ -1301,7 +1288,7 @@ MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
 PR_SINASC_MAP_TAXA_4_ANOS_21_25_ANOMAL_RS <- ggplot() +
   geom_sf(data = MAPA_BASE_RS, 
           color = "grey30", 
-          linewidth = 0.1, 
+          linewidth = 0.5, 
           aes(fill = Cat)) +
   annotation_scale(location = "bl") + 
   annotation_north_arrow(location = "tl", 
@@ -1336,6 +1323,68 @@ PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS <- PR_SINASC_MAP_TAXA_4_ANOS_16_
                                                 size = 10)
                   ))
 
+#### Mapa regional com taxa de 2025
+
+AUX <- PR_PEVASPEA_SINASC_RS_Serie_Historica[, 1]
+
+AUX <- PR_PEVASPEA_SINASC_RS_Serie_Historica %>%
+  mutate(TAXA_2025 = ((PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2025)/
+                        (PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2025 ) *
+                        1000)
+  )
+
+#### Incluindo 0 em regionais com um dígito 
+
+AUX$RS <- str_pad(AUX$RS, 
+                  width = 2, 
+                  side = "left", 
+                  pad = "0")
+
+AUX <- AUX[-nrow(AUX),]
+
+#### Fazendo o left_join da base de dados com o shapefile
+
+MAPA_BASE_RS <- left_join(AUX,
+                          SHAPEFILE_ESTADUAL_RS,
+                          by = (c("RS" = "Código")))
+
+MAPA_BASE_RS <- MAPA_BASE_RS %>%
+  select(RS, TAXA_2025, "geometry")
+
+MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = TAXA_2025,
+                                           breaks = c(-Inf, 4.50, 6.00, 7.30, 8.20, 9.20, 10.50, 13.00, Inf),
+                                           labels = c("Até 4,5", 
+                                                      "4,5 - 6,0", 
+                                                      "6,0 - 7,3", 
+                                                      "7,3 - 8,2", 
+                                                      "8,2 - 9,2", 
+                                                      "9,2 - 10,5", 
+                                                      "10,5 - 13,0",
+                                                      "Acima de 13,0"),
+                                           right = FALSE))
+
+MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
+
+PR_SINASC_MAP_TAXA_2025_ANOMAL_RS <- ggplot() +
+  geom_sf(data = MAPA_BASE_RS, 
+          color = "grey30", 
+          linewidth = 0.5, 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno", 
+                       direction = -1,
+                       begin = 0.05,       
+                       end = 0.95,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "Anomalias/1000 \nNascimentos",
+       title = "2025")  +
+  Theme() 
 ######  Tabelas 
 ################################################################################
 ################################################################################
@@ -1400,7 +1449,7 @@ AUX01[(nrow(AUX01) +1), 2:12] <- apply(AUX01[, 2:12], 2, sum)
 AUX01[23,1] <- "Estado"
 
 AUX <- AUX01 %>%
-    pivot_longer(
+  pivot_longer(
     cols = Anomalia_Detectada:last_col(), 
     names_to = "Evento", 
     values_to = "Absoluto"
@@ -1409,14 +1458,14 @@ AUX <- AUX01 %>%
   ) %>%
   rename(`(n)` = Absoluto, `(%)` = Percentual) %>% 
   pivot_wider(names_from = Evento, 
-    values_from = c(`(n)`, `(%)`),
-    names_glue = "{Evento} {.value}")
+              values_from = c(`(n)`, `(%)`),
+              names_glue = "{Evento} {.value}")
 
 AUX <- AUX[c(1, 12, 16:22, 2:11, 13, 14, 15, 23), c(1, 2, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17, 8, 18, 9, 19, 10, 20, 11, 21, 12, 22)]
 
 PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20 <- gt(AUX[, c(1, 2, 7:22)]) %>%
   tab_header(
-    title = md("**Prevalência de Anomalias Congênitas Prioritárias por Regional de Saúde**"),
+    title = md("**Incidência de Anomalias Congênitas Prioritárias por Regional de Saúde**"),
     subtitle = md("Paraná, 2018 – 2021")
   ) %>%
   tab_options(
@@ -1530,7 +1579,7 @@ Theme_Mun <- function(){
 }
 
 AUX01$Evento <- factor(AUX01$Evento,
-                  levels = sort(unique(AUX01$Evento)))
+                       levels = sort(unique(AUX01$Evento)))
 
 max_global <- max(AUX01$Percentual, na.rm = TRUE) 
 
@@ -1555,8 +1604,8 @@ AUX_LIST <- AUX01 %>%
            y = "Anomalias/1000 Nascimentos",
            title = paste0(nome_mun, " - Prioritárias")) +
       coord_flip() +
-     scale_y_continuous(limits = c(0, max_global), 
-                        expand = expansion(mult = c(0, 0.3))) + 
+      scale_y_continuous(limits = c(0, max_global), 
+                         expand = expansion(mult = c(0, 0.3))) + 
       Theme_Mun()
   })
 
@@ -1845,12 +1894,12 @@ ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25.png
 )
 
 ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4A_ANOMAL_16_20_21_25.png", 
-      plot = PR_SINASC_MAP_TAXA_4A_ANOMAL_16_20_21_25, 
-      width = 35,                               
-      height = 18,                               
-      units = "cm",                               
-      dpi = 300,                                   
-      bg = "white"                                
+       plot = PR_SINASC_MAP_TAXA_4A_ANOMAL_16_20_21_25, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
 )
 
 ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS.png",
@@ -1865,33 +1914,32 @@ ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_R
 #########  Tabelas
 
 gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20,
-  filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20.pdf")
+       filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20.pdf")
 
 gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25,
        filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25.pdf")
 
-
 ##################  SIM  
 
 PR_PEVASPEA_SIM_Congenitas_Geral_Serie_Hist <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_Congenitas_Geral_Serie_Hist.csv",
-                                                header = TRUE,
-                                                sep = ",")
+                                                         header = TRUE,
+                                                         sep = ",")
 
 RS_PEVASPEA_SIM_Congenitas_Geral_Serie_Hist <- read.csv (file = "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_Congenitas_Geral_Serie_Hist.csv",
                                                          header = TRUE,
                                                          sep = ",")
 
 RS_PEVASPEA_SIM_Prioritaria_Fetal_Serie_Hist <- read.csv (file = "Tabulacoes_R/SIM/RS_PEVASPEA_SIM_Prioritaria_Fetal_Serie_Hist.csv",
-                                                             header = TRUE,
-                                                             sep = ",")
-
-PR_PEVASPEA_SIM_Prioritarias_Fetal_Serie_Hist <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_Prioritarias_Fetal_Serie_Hist.csv",
                                                           header = TRUE,
                                                           sep = ",")
 
-PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- read.csv (file = "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016.csv",
+PR_PEVASPEA_SIM_Prioritarias_Fetal_Serie_Hist <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_Prioritarias_Fetal_Serie_Hist.csv",
                                                            header = TRUE,
                                                            sep = ",")
+
+PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- read.csv (file = "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
 
 PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 <- read.csv (file = "Tabulacoes_R/SIM/PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017.csv",
                                                   header = TRUE,
@@ -1971,6 +2019,10 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 <- read.csv (file = "Tabulacoes_R/SIM/RS_PE
                                                   header = TRUE,
                                                   sep = ",")
 
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2016 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2016.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
 AUX01 <- Base_Populacional %>%
   filter(MUNICÍPIO.ESTADO == "ESTADO DO PARANÁ")
 
@@ -1985,9 +2037,9 @@ AUX <- PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 %>%
            Grupo_CID == "Gen_Masc" ~ (`2016` / as.numeric(gsub("\\.", "", Base_Populacional_Masculina_2022[1, 2]))) * 100000,
            TRUE                   ~ (`2016` / pop_limpa) * 100000),
          Inc_2016 = round(Inc_2016, 2)
-         ) %>% 
-  select(-pop_limpa) 
-  
+  ) %>% 
+  select(-pop_limpa)  
+
 AUX <- left_join(
   AUX,
   PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 %>% 
@@ -1995,7 +2047,8 @@ AUX <- left_join(
     rename(`2017` = TOTAL),
   by = "Grupo_CID" ) 
 
-AUX <- AUX %>%
+AUX <- AUX %>% 
+  ungroup() %>%
   mutate(`2017` = as.numeric(`2017`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2017)),
          Inc_2017 = case_when(
@@ -2015,6 +2068,7 @@ AUX <- left_join(
   by = "Grupo_CID" )
 
 AUX <- AUX %>%
+  ungroup() %>%
   mutate(`2018` = as.numeric(`2018`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2018)),
          Inc_2018 = case_when(
@@ -2034,6 +2088,7 @@ AUX <- left_join(
   by = "Grupo_CID" )
 
 AUX <- AUX %>%
+  ungroup() %>%
   mutate(`2019` = as.numeric(`2019`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2019)),
          Inc_2019 = case_when(
@@ -2053,6 +2108,7 @@ AUX <- left_join(
   by = "Grupo_CID" )
 
 AUX <- AUX %>%
+  ungroup() %>%
   mutate(`2020` = as.numeric(`2020`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2020)),
          Inc_2020 = case_when(
@@ -2072,6 +2128,7 @@ AUX <- left_join(
   by = "Grupo_CID" )
 
 AUX <- AUX %>%
+  ungroup() %>%
   mutate(`2021` = as.numeric(`2021`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2021)),
          Inc_2021 = case_when(
@@ -2091,6 +2148,7 @@ AUX <- left_join(
   by = "Grupo_CID" )
 
 AUX <- AUX %>%
+  ungroup() %>%
   mutate(`2022` = as.numeric(`2022`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2021)),
          Inc_2022 = case_when(
@@ -2110,6 +2168,7 @@ AUX <- left_join(
   by = "Grupo_CID" )
 
 AUX <- AUX %>%
+  ungroup() %>%
   mutate(`2023` = as.numeric(`2023`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2021)),
          Inc_2023 = case_when(
@@ -2129,6 +2188,7 @@ AUX <- left_join(
   by = "Grupo_CID" )
 
 AUX <- AUX %>%
+  ungroup() %>%
   mutate(`2024` = as.numeric(`2024`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2024)),
          Inc_2024 = case_when(
@@ -2148,6 +2208,7 @@ AUX <- left_join(
   by = "Grupo_CID" )
 
 AUX <- AUX %>%
+  ungroup() %>%
   mutate(`2025` = as.numeric(`2025`),
          pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2025)),
          Inc_2025 = case_when(
@@ -2254,6 +2315,93 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   ) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
+
+Total <- data.frame(
+  Grupo_CID = "TOTAL",
+  `2016` = sum(AUX$`2016`, na.rm = TRUE),
+  `2017` = sum(AUX$`2017`, na.rm = TRUE),
+  `2018` = sum(AUX$`2018`, na.rm = TRUE),
+  `2019` = sum(AUX$`2019`, na.rm = TRUE),
+  `2020` = sum(AUX$`2020`, na.rm = TRUE),
+  `2021` = sum(AUX$`2021`, na.rm = TRUE),
+  `2022` = sum(AUX$`2022`, na.rm = TRUE),
+  `2023` = sum(AUX$`2023`, na.rm = TRUE),
+  `2024` = sum(AUX$`2024`, na.rm = TRUE),
+  `2025` = sum(AUX$`2025`, na.rm = TRUE),
+  check.names = FALSE 
+)
+
+Total$Inc_2016 <- round((Total$`2016` / as.numeric(gsub("\\.", "", AUX01$X2016))) * 100000, 2)
+Total$Inc_2017 <- round((Total$`2017` / as.numeric(gsub("\\.", "", AUX01$X2017))) * 100000, 2)
+Total$Inc_2018 <- round((Total$`2018` / as.numeric(gsub("\\.", "", AUX01$X2018))) * 100000, 2)
+Total$Inc_2019 <- round((Total$`2019` / as.numeric(gsub("\\.", "", AUX01$X2019))) * 100000, 2)
+Total$Inc_2020 <- round((Total$`2020` / as.numeric(gsub("\\.", "", AUX01$X2020))) * 100000, 2)
+Total$Inc_2021 <- round((Total$`2021` / as.numeric(gsub("\\.", "", AUX01$X2021))) * 100000, 2)
+Total$Inc_2022 <- round((Total$`2022` / as.numeric(gsub("\\.", "", AUX01$X2024))) * 100000, 2)
+Total$Inc_2023 <- round((Total$`2023` / as.numeric(gsub("\\.", "", AUX01$X2024))) * 100000, 2)
+Total$Inc_2024 <- round((Total$`2024` / as.numeric(gsub("\\.", "", AUX01$X2024))) * 100000, 2)
+Total$Inc_2025 <- round((Total$`2025` / as.numeric(gsub("\\.", "", AUX01$X2025))) * 100000, 2)
+
+Total_Inc <- Total %>% 
+  select(contains("Inc")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Incidencia = as.numeric(V1)     
+  ) %>%
+  select(Ano, Incidencia)
+
+Total_N <- Total %>% 
+  select(matches("^20(1[6-9]|2[0-9])$")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    N = as.numeric(V1)     
+  ) %>%
+  select(Ano, N)
+
+Total <- left_join(Total_Inc,
+                   Total_N,
+                   by = "Ano")
+
+fator_escala <- (max(Total$N, na.rm = TRUE) / 150)
+
+PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, 
+                                                     aes(x = Ano, y = Incidencia)) + 
+  geom_col(aes(y = N / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.6)+
+  geom_text(aes(y = N / fator_escala / 2, 
+                label = format(N, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(x = Ano,
+                y = Incidencia,
+                group = 1),
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(y = "Casos/100.000 habitantes",
+       x = NULL,
+       title = "Mortalidade por Câncer/100.000 habitantes no Paraná") +
+  geom_text(aes(label = format(round(Incidencia, 2),
+                               decimal.mark = ",")), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 180), 
+                     breaks = seq(0, 180, 20),
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Casos",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = 2016:2025) +
+  Theme()
+
+##### Regional
 
 AUX01 <- Base_Populacional %>%
   filter(MUNICÍPIO.ESTADO %in% c(
@@ -2411,7 +2559,7 @@ AUX <- left_join(
 
 AUX <- AUX %>%
   mutate(`2022` = as.numeric(`2022`),
-         pop_limpa = AUX02$X2021,
+         pop_limpa = AUX02$X2024,
          Inc_2022 = case_when(
            Grupo_CID == "Mama"    ~ (`2022` / AUX03) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2022` / AUX03) * 100000,
@@ -2430,7 +2578,7 @@ AUX <- left_join(
 
 AUX <- AUX %>%
   mutate(`2023` = as.numeric(`2023`),
-         pop_limpa = AUX02$X2021,
+         pop_limpa = AUX02$X2024,
          Inc_2023 = case_when(
            Grupo_CID == "Mama"    ~ (`2023` / AUX03) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2023` / AUX03) * 100000,
@@ -2574,6 +2722,92 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   ) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
+
+Total <- data.frame(
+  Grupo_CID = "TOTAL",
+  `2016` = sum(AUX$`2016`, na.rm = TRUE),
+  `2017` = sum(AUX$`2017`, na.rm = TRUE),
+  `2018` = sum(AUX$`2018`, na.rm = TRUE),
+  `2019` = sum(AUX$`2019`, na.rm = TRUE),
+  `2020` = sum(AUX$`2020`, na.rm = TRUE),
+  `2021` = sum(AUX$`2021`, na.rm = TRUE),
+  `2022` = sum(AUX$`2022`, na.rm = TRUE),
+  `2023` = sum(AUX$`2023`, na.rm = TRUE),
+  `2024` = sum(AUX$`2024`, na.rm = TRUE),
+  `2025` = sum(AUX$`2025`, na.rm = TRUE),
+  check.names = FALSE 
+)
+
+Total$Inc_2016 <- round((Total$`2016` / as.numeric(gsub("\\.", "", AUX02$X2016))) * 100000, 2)
+Total$Inc_2017 <- round((Total$`2017` / as.numeric(gsub("\\.", "", AUX02$X2017))) * 100000, 2)
+Total$Inc_2018 <- round((Total$`2018` / as.numeric(gsub("\\.", "", AUX02$X2018))) * 100000, 2)
+Total$Inc_2019 <- round((Total$`2019` / as.numeric(gsub("\\.", "", AUX02$X2019))) * 100000, 2)
+Total$Inc_2020 <- round((Total$`2020` / as.numeric(gsub("\\.", "", AUX02$X2020))) * 100000, 2)
+Total$Inc_2021 <- round((Total$`2021` / as.numeric(gsub("\\.", "", AUX02$X2021))) * 100000, 2)
+Total$Inc_2022 <- round((Total$`2022` / as.numeric(gsub("\\.", "", AUX02$X2024))) * 100000, 2)
+Total$Inc_2023 <- round((Total$`2023` / as.numeric(gsub("\\.", "", AUX02$X2024))) * 100000, 2)
+Total$Inc_2024 <- round((Total$`2024` / as.numeric(gsub("\\.", "", AUX02$X2024))) * 100000, 2)
+Total$Inc_2025 <- round((Total$`2025` / as.numeric(gsub("\\.", "", AUX02$X2025))) * 100000, 2)
+
+Total_Inc <- Total %>% 
+  select(contains("Inc")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Incidencia = as.numeric(V1)     
+  ) %>%
+  select(Ano, Incidencia)
+
+Total_N <- Total %>% 
+  select(matches("^20(1[6-9]|2[0-9])$")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    N = as.numeric(V1)     
+  ) %>%
+  select(Ano, N)
+
+Total <- left_join(Total_Inc,
+                   Total_N,
+                   by = "Ano")
+
+fator_escala <- (max(Total$N, na.rm = TRUE) / 190)
+
+PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, 
+                                                     aes(x = Ano, y = Incidencia)) + 
+  geom_col(aes(y = N / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.6)+
+  geom_text(aes(y = N / fator_escala / 2, 
+                label = format(N, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(x = Ano,
+                y = Incidencia,
+                group = 1),
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(y = "Casos/100.000 habitantes",
+       x = NULL,
+       title = "Mortalidade por Câncer/100.000 habitantes e Número de Casos na 22ª RS") +
+  geom_text(aes(label = format(round(Incidencia, 2),
+                               decimal.mark = ",")), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 200), 
+                     breaks = seq(0, 200, 20),
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Casos",
+                                         breaks = c(0, 100, 200, 300),
+                                         labels = c("0", "100", "200", "300"))) +
+  scale_x_discrete(breaks = 2016:2025) +
+  Theme()
 
 #### Mesmo procedimento para idade de 30 a 69 anos
 
@@ -2892,6 +3126,91 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   ) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
+
+Total <- data.frame(
+  Grupo_CID = "TOTAL",
+  `2016` = sum(AUX$`2016`, na.rm = TRUE),
+  `2017` = sum(AUX$`2017`, na.rm = TRUE),
+  `2018` = sum(AUX$`2018`, na.rm = TRUE),
+  `2019` = sum(AUX$`2019`, na.rm = TRUE),
+  `2020` = sum(AUX$`2020`, na.rm = TRUE),
+  `2021` = sum(AUX$`2021`, na.rm = TRUE),
+  `2022` = sum(AUX$`2022`, na.rm = TRUE),
+  `2023` = sum(AUX$`2023`, na.rm = TRUE),
+  `2024` = sum(AUX$`2024`, na.rm = TRUE),
+  `2025` = sum(AUX$`2025`, na.rm = TRUE),
+  check.names = FALSE 
+)
+
+Total$Inc_2016 <- round((Total$`2016` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2017 <- round((Total$`2017` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2018 <- round((Total$`2018` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2019 <- round((Total$`2019` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2020 <- round((Total$`2020` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2021 <- round((Total$`2021` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2022 <- round((Total$`2022` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2023 <- round((Total$`2023` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2024 <- round((Total$`2024` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+Total$Inc_2025 <- round((Total$`2025` / as.numeric(Base_Populacional_Feminina_2022_30_69$`30_69`[1] + Base_Populacional_Masculina_2022_30_69$`30_69`[1])) * 100000, 2)
+
+Total_Inc <- Total %>% 
+  select(contains("Inc")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Incidencia = as.numeric(V1)     
+  ) %>%
+  select(Ano, Incidencia)
+
+Total_N <- Total %>% 
+  select(matches("^20(1[6-9]|2[0-9])$")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    N = as.numeric(V1)     
+  ) %>%
+  select(Ano, N)
+
+Total <- left_join(Total_Inc,
+                   Total_N,
+                   by = "Ano")
+
+fator_escala <- (max(Total$N, na.rm = TRUE) / 140)
+
+PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, 
+                                                     aes(x = Ano, y = Incidencia)) + 
+  geom_col(aes(y = N / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.6)+
+  geom_text(aes(y = N / fator_escala / 2, 
+                label = format(N, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(x = Ano,
+                y = Incidencia,
+                group = 1),
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(y = "Casos/100.000 habitantes",
+       x = NULL,
+       title = "Mortalidade por Câncer/100.000 habitantes no Paraná") +
+  geom_text(aes(label = format(round(Incidencia, 2),
+                               decimal.mark = ",")), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 180), 
+                     breaks = seq(0, 180, 20),
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Casos",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = 2016:2025) +
+  Theme()
 
 #### Mesmo procedimento para idade de 30 a 69 anos REGIONAL
 
@@ -3261,6 +3580,942 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
+Total <- data.frame(
+  Grupo_CID = "TOTAL",
+  `2016` = sum(AUX$`2016`, na.rm = TRUE),
+  `2017` = sum(AUX$`2017`, na.rm = TRUE),
+  `2018` = sum(AUX$`2018`, na.rm = TRUE),
+  `2019` = sum(AUX$`2019`, na.rm = TRUE),
+  `2020` = sum(AUX$`2020`, na.rm = TRUE),
+  `2021` = sum(AUX$`2021`, na.rm = TRUE),
+  `2022` = sum(AUX$`2022`, na.rm = TRUE),
+  `2023` = sum(AUX$`2023`, na.rm = TRUE),
+  `2024` = sum(AUX$`2024`, na.rm = TRUE),
+  `2025` = sum(AUX$`2025`, na.rm = TRUE),
+  check.names = FALSE 
+)
+
+Total$Inc_2016 <- round((Total$`2016` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2017 <- round((Total$`2017` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2018 <- round((Total$`2018` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2019 <- round((Total$`2019` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2020 <- round((Total$`2020` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2021 <- round((Total$`2021` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2022 <- round((Total$`2022` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2023 <- round((Total$`2023` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2024 <- round((Total$`2024` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+Total$Inc_2025 <- round((Total$`2025` / as.numeric(Base_Populacional_Feminina_2022_30_69_RS$`30_69`[17] + Base_Populacional_Masculina_2022_30_69_RS$`30_69`[17])) * 100000, 2)
+
+Total_Inc <- Total %>% 
+  select(contains("Inc")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Incidencia = as.numeric(V1)     
+  ) %>%
+  select(Ano, Incidencia)
+
+Total_N <- Total %>% 
+  select(matches("^20(1[6-9]|2[0-9])$")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    N = as.numeric(V1)     
+  ) %>%
+  select(Ano, N)
+
+Total <- left_join(Total_Inc,
+                   Total_N,
+                   by = "Ano")
+
+fator_escala <- (max(Total$N, na.rm = TRUE) / 140)
+
+RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, 
+                                                     aes(x = Ano, y = Incidencia)) + 
+  geom_col(aes(y = N / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.6)+
+  geom_text(aes(y = N / fator_escala / 2, 
+                label = format(N, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(x = Ano,
+                y = Incidencia,
+                group = 1),
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(y = "Casos/100.000 habitantes",
+       x = NULL,
+       title = "Mortalidade por Câncerem População entre 30 e 69 Anos/100.000 habitantes e Número de Casos na 22ª RS") +
+  geom_text(aes(label = format(round(Incidencia, 2),
+                               decimal.mark = ",")), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 200), 
+                     breaks = seq(0, 200, 20),
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Casos",
+                                         breaks = c(0, 100, 200, 300),
+                                         labels = c("0", "100", "200", "300"))) +
+  scale_x_discrete(breaks = 2016:2025) +
+  Theme()
+
+#### Mesmo procedimento para menores de 30 anos
+
+Base_Populacional_Masculina_2022_Men_30 <- Base_Populacional_Masculina_2022 %>%
+  mutate(across(c(Menores.de.1.ano, X1.a.4.anos, X5.a.9.anos, X10.a.14.anos,
+                  X15.a.19.anos, X20.a.24.anos, X25.a.29.anos),
+                ~ as.numeric(gsub("\\.", "", .x)))) %>%
+  mutate(Men_30  = rowSums(across(c(Menores.de.1.ano, X1.a.4.anos, X5.a.9.anos, X10.a.14.anos,
+                                    X15.a.19.anos, X20.a.24.anos, X25.a.29.anos)), na.rm = TRUE)
+  )
+
+Base_Populacional_Feminina_2022_Men_30 <- Base_Populacional_Feminina_2022 %>%
+  mutate(across(c(Menores.de.1.ano, X1.a.4.anos, X5.a.9.anos, X10.a.14.anos,
+                  X15.a.19.anos, X20.a.24.anos, X25.a.29.anos),
+                ~ as.numeric(gsub("\\.", "", .x)))) %>%
+  mutate(Men_30 = rowSums(across(c(Menores.de.1.ano, X1.a.4.anos, X5.a.9.anos, X10.a.14.anos,
+                                   X15.a.19.anos, X20.a.24.anos, X25.a.29.anos)), na.rm = TRUE)
+  )
+
+AUX <-  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 %>%
+  mutate(`2016` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)
+  ) %>%
+  select(Grupo_CID, 
+         `2016`) %>%
+  mutate(pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2016 = case_when(
+           Grupo_CID == "Mama"    ~ (`2016` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2016` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2016` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2016` / pop_limpa) * 100000),
+         Inc_2016 = round(Inc_2016, 2)) %>%
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017  %>%
+    mutate(`2017` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2017`), 
+  by = "Grupo_CID") 
+
+AUX <- AUX %>%
+  mutate(`2017` = as.numeric(`2017`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2017 = case_when(
+           Grupo_CID == "Mama"    ~ (`2017` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2017` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2017` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2017` / pop_limpa) * 100000),
+         Inc_2017 = round(Inc_2017, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 %>%
+    mutate(`2018` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2018`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2018` = as.numeric(`2018`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2018 = case_when(
+           Grupo_CID == "Mama"    ~ (`2018` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2018` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2018` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2018` / pop_limpa) * 100000),
+         Inc_2018 = round(Inc_2018, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 %>%
+    mutate(`2019` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2019`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2019` = as.numeric(`2019`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2019 = case_when(
+           Grupo_CID == "Mama"    ~ (`2019` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2019` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2019` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2019` / pop_limpa) * 100000),
+         Inc_2019 = round(Inc_2019, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 %>%
+    mutate(`2020` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2020`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2020` = as.numeric(`2020`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2020 = case_when(
+           Grupo_CID == "Mama"    ~ (`2020` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2020` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2020` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2020` / pop_limpa) * 100000),
+         Inc_2020 = round(Inc_2020, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 %>%
+    mutate(`2021` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2021`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2021` = as.numeric(`2021`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2021 = case_when(
+           Grupo_CID == "Mama"    ~ (`2021` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2021` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2021` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2021` / pop_limpa) * 100000),
+         Inc_2021 = round(Inc_2021, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 %>%
+    mutate(`2022` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2022`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2022` = as.numeric(`2022`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2022 = case_when(
+           Grupo_CID == "Mama"    ~ (`2022` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2022` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2022` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2022` / pop_limpa) * 100000),
+         Inc_2022 = round(Inc_2022, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 %>%
+    mutate(`2023` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2023`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2023` = as.numeric(`2023`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2023 = case_when(
+           Grupo_CID == "Mama"    ~ (`2023` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2023` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2023` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2023` / pop_limpa) * 100000),
+         Inc_2023 = round(Inc_2023, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 %>%
+    mutate(`2024` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2024`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2024` = as.numeric(`2024`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2024 = case_when(
+           Grupo_CID == "Mama"    ~ (`2024` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2024` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2024` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2024` / pop_limpa) * 100000),
+         Inc_2024 = round(Inc_2024, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 %>%
+    mutate(`2025` = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2025`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2025` = as.numeric(`2025`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1]),
+         Inc_2025 = case_when(
+           Grupo_CID == "Mama"    ~ (`2025` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2025` / Base_Populacional_Feminina_2022_Men_30$Men_30[1]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2025` / Base_Populacional_Masculina_2022_Men_30$Men_30[1]) * 100000,
+           TRUE                   ~ (`2025` / pop_limpa) * 100000),
+         Inc_2025 = round(Inc_2025, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- AUX %>%
+  mutate(Grupo_CID = case_when(
+    Grupo_CID == "Cerebro_SNC" ~ "Cérebro e SNC",
+    Grupo_CID == "Linfatico_Hematologico" ~ "Linfático e Hematológico",
+    Grupo_CID == "Digestivo" ~ "Aparelho Digestivo",
+    Grupo_CID == "Respiratorio" ~ "Aparelho Respiratório",
+    Grupo_CID == "Gen_Fem" ~ "Órgãos Genitais Femininos",
+    Grupo_CID == "Gen_Masc" ~ "Órgãos Genitais Masculinos",
+    Grupo_CID == "Mama" ~ "Mama",
+    Grupo_CID == "Via_Urinaria" ~ "Vias Urinárias",
+    Grupo_CID == "Pele" ~ "Pele (Melanoma/Outros)",
+    Grupo_CID == "Labio_Oral" ~ "Lábio e Cavidade Oral",
+    Grupo_CID == "Ossos" ~ "Ossos e Cartilagens",
+    Grupo_CID == "Tec_Mole" ~ "Tecidos Moles",
+    Grupo_CID == "Tireoide_Endo" ~ "Tireoide e Endócrinas",
+    Grupo_CID == "Mal_Definidas" ~ "Mal Definidas/Outras",
+    TRUE ~ Grupo_CID 
+  ))
+
+PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
+  tab_header(
+    title = md("**Incidência de Neoplasias Malignas por Localização em  População de 30 a 69 anos**"),
+    subtitle = md("Paraná, 2016 – 2025")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "1") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "3") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "4") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "5") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "6") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "7") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "8") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "9") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "10") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21) %>%
+  cols_label(contains("Inc_")     ~ "Inc.",
+             matches("^20\\d{2}$") ~ "n"
+  ) %>%
+  fmt_number(
+    columns = contains("Inc_"),
+    decimals = 2,
+    sep_mark = ".",
+    dec_mark = ","
+  ) %>%
+  sub_missing(columns = everything(), missing_text = "-") %>%
+  tab_footnote(
+    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota³: Incidência de câncer de genitais masculinos calculada usando a população masculina do Censo de 2022."
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(4:5, 8:9, 12:13, 16:17, 20:21)) 
+  ) %>%
+  tab_options(footnotes.padding = px(1),
+              footnotes.font.size = px(10))
+
+Total <- data.frame(
+  Grupo_CID = "TOTAL",
+  `2016` = sum(AUX$`2016`, na.rm = TRUE),
+  `2017` = sum(AUX$`2017`, na.rm = TRUE),
+  `2018` = sum(AUX$`2018`, na.rm = TRUE),
+  `2019` = sum(AUX$`2019`, na.rm = TRUE),
+  `2020` = sum(AUX$`2020`, na.rm = TRUE),
+  `2021` = sum(AUX$`2021`, na.rm = TRUE),
+  `2022` = sum(AUX$`2022`, na.rm = TRUE),
+  `2023` = sum(AUX$`2023`, na.rm = TRUE),
+  `2024` = sum(AUX$`2024`, na.rm = TRUE),
+  `2025` = sum(AUX$`2025`, na.rm = TRUE),
+  check.names = FALSE 
+)
+
+Total$Inc_2016 <- round((Total$`2016` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2017 <- round((Total$`2017` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2018 <- round((Total$`2018` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2019 <- round((Total$`2019` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2020 <- round((Total$`2020` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2021 <- round((Total$`2021` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2022 <- round((Total$`2022` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2023 <- round((Total$`2023` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2024 <- round((Total$`2024` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+Total$Inc_2025 <- round((Total$`2025` / as.numeric(Base_Populacional_Feminina_2022_Men_30$Men_30[1] + Base_Populacional_Masculina_2022_Men_30$Men_30[1])) * 100000, 2)
+
+Total_Inc <- Total %>% 
+  select(contains("Inc")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Incidencia = as.numeric(V1)     
+  ) %>%
+  select(Ano, Incidencia)
+
+Total_N <- Total %>% 
+  select(matches("^20(1[6-9]|2[0-9])$")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    N = as.numeric(V1)     
+  ) %>%
+  select(Ano, N)
+
+Total <- left_join(Total_Inc,
+                   Total_N,
+                   by = "Ano")
+
+fator_escala <- (max(Total$N, na.rm = TRUE) / 8)
+
+PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total, 
+                                                           aes(x = Ano, y = Incidencia)) + 
+  geom_col(aes(y = N / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.6)+
+  geom_text(aes(y = N / fator_escala / 2, 
+                label = format(N, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(x = Ano,
+                y = Incidencia,
+                group = 1),
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(y = "Casos/100.000 habitantes",
+       x = NULL,
+       title = "Mortalidade por Câncer/100.000 habitantes no Paraná") +
+  geom_text(aes(label = format(round(Incidencia, 2),
+                               decimal.mark = ",")), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 15), 
+                     breaks = seq(0, 15, 5),
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Casos",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = 2016:2025) +
+  Theme()
+
+#### Mesmo procedimento para menores de 30 anos Regional
+
+Base_Populacional_Masculina_2022_Men_30_RS <- Base_Populacional_Masculina_2022 %>%
+  filter(MUN_ESTADO %in% c(
+    "ARAPUÃ", "ARIRANHA DO IVAÍ", "CÂNDIDO DE ABREU", "CRUZMALTINA",
+    "GODOY MOREIRA", "IVAIPORÃ", "JARDIM ALEGRE", "LIDIANÓPOLIS",
+    "LUNARDELLI", "MANOEL RIBAS", "MATO RICO", "NOVA TEBAS",
+    "RIO BRANCO DO IVAÍ", "ROSÁRIO DO IVAÍ", "SANTA MARIA DO OESTE", 
+    "SÃO JOÃO DO IVAÍ"
+  )) %>% 
+  mutate(across(c(Menores.de.1.ano, X1.a.4.anos, X5.a.9.anos, X10.a.14.anos,
+                  X15.a.19.anos, X20.a.24.anos, X25.a.29.anos),
+                ~ as.numeric(gsub("\\.", "", .x)))) %>%
+  mutate(Men_30 = rowSums(across(c(Menores.de.1.ano, X1.a.4.anos, X5.a.9.anos, X10.a.14.anos,
+                                   X15.a.19.anos, X20.a.24.anos, X25.a.29.anos)), na.rm = TRUE)
+  )
+
+Base_Populacional_Masculina_2022_Men_30_RS$Total <- as.numeric(gsub("\\.", "", Base_Populacional_Masculina_2022_Men_30_RS$Total))
+
+linha_total_masc_regional <- Base_Populacional_Masculina_2022_Men_30_RS %>%
+  summarise(
+    MUN_ESTADO = "TOTAL REGIONAL",
+    across(where(is.numeric), ~ sum(.x, na.rm = TRUE)),
+    Até.14.anos = NA,
+    X15.a.64.anos = NA
+  )
+
+Base_Populacional_Masculina_2022_Men_30_RS <- bind_rows(
+  Base_Populacional_Masculina_2022_Men_30_RS, 
+  linha_total_masc_regional
+)
+
+Base_Populacional_Feminina_2022_Men_30_RS <- Base_Populacional_Feminina_2022 %>%
+  filter(MUN_ESTADO %in% c(
+    "ARAPUÃ", "ARIRANHA DO IVAÍ", "CÂNDIDO DE ABREU", "CRUZMALTINA",
+    "GODOY MOREIRA", "IVAIPORÃ", "JARDIM ALEGRE", "LIDIANÓPOLIS",
+    "LUNARDELLI", "MANOEL RIBAS", "MATO RICO", "NOVA TEBAS",
+    "RIO BRANCO DO IVAÍ", "ROSÁRIO DO IVAÍ", "SANTA MARIA DO OESTE", 
+    "SÃO JOÃO DO IVAÍ"
+  )) %>% 
+  mutate(across(c(Menores.de.1.ano, X1.a.4.anos, X5.a.9.anos, X10.a.14.anos,
+                  X15.a.19.anos, X20.a.24.anos, X25.a.29.anos),
+                ~ as.numeric(gsub("\\.", "", .x)))) %>%
+  mutate(
+    Men_30 = rowSums(across(c(Menores.de.1.ano, X1.a.4.anos, X5.a.9.anos, X10.a.14.anos,
+                              X15.a.19.anos, X20.a.24.anos, X25.a.29.anos)), na.rm = TRUE)
+  )
+
+Base_Populacional_Feminina_2022_Men_30_RS$Total <- as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022_Men_30_RS$Total))
+
+linha_total_fem_regional <- Base_Populacional_Feminina_2022_Men_30_RS %>%
+  summarise(
+    MUN_ESTADO = "TOTAL REGIONAL",
+    across(where(is.numeric), ~ sum(.x, na.rm = TRUE)),
+    Até.14.anos = NA,
+    X15.a.64.anos = NA
+  )
+
+Base_Populacional_Feminina_2022_Men_30_RS <- bind_rows(
+  Base_Populacional_Feminina_2022_Men_30_RS, 
+  linha_total_fem_regional
+)
+
+AUX <-  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 %>%
+  mutate(`2016` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                          "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)
+  ) %>%
+  select(Grupo_CID, 
+         `2016`) %>%
+  mutate(pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2016 = case_when(
+           Grupo_CID == "Mama"    ~ (`2016` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2016` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2016` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2016` / pop_limpa) * 100000),
+         Inc_2016 = round(Inc_2016, 2)) %>%
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 %>%
+    mutate(`2017` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>% 
+    select(Grupo_CID, `2017`), 
+  by = "Grupo_CID"
+)  
+
+AUX <- AUX %>%
+  mutate(`2017` = as.numeric(`2017`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2017 = case_when(
+           Grupo_CID == "Mama"    ~ (`2017` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2017` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2017` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2017` / pop_limpa) * 100000),
+         Inc_2017 = round(Inc_2017, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 %>%
+    mutate(`2018` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>% 
+    select(Grupo_CID, `2018`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2018` = as.numeric(`2018`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2018 = case_when(
+           Grupo_CID == "Mama"    ~ (`2018` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2018` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2018` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2018` / pop_limpa) * 100000),
+         Inc_2018 = round(Inc_2018, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 %>%
+    mutate(`2019` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>%    
+    select(Grupo_CID, `2019`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2019` = as.numeric(`2019`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2019 = case_when(
+           Grupo_CID == "Mama"    ~ (`2019` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2019` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2019` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2019` / pop_limpa) * 100000),
+         Inc_2019 = round(Inc_2019, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 %>%
+    mutate(`2020` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>% 
+    select(Grupo_CID, `2020`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2020` = as.numeric(`2020`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2020 = case_when(
+           Grupo_CID == "Mama"    ~ (`2020` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2020` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2020` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2020` / pop_limpa) * 100000),
+         Inc_2020 = round(Inc_2020, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 %>%
+    mutate(`2021` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>% 
+    select(Grupo_CID, `2021`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2021` = as.numeric(`2021`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2021 = case_when(
+           Grupo_CID == "Mama"    ~ (`2021` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2021` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2021` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2021` / pop_limpa) * 100000),
+         Inc_2021 = round(Inc_2021, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 %>%
+    mutate(`2022` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2022`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2022` = as.numeric(`2022`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2022 = case_when(
+           Grupo_CID == "Mama"    ~ (`2022` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2022` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2022` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2022` / pop_limpa) * 100000),
+         Inc_2022 = round(Inc_2022, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 %>%
+    mutate(`2023` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2023`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2023` = as.numeric(`2023`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2023 = case_when(
+           Grupo_CID == "Mama"    ~ (`2023` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2023` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2023` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2023` / pop_limpa) * 100000),
+         Inc_2023 = round(Inc_2023, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 %>%
+    mutate(`2024` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2024`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2024` = as.numeric(`2024`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2024 = case_when(
+           Grupo_CID == "Mama"    ~ (`2024` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2024` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2024` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2024` / pop_limpa) * 100000),
+         Inc_2024 = round(Inc_2024, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- left_join(
+  AUX,
+  RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 %>%
+    mutate(`2025` = rowSums(across(any_of(c("X0.4", "X5.9", "X5.a.9.anos", "X10.14",
+                                            "X15.19", "X20.24", "X25.29"))), na.rm = TRUE)) %>%
+    select(Grupo_CID, `2025`), 
+  by = "Grupo_CID"
+) 
+
+AUX <- AUX %>%
+  mutate(`2025` = as.numeric(`2025`),
+         pop_limpa = as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]),
+         Inc_2025 = case_when(
+           Grupo_CID == "Mama"    ~ (`2025` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Fem" ~ (`2025` / Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17]) * 100000,
+           Grupo_CID == "Gen_Masc" ~ (`2025` / Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17]) * 100000,
+           TRUE                   ~ (`2025` / pop_limpa) * 100000),
+         Inc_2025 = round(Inc_2025, 2)
+  ) %>% 
+  select(-pop_limpa)
+
+AUX <- AUX %>%
+  mutate(Grupo_CID = case_when(
+    Grupo_CID == "Cerebro_SNC" ~ "Cérebro e SNC",
+    Grupo_CID == "Linfatico_Hematologico" ~ "Linfático e Hematológico",
+    Grupo_CID == "Digestivo" ~ "Aparelho Digestivo",
+    Grupo_CID == "Respiratorio" ~ "Aparelho Respiratório",
+    Grupo_CID == "Gen_Fem" ~ "Órgãos Genitais Femininos",
+    Grupo_CID == "Gen_Masc" ~ "Órgãos Genitais Masculinos",
+    Grupo_CID == "Mama" ~ "Mama",
+    Grupo_CID == "Via_Urinaria" ~ "Vias Urinárias",
+    Grupo_CID == "Pele" ~ "Pele (Melanoma/Outros)",
+    Grupo_CID == "Labio_Oral" ~ "Lábio e Cavidade Oral",
+    Grupo_CID == "Ossos" ~ "Ossos e Cartilagens",
+    Grupo_CID == "Tec_Mole" ~ "Tecidos Moles",
+    Grupo_CID == "Tireoide_Endo" ~ "Tireoide e Endócrinas",
+    Grupo_CID == "Mal_Definidas" ~ "Mal Definidas/Outras",
+    TRUE ~ Grupo_CID 
+  ))
+
+RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
+  tab_header(
+    title = md("**Incidência de Neoplasias Malignas por Localização em  População Menor de 30 anos**"),
+    subtitle = md("22ª Regional de Saúde, 2016 – 2025")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "1") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "3") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "4") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "5") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "6") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "7") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "8") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "9") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "10") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21) %>%
+  cols_label(contains("Inc_")     ~ "Inc.",
+             matches("^20\\d{2}$") ~ "n"
+  ) %>%
+  fmt_number(
+    columns = contains("Inc_"),
+    decimals = 2,
+    sep_mark = ".",
+    dec_mark = ","
+  ) %>%
+  sub_missing(columns = everything(), missing_text = "-") %>%
+  tab_footnote(
+    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota³: Incidência de câncer de genitais masculinos calculada usando a população masculina do Censo de 2022."
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(4:5, 8:9, 12:13, 16:17, 20:21)) 
+  ) %>%
+  tab_options(footnotes.padding = px(1),
+              footnotes.font.size = px(10))
+
+Total <- data.frame(
+  Grupo_CID = "TOTAL",
+  `2016` = sum(AUX$`2016`, na.rm = TRUE),
+  `2017` = sum(AUX$`2017`, na.rm = TRUE),
+  `2018` = sum(AUX$`2018`, na.rm = TRUE),
+  `2019` = sum(AUX$`2019`, na.rm = TRUE),
+  `2020` = sum(AUX$`2020`, na.rm = TRUE),
+  `2021` = sum(AUX$`2021`, na.rm = TRUE),
+  `2022` = sum(AUX$`2022`, na.rm = TRUE),
+  `2023` = sum(AUX$`2023`, na.rm = TRUE),
+  `2024` = sum(AUX$`2024`, na.rm = TRUE),
+  `2025` = sum(AUX$`2025`, na.rm = TRUE),
+  check.names = FALSE 
+)
+
+Total$Inc_2016 <- round((Total$`2016` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2017 <- round((Total$`2017` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2018 <- round((Total$`2018` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2019 <- round((Total$`2019` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2020 <- round((Total$`2020` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2021 <- round((Total$`2021` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2022 <- round((Total$`2022` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2023 <- round((Total$`2023` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2024 <- round((Total$`2024` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+Total$Inc_2025 <- round((Total$`2025` / as.numeric(Base_Populacional_Feminina_2022_Men_30_RS$Men_30[17] + Base_Populacional_Masculina_2022_Men_30_RS$Men_30[17])) * 100000, 2)
+
+Total_Inc <- Total %>% 
+  select(contains("Inc")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Incidencia = as.numeric(V1)     
+  ) %>%
+  select(Ano, Incidencia)
+
+Total_N <- Total %>% 
+  select(matches("^20(1[6-9]|2[0-9])$")) %>%
+  t() %>%
+  as.data.frame() %>% 
+  mutate(
+    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    N = as.numeric(V1)     
+  ) %>%
+  select(Ano, N)
+
+Total <- left_join(Total_Inc,
+                   Total_N,
+                   by = "Ano")
+
+fator_escala <- (max(Total$N, na.rm = TRUE) / 5)
+
+RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total, 
+                                                           aes(x = Ano, y = Incidencia)) + 
+  geom_col(aes(y = N / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.6)+
+  geom_text(aes(y = N / fator_escala / 2, 
+                label = format(N, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(x = Ano,
+                y = Incidencia,
+                group = 1),
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(y = "Casos/100.000 habitantes",
+       x = NULL,
+       title = "Mortalidade por Câncer em População Menor de 30 Anos/100.000 habitantes e Número de Casos na 22ª RS") +
+  geom_text(aes(label = format(round(Incidencia, 2),
+                               decimal.mark = ",")), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 20), 
+                     breaks = seq(0, 20, 5),
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Casos",
+                                         breaks = c(0, 100, 200, 300),
+                                         labels = c("0", "100", "200", "300"))) +
+  scale_x_discrete(breaks = 2016:2025) +
+  Theme()
+
 ###############################################################################################
 ###############################################################################################
 ################         DERAL     ############################################################
@@ -3268,8 +4523,8 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
 options(scipen = 999)
 
 PR_DERAL_GERAL <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_GERAL.csv",
-                                                header = TRUE,
-                                                sep = ",")
+                            header = TRUE,
+                            sep = ",")
 
 AUX <- PR_DERAL_GERAL %>%
   summarise(across(4:57, ~sum(.x, na.rm = TRUE))) %>%
@@ -3277,7 +4532,7 @@ AUX <- PR_DERAL_GERAL %>%
                names_to = "Variavel", 
                values_to = "Total") %>%
   mutate(Total = round(Total, 2)) 
-         
+
 ###### Área total em HA no Estado
 
 AUX01 <- AUX %>%
@@ -3287,8 +4542,8 @@ AUX01 <- AUX %>%
 ##### Gráfico de linhas
 
 PR_DERAL_GRAF_HA_CULTIVADO <- ggplot(AUX01, aes(x = Variavel, 
-                                               y = Total,
-                                               group = 1)) +
+                                                y = Total,
+                                                group = 1)) +
   geom_line(color = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
@@ -3312,8 +4567,8 @@ AUX01 <- AUX %>%
   mutate(Variavel = gsub("TON_AGRO_", "", Variavel))
 
 PR_DERAL_GRAF_TON_AGRO <- ggplot(AUX01, aes(x = Variavel, 
-                  y = Total,
-                  group = 1)) +
+                                            y = Total,
+                                            group = 1)) +
   geom_line(color = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
@@ -3325,16 +4580,16 @@ PR_DERAL_GRAF_TON_AGRO <- ggplot(AUX01, aes(x = Variavel,
        title = "Consumo Agrotóxico (TON) no Paraná - (2016 - 2024)",
        subtitle = "Consumo em Toneladas") +
   scale_y_continuous(limits = c(0, 180000), 
-labels = label_number(decimal.mark = ",", 
-                      big.mark = "."),
-expand = expansion(mult = c(0.2, 0.2))) +
+                     labels = label_number(decimal.mark = ",", 
+                                           big.mark = "."),
+                     expand = expansion(mult = c(0.2, 0.2))) +
   Theme()
 
 ##############  Agrotóxico/HA
 
 AUX01 <- AUX %>%
   filter(str_detect(Variavel, "AREA_HA") |
-         str_detect(Variavel, "TON_AGRO"))
+           str_detect(Variavel, "TON_AGRO"))
 
 AUX02 <- AUX01 %>%
   mutate(Ano = str_extract(Variavel, "\\d{4}"),
@@ -3345,8 +4600,8 @@ AUX02 <- AUX01 %>%
   mutate(Consumo_HA = (Consumo / Area) * 1000) 
 
 PR_DERAL_GRAF_AGRO_HA <- ggplot(AUX02, aes(x = Ano, 
-                  y = Consumo_HA,
-                  group = 1)) +
+                                           y = Consumo_HA,
+                                           group = 1)) +
   geom_line(color = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
@@ -3370,8 +4625,8 @@ AUX01 <- AUX %>%
 
 
 PR_DERAL_GRAF_PRODUCAO <- ggplot(AUX01, aes(x = Variavel, 
-                  y = Total,
-                  group = 1)) +
+                                            y = Total,
+                                            group = 1)) +
   geom_line(color = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
@@ -3402,7 +4657,7 @@ AUX <- PR_DERAL_GERAL %>%
   )   
 
 AUX$AGRO_HA_21_24 <- ((AUX$TON_AGRO_2021 + AUX$TON_AGRO_2022 + AUX$TON_AGRO_2023 + AUX$TON_AGRO_2024)/
-  (AUX$AREA_HA_2021 + AUX$AREA_HA_2022 + AUX$AREA_HA_2023 + AUX$AREA_HA_2024)) *1000
+                        (AUX$AREA_HA_2021 + AUX$AREA_HA_2022 + AUX$AREA_HA_2023 + AUX$AREA_HA_2024)) *1000
 
 AUX$TON_AGRO_21_24 <- (AUX$TON_AGRO_2021 + AUX$TON_AGRO_2022 + AUX$TON_AGRO_2023 + AUX$TON_AGRO_2024)
 
@@ -3414,8 +4669,8 @@ AUX$RS <- str_pad(AUX$RS,
                   pad = "0")
 
 MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS, 
-                          AUX, 
-                          by = c("RS" = "RS"))
+                             AUX, 
+                             by = c("RS" = "RS"))
 
 MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = AGRO_HA_21_24,
                                                  breaks = c(0, 5.5, 6.5, 7.5, 8.5, 10.0, 12.0, 14.0, Inf),
@@ -3521,7 +4776,7 @@ PR_DERAL_MAP_HA_21_24 <- ggplot() +
     y = NULL
   )  +
   Theme() 
-  
+
 #################### 2017 - 2020
 
 AUX <- PR_DERAL_GERAL %>%
@@ -3712,7 +4967,7 @@ PR_DERAL_MAP_AGRO_HA_17_20_21_24 <- PR_DERAL_MAP_AGRO_HA_17_20 +
                                                 face = "italic", 
                                                 size = 10)
                   ))
-  
+
 ######  Municípios
 
 AUX <- PR_DERAL_GERAL %>%
@@ -3723,8 +4978,8 @@ AUX <- PR_DERAL_GERAL %>%
                      TON_AGRO_2017, TON_AGRO_2018, TON_AGRO_2019, TON_AGRO_2020,
                      PRODUCAO_2021, PRODUCAO_2022, PRODUCAO_2023, PRODUCAO_2024,
                      PRODUCAO_2017, PRODUCAO_2018, PRODUCAO_2019, PRODUCAO_2020),
-      ~ sum(.x, na.rm = TRUE)
-    ))
+                   ~ sum(.x, na.rm = TRUE)
+  ))
 
 AUX$AGRO_HA_21_24 <- ((AUX$TON_AGRO_2021 + AUX$TON_AGRO_2022 + AUX$TON_AGRO_2023 + AUX$TON_AGRO_2024)/
                         (AUX$AREA_HA_2021 + AUX$AREA_HA_2022 + AUX$AREA_HA_2023 + AUX$AREA_HA_2024)) *1000
@@ -3775,7 +5030,7 @@ MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = AGRO_HA_17_20,
                                                         "9,0 - 10,5", 
                                                         "Acima de 10,5"), 
                                              right = FALSE
-                                             ))
+))
 
 PR_DERAL_MAP_Mun_AGRO_HA_17_20 <- ggplot() + 
   geom_sf(data = MAPA_BASE_Mun, 
@@ -3850,17 +5105,17 @@ PR_DERAL_MAP_AGRO_HA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_AGRO_HA_17_20 +
 ##### TON DE AGRO
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = TON_AGRO_17_20,
-                                                 breaks = c(0, 250, 500, 750, 1000, 1750, 3500, 5500, Inf),
-                                                 labels = c("Até 250", 
-                                                            "250 - 500",
-                                                            "500 - 750",    
-                                                            "750 - 1.000", 
-                                                            "1.000 - 1.750", 
-                                                            "1.750 - 3.500", 
-                                                            "3.500 - 5.500", 
-                                                            "Acima de 5.500"),
-                                                 right = FALSE
-                                                 ))
+                                             breaks = c(0, 250, 500, 750, 1000, 1750, 3500, 5500, Inf),
+                                             labels = c("Até 250", 
+                                                        "250 - 500",
+                                                        "500 - 750",    
+                                                        "750 - 1.000", 
+                                                        "1.000 - 1.750", 
+                                                        "1.750 - 3.500", 
+                                                        "3.500 - 5.500", 
+                                                        "Acima de 5.500"),
+                                             right = FALSE
+))
 
 PR_DERAL_MAP_Mun_TON_AGRO_17_20 <- ggplot() + 
   geom_sf(data = MAPA_BASE_Mun, 
@@ -3922,27 +5177,27 @@ PR_DERAL_MAP_TON_AGRO_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_TON_AGRO_17_20 +
   plot_annotation(title = 'Evolução Espacial do Consumo de Agrotóxico no Paraná',
                   subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (TONELADAS)',
                   caption =  Fonte3) &
-                  theme(
-                    plot.title = element_text(size = 20, 
-                                              face = "bold"),
-                    plot.subtitle = element_text(size = 14),
-                    legend.position = "bottom",
-                    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
-                  )
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
 #### HA cultivado
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = HA_17_20,
-                                                      breaks = c(0, 25000, 50000, 100000, 150000, 200000, 300000, 500000, Inf),
-                                                      labels = c("Até 25.000", 
-                                                                 "25.000 - 50.000", 
-                                                                 "50.000 - 100.000", 
-                                                                 "100.000 - 150.000", 
-                                                                 "150.000 - 200.000", 
-                                                                 "200.000 - 300.000", 
-                                                                 "300.000 - 500.000", 
-                                                                 "Acima de 500.000"), 
-                                                      right = FALSE
-                                                      ))
+                                             breaks = c(0, 25000, 50000, 100000, 150000, 200000, 300000, 500000, Inf),
+                                             labels = c("Até 25.000", 
+                                                        "25.000 - 50.000", 
+                                                        "50.000 - 100.000", 
+                                                        "100.000 - 150.000", 
+                                                        "150.000 - 200.000", 
+                                                        "200.000 - 300.000", 
+                                                        "300.000 - 500.000", 
+                                                        "Acima de 500.000"), 
+                                             right = FALSE
+))
 PR_DERAL_MAP_Mun_HA_17_20 <- ggplot() + 
   geom_sf(data = MAPA_BASE_Mun, 
           color = "black", 
@@ -4015,7 +5270,7 @@ PR_DERAL_MAP_HA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_17_20 +
 ### Criando Matriz de vizinhança (QUEEN) Verificar se o queen é padrão no spdep
 
 Matriz_Viz_MAPA_BASE_Mun <- poly2nb(MAPA_BASE_Mun,
-                                   queen = TRUE)
+                                    queen = TRUE)
 
 ### Verificando a malha queen
 
@@ -4030,7 +5285,7 @@ Matriz_VIZ_Linhas <- nb2lines(nb = Matriz_Viz_MAPA_BASE_Mun,
 st_crs(Matriz_VIZ_Linhas) <- st_crs(MAPA_BASE_Mun)
 
 PR_PEVASPEA_DERAL_MAP_MAPA_VIZINHANCA <-ggplot(MAPA_BASE_Mun, 
-                                                aes(geometry = geometry)) +
+                                               aes(geometry = geometry)) +
   geom_sf(fill = "lightblue") +
   geom_sf(data = Matriz_VIZ_Linhas, 
           aes(geometry = geometry)) +
@@ -4109,9 +5364,9 @@ quadrantes <- attr(Lisa,
                    "quadr")$mean
 
 MAPA_BASE_Mun$quadrante_17_20 <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
-                                          quadrantes == "Low-Low" ~ "Baixo-Baixo",
-                                          quadrantes == "High-Low" ~ "Alto-Baixo",
-                                          quadrantes == "Low-High" ~ "Baixo-Alto")
+                                           quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                           quadrantes == "High-Low" ~ "Alto-Baixo",
+                                           quadrantes == "Low-High" ~ "Baixo-Alto")
 
 MAPA_BASE_Mun <- MAPA_BASE_Mun %>%
   mutate(Lisa_resultado_17_20 = case_when(
@@ -4125,7 +5380,7 @@ MAPA_BASE_Mun$Lisa_resultado_17_20 <- factor(MAPA_BASE_Mun$Lisa_resultado_17_20,
                                              levels = Niveis_LISA)
 
 PR_PEVASPEA_DERAL_LOCAL_MORAN_17_20 <- ggplot(MAPA_BASE_Mun, 
-                                               aes(geometry = geometry)) +
+                                              aes(geometry = geometry)) +
   geom_sf(color = "grey30", 
           linewidth = 0.1, 
           aes(fill = Lisa_resultado_17_20)) +
@@ -4214,7 +5469,7 @@ Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não s
 MAPA_BASE_Mun$Lisa_resultado_21_24 <- factor(MAPA_BASE_Mun$Lisa_resultado_21_24, levels = Niveis_LISA)
 
 PR_PEVASPEA_DERAL_LOCAL_MORAN_21_24 <- ggplot(MAPA_BASE_Mun, 
-                                               aes(geometry = geometry)) +
+                                              aes(geometry = geometry)) +
   geom_sf(color = "grey30", 
           linewidth = 0.1, 
           aes(fill = Lisa_resultado_21_24)) +
@@ -4280,8 +5535,8 @@ AUX01 <- AUX %>%
 AUX02 <- AUX01 %>%
   select(contains("AREA_HA")) %>% 
   pivot_longer(cols = contains("AREA_HA"),
-                      names_to = "Variavel", 
-                      values_to = "Total") 
+               names_to = "Variavel", 
+               values_to = "Total") 
 
 RS_DERAL_GRAF_HA_CULTIVADO <- ggplot(AUX02, aes(x = str_replace(Variavel, "AREA_HA_", ""), 
                                                 y = Total,
@@ -4318,8 +5573,8 @@ AUX03 <- AUX01 %>%
                values_to = "Total_1") 
 
 RS_DERAL_GRAF_TON_AGRO_CULTIVADO <- ggplot(AUX03, aes(x = str_replace(Variavel_1, "AREA_HA_", ""), 
-                                                y = Total_1,
-                                                group = 1)) +
+                                                      y = Total_1,
+                                                      group = 1)) +
   geom_line(color = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
@@ -4353,8 +5608,8 @@ colnames(AUX02)[5] <- "AGRO_HA"
 glimpse(AUX02)
 
 RS_DERAL_GRAF_AGRO_HA_CULTIVADO <- ggplot(AUX02, aes(x = str_replace(Variavel, "AREA_HA_", ""), 
-                                                y = AGRO_HA,
-                                                group = 1)) +
+                                                     y = AGRO_HA,
+                                                     group = 1)) +
   geom_line(color = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
