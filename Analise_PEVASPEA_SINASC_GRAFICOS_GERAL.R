@@ -2023,6 +2023,167 @@ PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2016 <- read.csv (file = "Tabulacoes_R/SIM/PR_PE
                                                   header = TRUE,
                                                   sep = ",")
 
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2017 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2017.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2018 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2018.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2019 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2019.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2020 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2020.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2021 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2021.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2022 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2022.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2023 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2023.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2024 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2024.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2025 <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_NEOPLASIA_GERAL_2025.csv",
+                                                  header = TRUE,
+                                                  sep = ",")
+
+#### Preparando uma tabela para série histórica de regionais
+
+for (ano in 2016:2025) {
+  nome_tabela_origem <- paste0("PR_PEVASPEA_SIM_NEOPLASIA_GERAL_", ano)
+  dados_ano <- get(nome_tabela_origem)
+  dados_processados <- dados_ano %>%
+    as.data.frame() %>%
+    group_by(RS) %>%
+    summarise(across(População:Linfatico, ~ sum(.x, na.rm = TRUE))) 
+  nome_objeto_final <- paste0("AUX_", ano)
+  assign(nome_objeto_final, dados_processados)
+}
+
+Base_Populacional <- left_join(Base_Populacional,
+                               Base_IBGE %>%
+                                 select(Código_IBGE, RS),
+                               by = "Código_IBGE")
+
+#### Tabela série histórica Regionais
+
+POP_RS_2016 <- Base_Populacional %>%
+  as.data.frame() %>%
+  group_by(RS) %>%
+  summarise(Pop_Total_2016 = sum(as.numeric(gsub("\\.", "", X2016)), na.rm = TRUE))
+
+AUX <- AUX_2016 %>%
+  select(RS, NEOPLASIAS) %>% 
+  left_join(POP_RS_2016, by = "RS") %>% 
+  mutate(Inc_2016 = round((NEOPLASIAS / Pop_Total_2016) * 100000, 2)) %>%
+  rename(`2016` = NEOPLASIAS) %>%
+  select(-Pop_Total_2016)
+
+for (ano in 2017:2025) {
+  nome_coluna_pop <- if (ano %in% c(2022, 2023)) "X2021" else paste0("X", ano)
+  coluna_pop_sym  <- sym(nome_coluna_pop)
+  tabela_obitos_ano <- get(paste0("AUX_", ano))
+  pop_regional_atual <- Base_Populacional %>%
+    as.data.frame() %>%
+    group_by(RS) %>%
+    summarise(Pop_Fixo = sum(as.numeric(gsub("\\.", "", !!coluna_pop_sym)), na.rm = TRUE))
+  nome_col_n   <- paste0(ano)
+  nome_col_inc <- paste0("Inc_", ano)
+  AUX01 <- tabela_obitos_ano %>%
+    select(RS, NEOPLASIAS) %>% 
+    left_join(pop_regional_atual, by = "RS") %>% 
+    mutate(!!nome_col_inc := round((NEOPLASIAS / Pop_Fixo) * 100000, 2)
+    ) %>%
+    rename(!!nome_col_n := NEOPLASIAS) %>%
+    select(-Pop_Fixo)
+  AUX <- left_join(AUX, AUX01, by = "RS")
+}
+
+PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist <- gt(AUX) %>%
+  tab_header(
+    title = md("**Mortalidade por Neoplasias Malignas - Regionais de Saúde**"),
+    subtitle = md("Paraná, 2016 – 2025")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "1") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "3") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "4") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "5") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "6") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "7") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "8") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "9") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "10") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21) %>%
+  cols_label(contains("Inc_")     ~ "Inc.",
+             matches("^20\\d{2}$") ~ "n"
+  ) %>%
+  fmt_number(
+    columns = contains("Inc_"),
+    decimals = 2,
+    sep_mark = ".",
+    dec_mark = ","
+  ) %>%
+  sub_missing(columns = everything(), missing_text = "-") %>%
+  tab_footnote(
+    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota¹: Incidência calculada por 100.000 habitantes (População estimada IBGE)."
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(4:5, 8:9, 12:13, 16:17, 20:21)) 
+  ) %>%
+  tab_options(footnotes.padding = px(1),
+              footnotes.font.size = px(10))
+
+####
 AUX01 <- Base_Populacional %>%
   filter(MUNICÍPIO.ESTADO == "ESTADO DO PARANÁ")
 
@@ -2241,7 +2402,7 @@ AUX <- AUX %>%
 
 PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_header(
-    title = md("**Incidência de Neoplasias Malignas por Localização**"),
+    title = md("**Mortalidade por Neoplasias Malignas no Paraná**"),
     subtitle = md("Paraná, 2016 – 2025")
   ) %>%
   tab_options(
@@ -2342,12 +2503,13 @@ Total$Inc_2023 <- round((Total$`2023` / as.numeric(gsub("\\.", "", AUX01$X2024))
 Total$Inc_2024 <- round((Total$`2024` / as.numeric(gsub("\\.", "", AUX01$X2024))) * 100000, 2)
 Total$Inc_2025 <- round((Total$`2025` / as.numeric(gsub("\\.", "", AUX01$X2025))) * 100000, 2)
 
+
 Total_Inc <- Total %>% 
   select(contains("Inc")) %>%
   t() %>%
   as.data.frame() %>% 
   mutate(
-    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Ano = as.character(seq(2016, 2016 + n() - 1)),
     Incidencia = as.numeric(V1)     
   ) %>%
   select(Ano, Incidencia)
@@ -2357,49 +2519,52 @@ Total_N <- Total %>%
   t() %>%
   as.data.frame() %>% 
   mutate(
-    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Ano = as.character(seq(2016, 2016 + n() - 1)),
     N = as.numeric(V1)     
   ) %>%
   select(Ano, N)
 
-Total <- left_join(Total_Inc,
-                   Total_N,
-                   by = "Ano")
+Total <- left_join(Total_Inc, Total_N, by = "Ano") %>%
+  mutate(Ano = as.factor(Ano))
 
 fator_escala <- (max(Total$N, na.rm = TRUE) / 150)
 
-PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, 
-                                                     aes(x = Ano, y = Incidencia)) + 
+PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Incidencia)) + 
   geom_col(aes(y = N / fator_escala), 
            fill = "#dcdde1", 
-           width = 0.6)+
+           width = 0.4) +
   geom_text(aes(y = N / fator_escala / 2, 
                 label = format(N, big.mark = ".")), 
             size = 4, 
             fontface = "bold") +
-  geom_line(aes(x = Ano,
-                y = Incidencia,
-                group = 1),
+  geom_line(aes(group = 1), 
             colour = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Casos/100.000 habitantes",
+  labs(y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Mortalidade por Câncer/100.000 habitantes no Paraná") +
-  geom_text(aes(label = format(round(Incidencia, 2),
-                               decimal.mark = ",")), 
+       title = "Nº de Óbitos e Mortalidade por Neoplasias/100.000 habitantes no Paraná") +
+  geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
-            vjust = -2, 
+            vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 180), 
-                     breaks = seq(0, 180, 20),
+  scale_y_continuous(limits = c(0, 240), 
+                     breaks = seq(0, 240, 20),
                      sec.axis = sec_axis(~ . * fator_escala, 
-                                         name = "Casos",
+                                         name = "Nº de Óbitos (Absoluto)",
                                          labels = label_number(big.mark = "."))) +
-  scale_x_discrete(breaks = 2016:2025) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
   Theme()
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia.png",
+       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia,
+       width = 26,          
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
 
 ##### Regional
 
@@ -2647,7 +2812,7 @@ AUX <- AUX %>%
 
 RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_header(
-    title = md("**Incidência de Neoplasias Malignas por Localização**"),
+    title = md("**Mortalidade por Neoplasias Malignas na 22ª Regional de Saúde**"),
     subtitle = md("22 ª Regional de Saúde, 2016 – 2025")
   ) %>%
   tab_options(
@@ -2708,7 +2873,7 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
     footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
   ) %>%
   tab_footnote(
-    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (População Estimada IBGE)."
+    footnote = "Nota¹: Incidência calculada por 100.000 habitantes (População Estimada IBGE)."
   ) %>%
   tab_footnote(
     footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
@@ -2754,7 +2919,7 @@ Total_Inc <- Total %>%
   t() %>%
   as.data.frame() %>% 
   mutate(
-    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Ano = as.character(seq(2016, 2016 + n() - 1)),
     Incidencia = as.numeric(V1)     
   ) %>%
   select(Ano, Incidencia)
@@ -2764,52 +2929,55 @@ Total_N <- Total %>%
   t() %>%
   as.data.frame() %>% 
   mutate(
-    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Ano = as.character(seq(2016, 2016 + n() - 1)),
     N = as.numeric(V1)     
   ) %>%
   select(Ano, N)
 
-Total <- left_join(Total_Inc,
-                   Total_N,
-                   by = "Ano")
+Total <- left_join(Total_Inc, Total_N, by = "Ano") %>%
+  mutate(Ano = as.factor(Ano))
 
 fator_escala <- (max(Total$N, na.rm = TRUE) / 190)
 
-PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, 
-                                                     aes(x = Ano, y = Incidencia)) + 
+RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Incidencia)) + 
   geom_col(aes(y = N / fator_escala), 
            fill = "#dcdde1", 
-           width = 0.6)+
+           width = 0.4) +
   geom_text(aes(y = N / fator_escala / 2, 
                 label = format(N, big.mark = ".")), 
             size = 4, 
             fontface = "bold") +
-  geom_line(aes(x = Ano,
-                y = Incidencia,
-                group = 1),
+  geom_line(aes(group = 1),
             colour = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Casos/100.000 habitantes",
+  labs(y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Mortalidade por Câncer/100.000 habitantes e Número de Casos na 22ª RS") +
-  geom_text(aes(label = format(round(Incidencia, 2),
-                               decimal.mark = ",")), 
+       title = "Nº de Óbitos e Mortalidade por Câncer/100.000 Habitantes na 22ª RS") +
+  geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
-            vjust = -2, 
+            vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 200), 
-                     breaks = seq(0, 200, 20),
+  scale_y_continuous(limits = c(0, 280), 
+                     breaks = seq(0, 280, 20),
                      sec.axis = sec_axis(~ . * fator_escala, 
-                                         name = "Casos",
+                                         name = "Nº de Óbitos (Absoluto)",
                                          breaks = c(0, 100, 200, 300),
                                          labels = c("0", "100", "200", "300"))) +
-  scale_x_discrete(breaks = 2016:2025) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
   Theme()
 
-#### Mesmo procedimento para idade de 30 a 69 anos
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia.png",
+       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia,
+       width = 26,          
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+### Mesmo procedimento para idade de 30 a 69 anos
 
 Base_Populacional_Masculina_2022_30_69 <- Base_Populacional_Masculina_2022 %>%
   mutate(across(c(X30.a.34.anos, X35.a.39.anos, X40.a.44.anos, X45.a.49.anos,
@@ -3051,7 +3219,7 @@ AUX <- AUX %>%
 
 PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_header(
-    title = md("**Incidência de Neoplasias Malignas por Localização em  População de 30 a 69 anos**"),
+    title = md("**Mortalidade por Neoplasias Malignas em População de 30 a 69 anos - Paraná**"),
     subtitle = md("Paraná, 2016 – 2025")
   ) %>%
   tab_options(
@@ -3112,7 +3280,7 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
     footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
   ) %>%
   tab_footnote(
-    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
+    footnote = "Nota¹: Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
   ) %>%
   tab_footnote(
     footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
@@ -3158,7 +3326,7 @@ Total_Inc <- Total %>%
   t() %>%
   as.data.frame() %>% 
   mutate(
-    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Ano = as.character(seq(2016, 2016 + n() - 1)),
     Incidencia = as.numeric(V1)     
   ) %>%
   select(Ano, Incidencia)
@@ -3168,49 +3336,51 @@ Total_N <- Total %>%
   t() %>%
   as.data.frame() %>% 
   mutate(
-    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Ano = as.character(seq(2016, 2016 + n() - 1)),
     N = as.numeric(V1)     
   ) %>%
   select(Ano, N)
 
-Total <- left_join(Total_Inc,
-                   Total_N,
-                   by = "Ano")
+Total <- left_join(Total_Inc, Total_N, by = "Ano") %>%
+  mutate(Ano = as.factor(Ano))
 
 fator_escala <- (max(Total$N, na.rm = TRUE) / 140)
-
-PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, 
-                                                     aes(x = Ano, y = Incidencia)) + 
+PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y = Incidencia)) + 
   geom_col(aes(y = N / fator_escala), 
            fill = "#dcdde1", 
-           width = 0.6)+
+           width = 0.4) +
   geom_text(aes(y = N / fator_escala / 2, 
                 label = format(N, big.mark = ".")), 
             size = 4, 
             fontface = "bold") +
-  geom_line(aes(x = Ano,
-                y = Incidencia,
-                group = 1),
+  geom_line(aes(group = 1),
             colour = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Casos/100.000 habitantes",
+  labs(y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Mortalidade por Câncer/100.000 habitantes no Paraná") +
-  geom_text(aes(label = format(round(Incidencia, 2),
-                               decimal.mark = ",")), 
+       title = "Nº de Óbitos e Mortalidade por Neoplasias/100.000 em População de 30 a 69 anos no Paraná") +
+  geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
-            vjust = -2, 
+            vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 180), 
-                     breaks = seq(0, 180, 20),
+  scale_y_continuous(limits = c(0, 240), 
+                     breaks = seq(0, 240, 20),
                      sec.axis = sec_axis(~ . * fator_escala, 
-                                         name = "Casos",
+                                         name = "Nº de Óbitos (Absoluto)",
                                          labels = label_number(big.mark = "."))) +
-  scale_x_discrete(breaks = 2016:2025) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
   Theme()
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
+       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
+       width = 26,          
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
 
 #### Mesmo procedimento para idade de 30 a 69 anos REGIONAL
 
@@ -3504,7 +3674,7 @@ AUX <- AUX %>%
 
 RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_header(
-    title = md("**Incidência de Neoplasias Malignas por Localização em  População de 30 a 69 anos**"),
+    title = md("**Mortalidade por Neoplasias Malignas em  População de 30 a 69 anos na 22ª Regional de Saúde**"),
     subtitle = md("22ª Regional de Saúde, 2016 – 2025")
   ) %>%
   tab_options(
@@ -3611,7 +3781,7 @@ Total_Inc <- Total %>%
   t() %>%
   as.data.frame() %>% 
   mutate(
-    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Ano = as.character(seq(2016, 2016 + n() - 1)),
     Incidencia = as.numeric(V1)     
   ) %>%
   select(Ano, Incidencia)
@@ -3621,50 +3791,53 @@ Total_N <- Total %>%
   t() %>%
   as.data.frame() %>% 
   mutate(
-    Ano = as.factor(seq(2016, 2016 + n() - 1)),
+    Ano = as.character(seq(2016, 2016 + n() - 1)),
     N = as.numeric(V1)     
   ) %>%
   select(Ano, N)
 
-Total <- left_join(Total_Inc,
-                   Total_N,
-                   by = "Ano")
+Total <- left_join(Total_Inc, Total_N, by = "Ano") %>%
+  mutate(Ano = as.factor(Ano))
 
 fator_escala <- (max(Total$N, na.rm = TRUE) / 140)
 
-RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, 
-                                                     aes(x = Ano, y = Incidencia)) + 
+RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y = Incidencia)) + 
   geom_col(aes(y = N / fator_escala), 
            fill = "#dcdde1", 
-           width = 0.6)+
+           width = 0.4) +
   geom_text(aes(y = N / fator_escala / 2, 
                 label = format(N, big.mark = ".")), 
             size = 4, 
             fontface = "bold") +
-  geom_line(aes(x = Ano,
-                y = Incidencia,
-                group = 1),
+  geom_line(aes(group = 1),
             colour = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Casos/100.000 habitantes",
+  labs(y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Mortalidade por Câncerem População entre 30 e 69 Anos/100.000 habitantes e Número de Casos na 22ª RS") +
-  geom_text(aes(label = format(round(Incidencia, 2),
-                               decimal.mark = ",")), 
+       title = "Nº de Óbitos e Mortalidade por Neoplasias/100.000 habitantes em População de 30 a 69 anos na 22ª RS") +
+  geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
-            vjust = -2, 
+            vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 200), 
-                     breaks = seq(0, 200, 20),
+  scale_y_continuous(limits = c(0, 280), 
+                     breaks = seq(0, 280, 20),
                      sec.axis = sec_axis(~ . * fator_escala, 
-                                         name = "Casos",
+                                         name = "Nº de Óbitos (Absoluto)",
                                          breaks = c(0, 100, 200, 300),
                                          labels = c("0", "100", "200", "300"))) +
-  scale_x_discrete(breaks = 2016:2025) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
   Theme()
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
+       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
+       width = 26,         
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
 
 #### Mesmo procedimento para menores de 30 anos
 
@@ -3903,7 +4076,7 @@ AUX <- AUX %>%
 
 PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
   tab_header(
-    title = md("**Incidência de Neoplasias Malignas por Localização em  População de 30 a 69 anos**"),
+    title = md("**Mortalidade por Neoplasias Malignas em População Menor de 30 Anos - Paraná**"),
     subtitle = md("Paraná, 2016 – 2025")
   ) %>%
   tab_options(
@@ -4050,7 +4223,7 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
              shape = 21) + 
   labs(y = "Casos/100.000 habitantes",
        x = NULL,
-       title = "Mortalidade por Câncer/100.000 habitantes no Paraná") +
+       title = "Nº de Casos e Mortalidade por Câncer/100.000 habitantes em População Menor de 30 anos - Paraná") +
   geom_text(aes(label = format(round(Incidencia, 2),
                                decimal.mark = ",")), 
             size = 4, 
@@ -4354,7 +4527,7 @@ AUX <- AUX %>%
 
 RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
   tab_header(
-    title = md("**Incidência de Neoplasias Malignas por Localização em  População Menor de 30 anos**"),
+    title = md("**Mortalidade por Neoplasias Malignas em  População Menor de 30 anos - 22ª Regional de Saúde**"),
     subtitle = md("22ª Regional de Saúde, 2016 – 2025")
   ) %>%
   tab_options(
@@ -4501,7 +4674,7 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
              shape = 21) + 
   labs(y = "Casos/100.000 habitantes",
        x = NULL,
-       title = "Mortalidade por Câncer em População Menor de 30 Anos/100.000 habitantes e Número de Casos na 22ª RS") +
+       title = "Nº de Casos e Mortalidade por Câncer em População Menor de 30 Anos/100.000 habitantes - 22ª RS") +
   geom_text(aes(label = format(round(Incidencia, 2),
                                decimal.mark = ",")), 
             size = 4, 
@@ -4515,6 +4688,59 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
                                          labels = c("0", "100", "200", "300"))) +
   scale_x_discrete(breaks = 2016:2025) +
   Theme()
+
+#### Salvando material
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia.png",
+  plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia,
+  width = 25,          # Reduzido de 25 para compactar a horizontal
+  height = 15,         # Reduzido de 15 para 10 (Proporção 2:1 ideal para séries temporais)
+  units = "cm",
+  dpi = 300,            
+  bg = "white"
+)
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
+       PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
+       width = 25,          
+       height = 15,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
+       PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
+       width = 25,          
+       height = 15,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
+       RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
+       width = 25,          
+       height = 15,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
+       RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
+       width = 25,          
+       height = 15,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+#########  Tabelas
+
+gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20,
+       filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20.pdf")
+
+gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25,
+       filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25.pdf")
+
+
 
 ###############################################################################################
 ###############################################################################################
@@ -4692,7 +4918,7 @@ PR_DERAL_MAP_AGRO_HA_21_24 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -4727,7 +4953,7 @@ PR_DERAL_MAP_TON_AGRO_21_24 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno", 
+  scale_fill_viridis_d(option = "mako", 
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -4762,7 +4988,7 @@ PR_DERAL_MAP_HA_21_24 <- ggplot() +
   annotation_north_arrow(location = "tl", 
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -4825,7 +5051,7 @@ PR_DERAL_MAP_AGRO_HA_17_20 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -4860,7 +5086,7 @@ PR_DERAL_MAP_TON_AGRO_17_20 <- ggplot() +
   annotation_north_arrow(location = "tl", 
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -4895,7 +5121,7 @@ PR_DERAL_MAP_HA_17_20 <- ggplot() +
   annotation_north_arrow(location = "tl", 
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -5040,7 +5266,7 @@ PR_DERAL_MAP_Mun_AGRO_HA_17_20 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -5073,7 +5299,7 @@ PR_DERAL_MAP_Mun_AGRO_HA_21_24 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -5125,7 +5351,7 @@ PR_DERAL_MAP_Mun_TON_AGRO_17_20 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -5158,7 +5384,7 @@ PR_DERAL_MAP_Mun_TON_AGRO_21_24 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -5206,7 +5432,7 @@ PR_DERAL_MAP_Mun_HA_17_20 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -5238,7 +5464,7 @@ PR_DERAL_MAP_Mun_HA_21_24 <- ggplot() +
   annotation_north_arrow(location = "tl",
                          which_north = "true",
                          style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno",
+  scale_fill_viridis_d(option = "mako",
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
@@ -5711,6 +5937,785 @@ ggplot(st_drop_geometry(MAPA_BASE_PR),
   ) +
   Theme()
 
+###### Mapas de cultivos
+
+PR_DERAL_2016_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2016_CULTIVOS_MUNICIPIOS.csv",
+                                        header = TRUE,
+                                        sep = ",")
+
+PR_DERAL_2017_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2017_CULTIVOS_MUNICIPIOS.csv",
+                                               header = TRUE,
+                                               sep = ",")
+
+PR_DERAL_2018_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2018_CULTIVOS_MUNICIPIOS.csv",
+                                               header = TRUE,
+                                               sep = ",")
+
+PR_DERAL_2019_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2019_CULTIVOS_MUNICIPIOS.csv",
+                                               header = TRUE,
+                                               sep = ",")
+
+PR_DERAL_2020_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2020_CULTIVOS_MUNICIPIOS.csv",
+                                               header = TRUE,
+                                               sep = ",")
+
+PR_DERAL_2021_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2021_CULTIVOS_MUNICIPIOS.csv",
+                                               header = TRUE,
+                                               sep = ",")
+
+PR_DERAL_2022_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2022_CULTIVOS_MUNICIPIOS.csv",
+                                               header = TRUE,
+                                               sep = ",")
+
+PR_DERAL_2023_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2023_CULTIVOS_MUNICIPIOS.csv",
+                                               header = TRUE,
+                                               sep = ",")
+
+PR_DERAL_2024_CULTIVOS_MUNICIPIOS <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2024_CULTIVOS_MUNICIPIOS.csv",
+                                               header = TRUE,
+                                               sep = ",")
+
+#### 2017 - 2020
+AUX_Cultivos_17_20 <- bind_rows(PR_DERAL_2017_CULTIVOS_MUNICIPIOS %>% 
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2017),
+                                PR_DERAL_2018_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2018),
+                                PR_DERAL_2019_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2019),
+                                PR_DERAL_2020_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2020)
+)
+
+AUX <- AUX_Cultivos_17_20 %>% 
+  filter(str_detect(CULTURA, regex("SOJA", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_SOJA_17_20 = sum(PRODUCAO, na.rm = TRUE),
+    Area_SOJA_17_20      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_SOJA_17_20, Area_SOJA_17_20),
+                           by = c("NM_MUN" = "MUNICIPIO"))
+#### 2021 - 2024
+
+AUX_Cultivos_21_24 <- bind_rows(PR_DERAL_2021_CULTIVOS_MUNICIPIOS %>% 
+    select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+    mutate(ANO_DATA = 2021),
+  PR_DERAL_2022_CULTIVOS_MUNICIPIOS %>%
+    select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+     mutate(ANO_DATA = 2022),
+  PR_DERAL_2023_CULTIVOS_MUNICIPIOS %>%
+    select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+     mutate(ANO_DATA = 2023),
+  PR_DERAL_2024_CULTIVOS_MUNICIPIOS %>%
+    select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+     mutate(ANO_DATA = 2024)
+)
+
+AUX <- AUX_Cultivos_21_24 %>% 
+  filter(str_detect(CULTURA, regex("SOJA", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_SOJA_21_24 = sum(PRODUCAO, na.rm = TRUE),
+    Area_SOJA_21_24      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_SOJA_21_24, Area_SOJA_21_24),
+                           by = c("NM_MUN" = "MUNICIPIO")) %>%
+  mutate(
+    Area_SOJA_17_20 = replace_na(Area_SOJA_17_20, 0),
+    Area_SOJA_21_24 = replace_na(Area_SOJA_21_24, 0))
+
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_SOJA_17_20,
+                                             breaks = c(0, 1, 25000, 50000, 100000, 150000, 200000, 300000, Inf),
+                                             labels = c("Sem cultivo", 
+                                                        "Até 25.000", 
+                                                        "25.000 - 50.000", 
+                                                        "50.000 - 100.000", 
+                                                        "100.000 - 150.000", 
+                                                        "150.000 - 200.000", 
+                                                        "200.000 - 300.000", 
+                                                        "Acima de 300.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_SOJA_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2017 - 2020")  +
+  Theme()
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_SOJA_21_24,
+                                             breaks = c(0, 1, 25000, 50000, 100000, 150000, 200000, 300000, Inf),
+                                             labels = c("Sem cultivo", 
+                                                        "Até 25.000", 
+                                                        "25.000 - 50.000", 
+                                                        "50.000 - 100.000", 
+                                                        "100.000 - 150.000", 
+                                                        "150.000 - 200.000", 
+                                                        "200.000 - 300.000", 
+                                                        "Acima de 300.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_SOJA_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2021 - 2024")  +
+  Theme()
+
+PR_DERAL_MAP_HA_SOJA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_SOJA_17_20 + 
+  PR_DERAL_MAP_Mun_HA_SOJA_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Área Cultivada de Soja no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HECTARES)',
+                  caption =  Fonte3) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+#### Milho
+
+AUX <- AUX_Cultivos_17_20 %>% 
+  filter(str_detect(CULTURA, regex("MILHO", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_MILHO_17_20 = sum(PRODUCAO, na.rm = TRUE),
+    Area_MILHO_17_20      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_MILHO_17_20, Area_MILHO_17_20),
+                           by = c("NM_MUN" = "MUNICIPIO"))
+#### 2021 - 2024
+
+AUX_Cultivos_21_24 <- bind_rows(PR_DERAL_2021_CULTIVOS_MUNICIPIOS %>% 
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2021),
+                                PR_DERAL_2022_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2022),
+                                PR_DERAL_2023_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2023),
+                                PR_DERAL_2024_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2024)
+)
+
+AUX <- AUX_Cultivos_21_24 %>% 
+  filter(str_detect(CULTURA, regex("MILHO", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_MILHO_21_24 = sum(PRODUCAO, na.rm = TRUE),
+    Area_MILHO_21_24      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_MILHO_21_24, Area_MILHO_21_24),
+                           by = c("NM_MUN" = "MUNICIPIO")) %>%
+  mutate(
+    Area_MILHO_17_20 = replace_na(Area_MILHO_17_20, 0),
+    Area_MILHO_21_24 = replace_na(Area_MILHO_21_24, 0))
+
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_MILHO_17_20,
+                                             breaks = c(0, 1, 10000, 25000, 50000, 100000, 150000, 200000, Inf),
+                                             labels = c("Sem cultivo", 
+                                                        "Até 10.000", 
+                                                        "10.000 - 25.000", 
+                                                        "25.000 - 50.000", 
+                                                        "50.000 - 100.000", 
+                                                        "100.000 - 150.000", 
+                                                        "150.000 - 200.000", 
+                                                        "Acima de 200.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_MILHO_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2017 - 2020")  +
+  Theme()
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_MILHO_21_24,
+                                             breaks = c(0, 1, 10000, 25000, 50000, 100000, 150000, 200000, Inf),
+                                             labels = c("Sem cultivo", 
+                                                        "Até 10.000", 
+                                                        "10.000 - 25.000", 
+                                                        "25.000 - 50.000", 
+                                                        "50.000 - 100.000", 
+                                                        "100.000 - 150.000", 
+                                                        "150.000 - 200.000", 
+                                                        "Acima de 200.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_MILHO_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2021 - 2024")  +
+  Theme()
+
+PR_DERAL_MAP_HA_MILHO_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_MILHO_17_20 + 
+  PR_DERAL_MAP_Mun_HA_MILHO_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Área Cultivada de MILHO no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HECTARES)',
+                  caption =  Fonte3) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+#### Trigo
+
+AUX <- AUX_Cultivos_17_20 %>% 
+  filter(str_detect(CULTURA, regex("Trigo", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_Trigo_17_20 = sum(PRODUCAO, na.rm = TRUE),
+    Area_Trigo_17_20      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_Trigo_17_20, Area_Trigo_17_20),
+                           by = c("NM_MUN" = "MUNICIPIO"))
+#### 2021 - 2024
+
+AUX_Cultivos_21_24 <- bind_rows(PR_DERAL_2021_CULTIVOS_MUNICIPIOS %>% 
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2021),
+                                PR_DERAL_2022_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2022),
+                                PR_DERAL_2023_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2023),
+                                PR_DERAL_2024_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2024)
+)
+
+AUX <- AUX_Cultivos_21_24 %>% 
+  filter(str_detect(CULTURA, regex("Trigo", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_Trigo_21_24 = sum(PRODUCAO, na.rm = TRUE),
+    Area_Trigo_21_24      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_Trigo_21_24, Area_Trigo_21_24),
+                           by = c("NM_MUN" = "MUNICIPIO")) %>%
+  mutate(
+    Area_Trigo_17_20 = replace_na(Area_Trigo_17_20, 0),
+    Area_Trigo_21_24 = replace_na(Area_Trigo_21_24, 0))
+
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_Trigo_17_20,
+                                             breaks = c(0, 1, 1000, 5000, 15000, 30000, 60000, 100000, Inf),
+                                             labels = c("Sem cultivo", 
+                                                        "Até 1.000", 
+                                                        "1.000 - 5.000", 
+                                                        "5.000 - 15.000", 
+                                                        "15000 - 30.000", 
+                                                        "30.000 - 60.000", 
+                                                        "60.000 - 100.000", 
+                                                        "Acima de 100.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_Trigo_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2017 - 2020")  +
+  Theme()
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_Trigo_21_24,
+                                             breaks = c(0, 1, 1000, 5000, 15000, 30000, 60000, 100000, Inf),
+                                             labels = c("Sem cultivo", 
+                                                        "Até 1.000", 
+                                                        "1.000 - 5.000", 
+                                                        "5.000 - 15.000", 
+                                                        "15000 - 30.000", 
+                                                        "30.000 - 60.000", 
+                                                        "60.000 - 100.000", 
+                                                        "Acima de 100.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_Trigo_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2021 - 2024")  +
+  Theme()
+
+PR_DERAL_MAP_HA_Trigo_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_Trigo_17_20 + 
+  PR_DERAL_MAP_Mun_HA_Trigo_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Área Cultivada de Trigo no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HECTARES)',
+                  caption =  Fonte3) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+#### Feijão
+
+AUX <- AUX_Cultivos_17_20 %>% 
+  filter(str_detect(CULTURA, regex("FEIJ[AÃ]O", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_FEIJAO_17_20 = sum(PRODUCAO, na.rm = TRUE),
+    Area_FEIJAO_17_20      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_FEIJAO_17_20, Area_FEIJAO_17_20),
+                           by = c("NM_MUN" = "MUNICIPIO"))
+#### 2021 - 2024
+
+AUX_Cultivos_21_24 <- bind_rows(PR_DERAL_2021_CULTIVOS_MUNICIPIOS %>% 
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2021),
+                                PR_DERAL_2022_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2022),
+                                PR_DERAL_2023_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2023),
+                                PR_DERAL_2024_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2024)
+)
+
+AUX <- AUX_Cultivos_21_24 %>% 
+  filter(str_detect(CULTURA, regex("FEIJ[AÃ]O", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_FEIJAO_21_24 = sum(PRODUCAO, na.rm = TRUE),
+    Area_FEIJAO_21_24      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_FEIJAO_21_24, Area_FEIJAO_21_24),
+                           by = c("NM_MUN" = "MUNICIPIO")) %>%
+  mutate(
+    Area_FEIJAO_17_20 = replace_na(Area_FEIJAO_17_20, 0),
+    Area_FEIJAO_21_24 = replace_na(Area_FEIJAO_21_24, 0))
+
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_FEIJAO_17_20,
+                                             breaks = c(0, 1, 200, 1000, 3000, 10000, 30000, 60000, Inf),
+                                             labels = c("Sem cultivo", 
+                                                        "Até 200", 
+                                                        "200 - 1.000", 
+                                                        "1.000 - 3.000", 
+                                                        "3.000 - 10.000", 
+                                                        "10.000 - 30.000", 
+                                                        "30.000 - 60.000", 
+                                                        "Acima de 60.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_FEIJAO_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2017 - 2020")  +
+  Theme()
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_FEIJAO_21_24,
+                                             breaks = c(0, 1, 200, 1000, 3000, 10000, 30000, 60000, Inf),
+                                             labels = c("Sem cultivo", 
+                                                        "Até 200", 
+                                                        "200 - 1.000", 
+                                                        "1.000 - 3.000", 
+                                                        "3.000 - 10.000", 
+                                                        "10.000 - 30.000", 
+                                                        "30.000 - 60.000", 
+                                                        "Acima de 60.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_FEIJAO_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2021 - 2024")  +
+  Theme()
+
+PR_DERAL_MAP_HA_FEIJAO_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_FEIJAO_17_20 + 
+  PR_DERAL_MAP_Mun_HA_FEIJAO_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Área Cultivada de Feijão no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HECTARES)',
+                  caption =  Fonte3) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+AUX <- AUX_Cultivos_17_20 %>% 
+  filter(str_detect(CULTURA, regex("A[CÇ][UÚ]CAR", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_CANA_17_20 = sum(PRODUCAO, na.rm = TRUE),
+    Area_CANA_17_20      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_CANA_17_20, Area_CANA_17_20),
+                           by = c("NM_MUN" = "MUNICIPIO"))
+#### 2021 - 2024
+
+AUX_Cultivos_21_24 <- bind_rows(PR_DERAL_2021_CULTIVOS_MUNICIPIOS %>% 
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2021),
+                                PR_DERAL_2022_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2022),
+                                PR_DERAL_2023_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2023),
+                                PR_DERAL_2024_CULTIVOS_MUNICIPIOS %>%
+                                  select(MUNICIPIO, CULTURA, AREA_HA, PRODUCAO, VALOR_Reais, RS) %>%
+                                  mutate(ANO_DATA = 2024)
+)
+
+AUX <- AUX_Cultivos_21_24 %>% 
+  filter(str_detect(CULTURA, regex("A[CÇ][UÚ]CAR", ignore_case = TRUE))) %>%
+  group_by(MUNICIPIO) %>%
+  summarise(
+    Producao_CANA_21_24 = sum(PRODUCAO, na.rm = TRUE),
+    Area_CANA_21_24      = sum(AREA_HA, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "ITAPEJARA DOESTE", "ITAPEJARA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "BELA VISTA DO CAROBA", "BELA VISTA DA CAROBA")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "PEROLA DOESTE", "PEROLA D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SAO JORGE DOESTE", "SAO JORGE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "RANCHO ALEGRE DOESTE", "RANCHO ALEGRE D'OESTE")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "SANTA CRUZ MONTE CASTELO", "SANTA CRUZ DE MONTE CASTELO")
+AUX$MUNICIPIO <- str_replace(AUX$MUNICIPIO, "DIAMANTE DOESTE", "DIAMANTE D'OESTE")
+
+MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
+                           AUX %>%
+                             select(MUNICIPIO, Producao_CANA_21_24, Area_CANA_21_24),
+                           by = c("NM_MUN" = "MUNICIPIO")) %>%
+  mutate(
+    Area_CANA_17_20 = replace_na(Area_CANA_17_20, 0),
+    Area_CANA_21_24 = replace_na(Area_CANA_21_24, 0))
+
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_CANA_17_20,
+                                             breaks = c(0, 1, 500, 2000, 5000, 15000, 30000, 50000, Inf),
+                                             labels = c("Sem cultivo comercial", 
+                                                        "Até 500", 
+                                                        "500 - 2.000", 
+                                                        "2.000 - 5.000", 
+                                                        "5.000 - 15.000", 
+                                                        "15.000 - 30.000", 
+                                                        "30.000 - 50.000", 
+                                                        "Acima de 50.000"), 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_CANA_17_20 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2017 - 2020")  +
+  Theme()
+
+MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_CANA_21_24,
+                                             breaks = c(0, 1, 500, 2000, 5000, 15000, 30000, 50000, Inf),
+                                             labels = c("Sem cultivo comercial", 
+                                                        "Até 500", 
+                                                        "500 - 2.000", 
+                                                        "2.000 - 5.000", 
+                                                        "5.000 - 15.000", 
+                                                        "15.000 - 30.000", 
+                                                        "30.000 - 50.000", 
+                                                        "Acima de 50.000"),, 
+                                             right = FALSE
+))
+
+PR_DERAL_MAP_Mun_HA_CANA_21_24 <- ggplot() + 
+  geom_sf(data = MAPA_BASE_Mun, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "mako",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = "HECTARES", 
+       title = "2021 - 2024")  +
+  Theme()
+
+PR_DERAL_MAP_HA_CANA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_CANA_17_20 + 
+  PR_DERAL_MAP_Mun_HA_CANA_21_24 + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Área Cultivada de Cana de Açucar no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HECTARES)',
+                  caption =  Fonte3) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
 ##### Salvando objetos
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/DERAL/RS_DERAL_GRAF_AGRO_HA_CULTIVADO.png",
@@ -5791,6 +6796,51 @@ ggsave(filename = "Imagens/DERAL/PR_PEVASPEA_DERAL_LOCAL_MORAN_16_20_21_25.png",
 
 ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_AGRO_HA_17_20_21_24.png", 
        plot = PR_DERAL_MAP_AGRO_HA_17_20_21_24, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_HA_Trigo_Mun_17_20_21_24.png", 
+       plot = PR_DERAL_MAP_HA_Trigo_Mun_17_20_21_24, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_HA_CANA_Mun_17_20_21_24.png", 
+       plot = PR_DERAL_MAP_HA_CANA_Mun_17_20_21_24, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_HA_FEIJAO_Mun_17_20_21_24.png", 
+       plot = PR_DERAL_MAP_HA_FEIJAO_Mun_17_20_21_24, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_HA_MILHO_Mun_17_20_21_24.png", 
+       plot = PR_DERAL_MAP_HA_MILHO_Mun_17_20_21_24, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_HA_SOJA_Mun_17_20_21_24.png", 
+       plot = PR_DERAL_MAP_HA_SOJA_Mun_17_20_21_24, 
        width = 35,                               
        height = 18,                               
        units = "cm",                               
