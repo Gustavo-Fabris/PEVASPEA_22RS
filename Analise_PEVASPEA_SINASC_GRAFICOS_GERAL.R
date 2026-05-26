@@ -4205,37 +4205,43 @@ Total <- left_join(Total_Inc,
 fator_escala <- (max(Total$N, na.rm = TRUE) / 8)
 
 PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total, 
-                                                           aes(x = Ano, y = Incidencia)) + 
+                                                            aes(x = Ano, y = Incidencia)) + 
   geom_col(aes(y = N / fator_escala), 
            fill = "#dcdde1", 
-           width = 0.6)+
+           width = 0.4) +
   geom_text(aes(y = N / fator_escala / 2, 
                 label = format(N, big.mark = ".")), 
             size = 4, 
             fontface = "bold") +
-  geom_line(aes(x = Ano,
-                y = Incidencia,
-                group = 1),
+  geom_line(aes(group = 1),
             colour = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Casos/100.000 habitantes",
+  labs(y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Nº de Casos e Mortalidade por Câncer/100.000 habitantes em População Menor de 30 anos - Paraná") +
-  geom_text(aes(label = format(round(Incidencia, 2),
-                               decimal.mark = ",")), 
+       title = "Nº de Óbitos e Mortalidade por Câncer/100.000 habitantes em População Menor de 30 anos - Paraná") +
+  geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
-            vjust = -2, 
+            vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 15), 
-                     breaks = seq(0, 15, 5),
+  scale_y_continuous(limits = c(0, 20), 
+                     breaks = seq(0, 20, 5),
                      sec.axis = sec_axis(~ . * fator_escala, 
-                                         name = "Casos",
+                                         name = "Nº de Óbitos (Absoluto)",
                                          labels = label_number(big.mark = "."))) +
-  scale_x_discrete(breaks = 2016:2025) +
+  scale_x_discrete(breaks = as.character(2016:2025)) + 
   Theme()
+
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
+       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
+       width = 26,          
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
 
 #### Mesmo procedimento para menores de 30 anos Regional
 
@@ -4656,81 +4662,46 @@ Total <- left_join(Total_Inc,
 fator_escala <- (max(Total$N, na.rm = TRUE) / 5)
 
 RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total, 
-                                                           aes(x = Ano, y = Incidencia)) + 
+                                                            aes(x = Ano, y = Incidencia)) + 
   geom_col(aes(y = N / fator_escala), 
            fill = "#dcdde1", 
-           width = 0.6)+
+           width = 0.4) +
   geom_text(aes(y = N / fator_escala / 2, 
                 label = format(N, big.mark = ".")), 
             size = 4, 
             fontface = "bold") +
-  geom_line(aes(x = Ano,
-                y = Incidencia,
-                group = 1),
+  geom_line(aes(group = 1),
             colour = "black",
             linewidth = 1.3) +
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Casos/100.000 habitantes",
+  labs(y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Nº de Casos e Mortalidade por Câncer em População Menor de 30 Anos/100.000 habitantes - 22ª RS") +
-  geom_text(aes(label = format(round(Incidencia, 2),
-                               decimal.mark = ",")), 
+       title = "Nº de Óbitos e Mortalidade por Câncer/100.000 habitantes em População Menor de 30 Anos - 22ª RS") +
+  geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
-            vjust = -2, 
+            vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 20), 
-                     breaks = seq(0, 20, 5),
+  scale_y_continuous(limits = c(0, 25), 
+                     breaks = seq(0, 25, 5),
                      sec.axis = sec_axis(~ . * fator_escala, 
-                                         name = "Casos",
+                                         name = "Nº de Óbitos (Absoluto)",
                                          breaks = c(0, 100, 200, 300),
                                          labels = c("0", "100", "200", "300"))) +
-  scale_x_discrete(breaks = 2016:2025) +
+  scale_x_discrete(breaks = as.character(2016:2025)) + 
   Theme()
 
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
+       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
+       width = 26,         
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
 #### Salvando material
 
-ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia.png",
-  plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia,
-  width = 25,          # Reduzido de 25 para compactar a horizontal
-  height = 15,         # Reduzido de 15 para 10 (Proporção 2:1 ideal para séries temporais)
-  units = "cm",
-  dpi = 300,            
-  bg = "white"
-)
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
-       PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
-       width = 25,          
-       height = 15,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
-       PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
-       width = 25,          
-       height = 15,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
-       RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
-       width = 25,          
-       height = 15,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
-       RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
-       width = 25,          
-       height = 15,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
 
 #########  Tabelas
 
