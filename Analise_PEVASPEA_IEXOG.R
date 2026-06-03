@@ -3111,7 +3111,7 @@ AUX$Outra <- NA
 
 ###      For Loop para geração da tabela RS22_Utilização      ###
 
-for(i in BASE_IBGE[(which(BASE_IBGE$RS == RS)), 2]){
+for(i in BASE_IBGE[, 2]){
   
   AUX[which(AUX$Código_IBGE == i), 5] <- as.integer(IEXOGNET2016 %>% 
                                                       filter(ID_MN_RESI == i,
@@ -3196,7 +3196,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2016_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2016_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -6517,7 +6517,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2017_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2017_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -9838,7 +9838,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2018_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2018_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -13159,7 +13159,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2019_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2019_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -16480,7 +16480,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2020_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2020_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -19801,7 +19801,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2021_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2021_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -23122,7 +23122,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2022_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2022_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -26443,7 +26443,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2023_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2023_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -29764,7 +29764,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2024_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2024_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -33085,7 +33085,7 @@ AUX[(nrow(AUX)+ 1), 4:17] <- apply(AUX[,4:17], 2, sum)
 
 AUX[nrow(AUX), 1] <- "Total"
 
-assign("PR_2025_LCIRCUNSTANCIA_EXPOSICAO", AUX)
+assign("PR_2025_CIRCUNSTANCIA_EXPOSICAO", AUX)
 
 ##### Circunstância da exposicao
 
@@ -33245,8 +33245,564 @@ AUX[nrow(AUX), 1] <- "Total"
 
 assign("PR_2025_CIRCUNSTANCIA_EXPOSICAO_AGRO", AUX)
 
+######  Montando tabelas Especiais
 
+AUX <- PR_2016_GERAL[nrow(PR_2016_GERAL),]
+AUX[1, 1] <- "2016"
+AUX[nrow(AUX) +1, ] <- PR_2017_GERAL[nrow(PR_2017_GERAL), ]
+AUX[2, 1] <- "2017"
+AUX[nrow(AUX) +1, ] <- PR_2018_GERAL[nrow(PR_2018_GERAL), ]
+AUX[3, 1] <- "2018"
+AUX[nrow(AUX) +1, ] <- PR_2019_GERAL[nrow(PR_2019_GERAL), ]
+AUX[4, 1] <- "2019"
+AUX[nrow(AUX) +1, ] <- PR_2020_GERAL[nrow(PR_2020_GERAL), ]
+AUX[5, 1] <- "2020"
+AUX[nrow(AUX) +1, ] <- PR_2021_GERAL[nrow(PR_2021_GERAL), ]
+AUX[6, 1] <- "2021"
+AUX[nrow(AUX) +1, ] <- PR_2022_GERAL[nrow(PR_2022_GERAL), ]
+AUX[7, 1] <- "2022"
+AUX[nrow(AUX) +1, ] <- PR_2023_GERAL[nrow(PR_2023_GERAL), ]
+AUX[8, 1] <- "2023"
+AUX[nrow(AUX) +1, ] <- PR_2024_GERAL[nrow(PR_2024_GERAL), ]
+AUX[9, 1] <- "2024"
+AUX[nrow(AUX) +1, ] <- PR_2025_GERAL[nrow(PR_2025_GERAL), ]
+AUX[10, 1] <- "2025"
 
+write.csv (AUX, 
+           "Tabulacoes_R/SINAN/PR_SINAN_GERAL_Serie_Hist.csv", 
+           row.names = FALSE)
+
+AUX <- PR_2016_GERAL %>%
+  group_by(RS) %>%
+  summarise(across(4:19, \(x) sum(x, na.rm = TRUE))) %>%
+  mutate(Ano = "2016")
+
+AUX[2, ] <- PR_2017_GERAL %>%
+  group_by(RS) %>%
+  summarise(across(4:19, \(x) sum(x, na.rm = TRUE))) %>%
+  mutate(Ano = "2016")
+
+#### Salvando os objetos de interesse
+
+write.csv (PR_2016_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2016_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2016_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2016_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2016_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2016_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2016_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2016_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2016_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2016_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2016_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2016_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2016_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2016_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2016_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2016_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2016_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2016_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2016_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2016_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2016_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2016_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2016_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2016_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2016_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2016_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2017_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2017_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2017_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2017_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2017_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2017_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2017_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2017_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2017_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2017_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2017_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2017_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2017_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2017_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2017_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2017_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2017_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2017_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2018_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2018_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2018_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2018_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2018_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2018_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2018_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2018_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2018_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2018_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2018_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2018_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2018_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2018_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2018_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2018_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2018_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2018_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2019_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2019_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2019_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2019_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2019_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2019_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2019_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2019_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2019_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2019_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2019_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2019_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2019_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2019_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2019_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2019_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2019_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2019_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2020_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2020_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2020_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2020_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2020_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2020_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2020_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2020_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2020_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2020_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2020_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2020_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2020_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2020_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2020_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2020_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2020_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2020_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2021_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2021_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2021_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2021_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2021_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2021_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2021_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2021_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2021_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2021_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2021_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2021_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2021_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2021_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2021_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2021_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2021_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2021_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2022_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2022_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2022_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2022_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2022_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2022_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2022_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2022_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2022_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2022_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2022_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2022_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2022_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2022_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2022_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2022_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2022_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2022_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2023_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2023_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2023_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2023_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2023_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2023_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2023_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2023_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2023_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2023_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2023_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2023_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2023_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2023_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2023_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2023_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2023_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2023_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2024_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2024_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2024_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2024_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2024_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2024_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2024_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2024_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2024_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2024_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2024_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2024_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2024_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2024_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2024_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2024_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2024_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2024_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_CIRCUNSTANCIA_EXPOSICAO_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2025_CIRCUNSTANCIA_EXPOSICAO_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_GERAL, 
+           "Tabulacoes_R/SINAN/PR_2025_GERAL.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_CIRCUNSTANCIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2025_CIRCUNSTANCIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_LOCAL_OCORRENCIA, 
+           "Tabulacoes_R/SINAN/PR_2025_LOCAL_OCORRENCIA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_LOCAL_TIPO_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2025_LOCAL_TIPO_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_LOCAL_UTILIZACAO, 
+           "Tabulacoes_R/SINAN/PR_2025_LOCAL_UTILIZACAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_LOCAL_VIA_EXPOSICAO, 
+           "Tabulacoes_R/SINAN/PR_2025_LOCAL_VIA_EXPOSICAO.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_PESSOA, 
+           "Tabulacoes_R/SINAN/PR_2025_PESSOA.csv", 
+           row.names = FALSE)
+
+write.csv (PR_2025_PESSOA_AGRO, 
+           "Tabulacoes_R/SINAN/PR_2025_PESSOA_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2025_SINAN, 
+           "Tabulacoes_R/SINAN/RS22_2025_SINAN.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2025_SINAN_AGRO, 
+           "Tabulacoes_R/SINAN/RS22_2025_SINAN_AGRO.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2025_SE_Notificados, 
+           "Tabulacoes_R/SINAN/RS22_2025_SE_Notificados.csv", 
+           row.names = FALSE)
+
+write.csv (RS22_2025_SE_Notificados_Agrot, 
+           "Tabulacoes_R/SINAN/RS22_2025_SE_Notificados_AGRO.csv", 
+           row.names = FALSE)
 
 
 

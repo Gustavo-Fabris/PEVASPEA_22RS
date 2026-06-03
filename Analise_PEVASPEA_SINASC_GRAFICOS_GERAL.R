@@ -5,6 +5,7 @@ setwd("/home/gustavo/Área de trabalho/Análise_de_Dados/")
 ####  Libraries
 
 library(spdep)
+library(purrr)
 library(scales)
 library(patchwork)
 library(foreign)
@@ -70,12 +71,14 @@ PR_DERAL_2024_SIMPLIFICADO <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2024
 
 #### Criando Objetos Fonte para servirem de base para as fontes dos gráficos/mapas
 
-Fonte <- "Fonte: SINASC. Base DBF acessada em 10/04/2026"
-Fonte1 <- "Fonte: SIAGRO. Base atualizada em 12/2025"
-Fonte2 <- "Fonte: DERAL. Acesso em 04/02/2026"
-Fonte3 <- "Fonte: DERAL. Acesso em 04/02/2026
-                SIAGRO. Base atualizada em 12/2025"
-
+Fonte <- "Fonte: SINASC. Base DBF acessada em 10/04/2026. Dados sujeitos a alteração."
+Fonte1 <- "Fonte: SIAGRO. Base atualizada em 12/2025. Dados sujeitos a alteração."
+Fonte2 <- "Fonte: DERAL. Acesso em 04/02/2026. Dados sujeitos a alteração."
+Fonte3 <- "Fonte: DERAL. Acesso em 04/02/2026. Dados sujeitos a alteração.
+                  SIAGRO. Base atualizada em 12/2025. Dados sujeitos a alteração."
+Fonte4 <- "Fonte: SINAN. Base DBF acessada em 10/04/2026. Dados sujeitos a alteração."
+Fonte5 <- "Fonte: SIM. Base DBF acessada em 10/04/2026. Dados sujeitos a alteração."
+               
 #####   SHAPEFILES
 
 SHAPEFILE_REGIONAL <- st_read("Shapefiles/22ª_Regional_de_Saúde/22ª_Regional_de_Saúde.shp")
@@ -712,12 +715,12 @@ MAPA_BASE_PR <- left_join(MAPA_BASE,
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = Taxa_2025,
                                            breaks = c(-1, 0.00001, 3.0, 6.5, 10.0, 14.0, 20.0, 40.0, Inf),
                                            labels = c("0", 
-                                                      ">0 a 3,0", 
-                                                      ">3,0 a 6,5 (Mediana)", 
-                                                      ">6,5 a 10,0 (Média)", 
-                                                      ">10,0 a 14,0", 
-                                                      ">14,0 a 20,0", 
-                                                      ">20,0 a 40,0", 
+                                                      ">0 a 2,999", 
+                                                      ">3,0 a 6,499 (Mediana)", 
+                                                      ">6,5 a 9,999 (Média)", 
+                                                      ">10,0 a 13,99", 
+                                                      ">14,0 a 19,99", 
+                                                      ">20,0 a 39,99", 
                                                       ">40,0 (Outliers)"),
                                            right = TRUE))
 
@@ -725,21 +728,24 @@ PR_SINASC_MAP_TAXA_2025_ANOMAL <- ggplot() +
   geom_sf(data = MAPA_BASE_PR, 
           color = "black", 
           aes(fill = Cat)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tr", 
-                         which_north = "true") +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+                                    color = "black",    
+                                    linewidth = 0.8,   
+                                    fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
   scale_fill_viridis_d(option = "inferno", 
-                       name = "Casos/1000 \nNascidos Vivos",
+                       name = NULL,
                        direction = -1,
                        begin = 0.1,       
                        end = 0.9,        
                        drop = FALSE) +   
   coord_sf(expand = FALSE)+
   labs(x = NULL,
-       y = NULL,
-       caption = Fonte, 
-       title = "Taxa Anomalias/1000 Nascidos Vivos em 2025 - 
-Paraná",
+       y = NULL, 
+       title = "Municípios",
        subtitle = "Referente ao Município de Residência") +
   Theme()
 
@@ -781,12 +787,12 @@ MAPA_BASE_PR <- left_join(MAPA_BASE,
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TAXA_4a_16_20,
                                            breaks = c(-Inf, 0.00001, 3.50, 5.50, 7.00, 9.50, 14.00, 20.00, Inf),
                                            labels = c("0", 
-                                                      ">0 a 3,5", 
-                                                      ">3,5 a 5,5", 
-                                                      ">5,5 a 7,0", 
-                                                      ">7,0 a 9,5", 
-                                                      ">9,5 a 14,0", 
-                                                      ">14,0 a 20,0", 
+                                                      ">0,01 a 3,49", 
+                                                      ">3,5 a 5,49", 
+                                                      ">5,5 a 6,99", 
+                                                      ">7,0 a 9,49", 
+                                                      ">9,5 a 13,99", 
+                                                      ">14,0 a 19,99", 
                                                       ">20,0"),
                                            right = FALSE
 ))
@@ -798,7 +804,7 @@ PR_SINASC_MAP_TAXA_4A_ANOMAL_16_20 <- ggplot() +
           aes(fill = Cat)) +
   geom_sf(data = SHAPEFILE_ESTADUAL_RS,
           color = "black",    
-          linewidth = 0.5,   
+          linewidth = 0.8,   
           fill = NA) +
   annotation_scale(location = "bl") + 
   annotation_north_arrow(location = "tl", 
@@ -854,12 +860,12 @@ MAPA_BASE_PR <- left_join(MAPA_BASE_PR,
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TAXA_4a_21_25,
                                            breaks = c(-Inf, 0.00001, 3.50, 5.50, 7.00, 9.50, 14.00, 20.00, Inf),
                                            labels = c("0", 
-                                                      ">0 a 3,5", 
-                                                      ">3,5 a 5,5", 
-                                                      ">5,5 a 7,0", 
-                                                      ">7,0 a 9,5", 
-                                                      ">9,5 a 14,0", 
-                                                      ">14,0 a 20,0", 
+                                                      ">0,01 a 3,49", 
+                                                      ">3,5 a 5,49", 
+                                                      ">5,5 a 6,99", 
+                                                      ">7,0 a 9,49", 
+                                                      ">9,5 a 13,99", 
+                                                      ">14,0 a 19,99", 
                                                       ">20,0"),
                                            right = FALSE
 ))
@@ -871,7 +877,7 @@ PR_SINASC_MAP_TAXA_4A_ANOMAL_21_25 <- ggplot() +
           aes(fill = Cat)) +
   geom_sf(data = SHAPEFILE_ESTADUAL_RS,
           color = "black",   
-          linewidth = 0.5,   
+          linewidth = 0.8,   
           fill = NA) +
   annotation_scale(location = "bl") + 
   annotation_north_arrow(location = "tl", 
@@ -886,7 +892,7 @@ PR_SINASC_MAP_TAXA_4A_ANOMAL_21_25 <- ggplot() +
   labs(x = NULL,
        y = NULL,
        fill = "Anomalias/1000 \nNascimentos",
-       title = "2022 - 2025")  +
+       title = "2021 - 2025")  +
   Theme() 
 
 PR_SINASC_MAP_TAXA_4A_ANOMAL_16_20_21_25 <- PR_SINASC_MAP_TAXA_4A_ANOMAL_16_20 + 
@@ -1162,6 +1168,63 @@ PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25 <- PR_PEVASPEA_SINASC_LOCAL_MORAN_16_
     legend.key.width = unit(1.2, "cm")   
   )
 
+#############  Taxa de anomalias em 2025 por regional de saúde
+
+AUX <- PR_PEVASPEA_SINASC_RS_Serie_Historica %>%
+  filter(RS != "Total") %>%
+  select(RS, contains("Taxa_An"))
+
+#### Incluindo 0 em regionais com um dígito 
+
+AUX$RS <- str_pad(AUX$RS, 
+                  width = 2, 
+                  side = "left", 
+                  pad = "0")
+
+#### Fazendo o left_join da base de dados com o shapefile
+
+MAPA_BASE_RS <- left_join(AUX,
+                          SHAPEFILE_ESTADUAL_RS,
+                          by = (c("RS" = "Código")))
+
+MAPA_BASE_RS <- MAPA_BASE_RS %>%
+  select(RS, contains("2025"), "geometry")
+
+MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = Taxa_Anomalias_2025,
+                                           breaks = c(-Inf, 5.00, 7.00, 8.00, 8.80, 9.80, 11.00, 13.00, Inf),
+                                           labels = c("Até 5,00", 
+                                                      "5,01 a 7,00", 
+                                                      "7,01 a 8,00", 
+                                                      "8,01 a 8,80 (Média)", # Onde está a sua média de 8,75
+                                                      "8,81 a 9,80", 
+                                                      "9,81 a 11,00", 
+                                                      "11,01 a 13,00", 
+                                                      "Acima de 13,00"),
+                                           right = TRUE
+))
+
+MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
+
+PR_SINASC_MAP_TAXA_2025_RS <- ggplot() +
+  geom_sf(data = MAPA_BASE_RS, 
+          color = "grey30", 
+          linewidth = 0.5, 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal())+
+  scale_fill_viridis_d(option = "inferno", 
+                       direction = -1,
+                       begin = 0.05,       
+                       end = 0.95,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "Regionais")  +
+  Theme() 
+
 #############   Taxa Anomalias/1000 nascimentos 18 - 21 somados
 #############   por Regionais de Saúde
 
@@ -1323,71 +1386,87 @@ PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS <- PR_SINASC_MAP_TAXA_4_ANOS_16_
                                                 size = 10)
                   ))
 
-#### Mapa regional com taxa de 2025
+##### Salvando mapas de 2025
 
-AUX <- PR_PEVASPEA_SINASC_RS_Serie_Historica[, 1]
+PR_SINASC_MAP_TAXA_2025_ANOMAL_RS <- PR_SINASC_MAP_TAXA_2025_ANOMAL + 
+  PR_SINASC_MAP_TAXA_2025_RS + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Taxa de Anomalias Congênitas em 2025 em Municípios e Regionais do Paraná',
+                  subtitle = '(Casos de Anomalias Congênitas/1000 Nascimentos)',
+                  caption =  Fonte,
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0,
+                                                face = "italic", 
+                                                size = 10)
+                  ))
 
-AUX <- PR_PEVASPEA_SINASC_RS_Serie_Historica %>%
-  mutate(TAXA_2025 = ((PR_PEVASPEA_SINASC_RS_Serie_Historica$Anomalias_2025)/
-                        (PR_PEVASPEA_SINASC_RS_Serie_Historica$Nascidos_2025 ) *
-                        1000)
-  )
+ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_2025_ANOMAL_RS.png", 
+       plot = PR_SINASC_MAP_TAXA_2025_ANOMAL_RS, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
 
-#### Incluindo 0 em regionais com um dígito 
-
-AUX$RS <- str_pad(AUX$RS, 
-                  width = 2, 
-                  side = "left", 
-                  pad = "0")
-
-AUX <- AUX[-nrow(AUX),]
-
-#### Fazendo o left_join da base de dados com o shapefile
-
-MAPA_BASE_RS <- left_join(AUX,
-                          SHAPEFILE_ESTADUAL_RS,
-                          by = (c("RS" = "Código")))
-
-MAPA_BASE_RS <- MAPA_BASE_RS %>%
-  select(RS, TAXA_2025, "geometry")
-
-MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = TAXA_2025,
-                                           breaks = c(-Inf, 4.50, 6.00, 7.30, 8.20, 9.20, 10.50, 13.00, Inf),
-                                           labels = c("Até 4,5", 
-                                                      "4,5 - 6,0", 
-                                                      "6,0 - 7,3", 
-                                                      "7,3 - 8,2", 
-                                                      "8,2 - 9,2", 
-                                                      "9,2 - 10,5", 
-                                                      "10,5 - 13,0",
-                                                      "Acima de 13,0"),
-                                           right = FALSE))
-
-MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
-
-PR_SINASC_MAP_TAXA_2025_ANOMAL_RS <- ggplot() +
-  geom_sf(data = MAPA_BASE_RS, 
-          color = "grey30", 
-          linewidth = 0.5, 
-          aes(fill = Cat)) +
-  annotation_scale(location = "bl") + 
-  annotation_north_arrow(location = "tl", 
-                         which_north = "true",
-                         style = north_arrow_minimal()) +
-  scale_fill_viridis_d(option = "inferno", 
-                       direction = -1,
-                       begin = 0.05,       
-                       end = 0.95,        
-                       drop = FALSE) +
-  coord_sf(expand = FALSE)+
-  labs(x = NULL,
-       y = NULL,
-       fill = "Anomalias/1000 \nNascimentos",
-       title = "2025")  +
-  Theme() 
 ######  Tabelas 
 ################################################################################
 ################################################################################
+#### Tabela Incidência por ano regionais
+
+AUX <- PR_PEVASPEA_SINASC_RS_Serie_Historica %>%
+  select(RS, contains("Taxa_An")) %>%
+  mutate(across(starts_with("Taxa_An"), ~ round(.x, 2)))
+
+PR_PEVASPEA_SINASC_ANOMAL_Serie_Hist_RS <- gt(AUX[c(1, 12, 16:22, 2:11, 13:15, 23 ), ]) %>%
+  tab_header(
+    title = md("**Série Histórica - Taxa de Anomalias Congênitas**")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:11) %>%
+  cols_label(Taxa_Anomalias_2016 = "2016",
+             Taxa_Anomalias_2017 = "2017",
+             Taxa_Anomalias_2018 = "2018",
+             Taxa_Anomalias_2019 = "2019",
+             Taxa_Anomalias_2020 = "2020",
+             Taxa_Anomalias_2021 = "2021",
+             Taxa_Anomalias_2022 = "2022",
+             Taxa_Anomalias_2023 = "2023",
+             Taxa_Anomalias_2024 = "2024",
+             Taxa_Anomalias_2025 = "2025",
+  ) %>%
+  tab_footnote(
+    footnote = "Incidência calculada por 1.000 nascidos vivos (NV)."
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  opt_row_striping() %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "yellow", alpha = 0.2),
+      cell_text(weight = "bold")
+    ),
+    locations = cells_body(rows = RS == "22")
+  )
 
 #### Tabela ANomalias Regionais 2016 - 2020
 # 
@@ -2092,7 +2171,7 @@ AUX <- AUX_2016 %>%
   select(-Pop_Total_2016)
 
 for (ano in 2017:2025) {
-  nome_coluna_pop <- if (ano %in% c(2022, 2023)) "X2021" else paste0("X", ano)
+  nome_coluna_pop <- if (ano %in% c(2022, 2023)) "X2024" else paste0("X", ano)
   coluna_pop_sym  <- sym(nome_coluna_pop)
   tabela_obitos_ano <- get(paste0("AUX_", ano))
   pop_regional_atual <- Base_Populacional %>%
@@ -2183,7 +2262,123 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
+gtsave(
+  data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist,
+  filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist.png"
+)
+
+##### Mapas de Médias do paraná (Regionais)
+
+AUX <- AUX %>%
+  mutate(RS = as.character(RS),
+         RS = str_pad(RS, 2, "left", pad = "0"),
+         Inc_16_20_Cancer = (Inc_2016 + Inc_2017 + Inc_2018 + Inc_2019 + Inc_2020) / 5,
+         Inc_21_25_Cancer = (Inc_2021 + Inc_2022 + Inc_2023 + Inc_2024 + Inc_2025) / 5) %>%
+  select(RS, Inc_21_25_Cancer, Inc_16_20_Cancer)
+
+MAPA_BASE_RS <- left_join(AUX,
+                          SHAPEFILE_ESTADUAL_RS,
+                          by = (c("RS" = "Código")))
+
+MAPA_BASE_RS <- MAPA_BASE_RS %>%
+  select(RS, contains("Cancer"), "geometry")
+
+MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = Inc_16_20_Cancer,
+                                           breaks =  c(-Inf, 118.00, 125.00, 131.00, 137.00, 143.00, 149.00, 155.00, Inf),
+                                           labels = c("Até 118,00", 
+                                                      "118,01 a 125,00", 
+                                                      "125,01 a 131,00", 
+                                                      "131,01 a 137,00", 
+                                                      "137,01 a 143,00", 
+                                                      "143,01 a 149,00", 
+                                                      "149,01 a 155,00", 
+                                                      "Acima de 155,00"),
+                                           right = TRUE
+))
+
+MAPA_BASE_RS <- st_as_sf(MAPA_BASE_RS)
+
+PR_SIM_MAP_TAXA_CANCER_2016_2020_RS <- ggplot() +
+  geom_sf(data = MAPA_BASE_RS, 
+          color = "grey30", 
+          linewidth = 0.5, 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal())+
+  scale_fill_viridis_d(option = "inferno", 
+                       direction = -1,
+                       begin = 0.05,       
+                       end = 0.95,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2016 - 2020 ")  +
+  Theme() 
+
+MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = Inc_21_25_Cancer,
+                                           breaks =  c(-Inf, 118.00, 125.00, 131.00, 137.00, 143.00, 149.00, 155.00, Inf),
+                                           labels = c("Até 118,00", 
+                                                      "118,01 a 125,00", 
+                                                      "125,01 a 131,00", 
+                                                      "131,01 a 137,00", 
+                                                      "137,01 a 143,00", 
+                                                      "143,01 a 149,00", 
+                                                      "149,01 a 155,00", 
+                                                      "Acima de 155,00"),
+                                           right = TRUE
+))
+
+PR_SIM_MAP_TAXA_CANCER_2021_2025_RS <- ggplot() +
+  geom_sf(data = MAPA_BASE_RS, 
+          color = "grey30", 
+          linewidth = 0.5, 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal())+
+  scale_fill_viridis_d(option = "inferno", 
+                       direction = -1,
+                       begin = 0.05,       
+                       end = 0.95,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2021 - 2025 ")  +
+  Theme() 
+
+PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS <- PR_SIM_MAP_TAXA_CANCER_2016_2020_RS + 
+  PR_SIM_MAP_TAXA_CANCER_2021_2025_RS + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Taxa de Mortalidade por Câncer em Regionais do Paraná',
+                  subtitle = 'Comparativo entre os quinquênios 2016-2020 e 2021-2025 (Casos/100.000 Habitantes)',
+                  caption =  Fonte5,
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0,
+                                                face = "italic", 
+                                                size = 10)
+                  ))
+
+ggsave(filename = "Imagens/SIM/PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS.png", 
+       plot = PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
 ####
+
 AUX01 <- Base_Populacional %>%
   filter(MUNICÍPIO.ESTADO == "ESTADO DO PARANÁ")
 
@@ -2477,6 +2672,11 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
+gtsave(
+  data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS,
+  filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS.png"
+)
+
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -2527,7 +2727,7 @@ Total_N <- Total %>%
 Total <- left_join(Total_Inc, Total_N, by = "Ano") %>%
   mutate(Ano = as.factor(Ano))
 
-fator_escala <- (max(Total$N, na.rm = TRUE) / 150)
+fator_escala <- 120
 
 PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Incidencia)) + 
   geom_col(aes(y = N / fator_escala), 
@@ -2543,7 +2743,8 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Óbitos/100.000 habitantes",
+  labs(caption = Fonte5,
+       y = "Óbitos/100.000 habitantes",
        x = NULL,
        title = "Nº de Óbitos e Mortalidade por Neoplasias/100.000 habitantes no Paraná") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
@@ -2888,6 +3089,11 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
+gtsave(
+  data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS,
+  filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS.png"
+)
+
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -2944,7 +3150,8 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
            fill = "#dcdde1", 
            width = 0.4) +
   geom_text(aes(y = N / fator_escala / 2, 
-                label = format(N, big.mark = ".")), 
+                label = format(N, 
+                               big.mark = ".")), 
             size = 4, 
             fontface = "bold") +
   geom_line(aes(group = 1),
@@ -2953,7 +3160,8 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Óbitos/100.000 habitantes",
+  labs(caption = Fonte5,
+       y = "Óbitos/100.000 habitantes",
        x = NULL,
        title = "Nº de Óbitos e Mortalidade por Câncer/100.000 Habitantes na 22ª RS") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
@@ -3295,6 +3503,9 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
+gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69.png" )
+
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -3345,6 +3556,7 @@ Total <- left_join(Total_Inc, Total_N, by = "Ano") %>%
   mutate(Ano = as.factor(Ano))
 
 fator_escala <- (max(Total$N, na.rm = TRUE) / 140)
+
 PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y = Incidencia)) + 
   geom_col(aes(y = N / fator_escala), 
            fill = "#dcdde1", 
@@ -3359,7 +3571,8 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Óbitos/100.000 habitantes",
+  labs(caption = Fonte5,
+       y = "Óbitos/100.000 habitantes",
        x = NULL,
        title = "Nº de Óbitos e Mortalidade por Neoplasias/100.000 em População de 30 a 69 anos no Paraná") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
@@ -3750,6 +3963,9 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
+gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69,
+       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69.png" )
+
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -3815,7 +4031,8 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Óbitos/100.000 habitantes",
+  labs(caption = Fonte5,
+       y = "Óbitos/100.000 habitantes",
        x = NULL,
        title = "Nº de Óbitos e Mortalidade por Neoplasias/100.000 habitantes em População de 30 a 69 anos na 22ª RS") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
@@ -4152,6 +4369,9 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
+gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30.png" )
+
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -4219,7 +4439,8 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Óbitos/100.000 habitantes",
+  labs(caption = Fonte5,
+       y = "Óbitos/100.000 habitantes",
        x = NULL,
        title = "Nº de Óbitos e Mortalidade por Câncer/100.000 habitantes em População Menor de 30 anos - Paraná") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
@@ -4233,7 +4454,6 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
                                          labels = label_number(big.mark = "."))) +
   scale_x_discrete(breaks = as.character(2016:2025)) + 
   Theme()
-
 
 ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
        plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
@@ -4609,6 +4829,9 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
+gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30,
+       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30.png" )
+
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -4676,7 +4899,8 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
   geom_point(fill = "grey",
              size = 4,
              shape = 21) + 
-  labs(y = "Óbitos/100.000 habitantes",
+  labs(caption = Fonte5,
+       y = "Óbitos/100.000 habitantes",
        x = NULL,
        title = "Nº de Óbitos e Mortalidade por Câncer/100.000 habitantes em População Menor de 30 Anos - 22ª RS") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
@@ -4700,8 +4924,528 @@ ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM
        units = "cm",
        dpi = 300,            
        bg = "white")
-#### Salvando material
 
+#####  Preparando uma tabela para série histórica de municípios
+
+for (ano in 2016:2025) {
+  nome_tabela_origem <- paste0("PR_PEVASPEA_SIM_NEOPLASIA_GERAL_", ano)
+  dados_ano <- get(nome_tabela_origem)
+  dados_processados <- dados_ano %>%
+    as.data.frame() %>%
+    group_by(Código_IBGE) %>%
+    summarise(across(População:Linfatico, ~ sum(.x, na.rm = TRUE))) 
+  nome_objeto_final <- paste0("AUX_MUN_", ano)
+  assign(nome_objeto_final, dados_processados)
+}
+
+#### Tabela série histórica Regionais
+
+POP_MUN_2016 <- Base_Populacional %>%
+  as.data.frame() %>%
+  group_by(Código_IBGE) %>%
+  summarise(Pop_Total_2016 = sum(as.numeric(gsub("\\.", "", X2016)), na.rm = TRUE))
+
+AUX <- AUX_MUN_2016 %>%
+  select(Código_IBGE, NEOPLASIAS) %>% 
+  left_join(POP_MUN_2016, by = "Código_IBGE") %>% 
+  mutate(Inc_2016 = round((NEOPLASIAS / Pop_Total_2016) * 100000, 2)) %>%
+  rename(`2016` = NEOPLASIAS) %>%
+  select(-Pop_Total_2016)
+
+for (ano in 2017:2025) {
+  nome_coluna_pop <- if (ano %in% c(2022, 2023)) "X2024" else paste0("X", ano)
+  coluna_pop_sym  <- sym(nome_coluna_pop)
+  tabela_obitos_ano <- get(paste0("AUX_MUN_", ano))
+  pop_regional_atual <- Base_Populacional %>%
+    as.data.frame() %>%
+    group_by(Código_IBGE) %>%
+    summarise(Pop_Fixo = sum(as.numeric(gsub("\\.", "", !!coluna_pop_sym)), na.rm = TRUE))
+  nome_col_n   <- paste0(ano)
+  nome_col_inc <- paste0("Inc_", ano)
+  AUX01 <- tabela_obitos_ano %>%
+    select(Código_IBGE, NEOPLASIAS) %>% 
+    left_join(pop_regional_atual, by = "Código_IBGE") %>% 
+    mutate(!!nome_col_inc := round((NEOPLASIAS / Pop_Fixo) * 100000, 2)
+    ) %>%
+    rename(!!nome_col_n := NEOPLASIAS) %>%
+    select(-Pop_Fixo)
+  AUX <- left_join(AUX, AUX01, by = "Código_IBGE")
+}
+######
+## Tabela GT() regional série histórica
+
+AUX01 <- left_join(AUX,
+                   Base_IBGE %>%
+                     select(Código_IBGE, Município_sem_Código, RS),
+                   by = "Código_IBGE")
+
+AUX01 <- AUX01 %>%
+  filter(RS == 22)
+
+RS_PEVASPEA_SIM_TAB_NEOPLASIAS_Serie_Historica <- gt(AUX01[, c(22, 2:21)]) %>%
+  tab_header(
+    title = md("**Óbitos por Neoplasias - 22ª Regional de Saúde**"),
+    subtitle = md("2016 – 2025")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "1") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "3") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "4") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "5") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "6") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "7") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "8") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "9") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "10") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21) %>%
+  cols_label(Município_sem_Código = "Município",
+    contains("Inc_")     ~ "Inc.",
+             matches("^20\\d{2}$") ~ "n"
+  ) %>%
+  fmt_number(
+    columns = contains("Inc_"),
+    decimals = 2,
+    sep_mark = ".",
+    dec_mark = ","
+  ) %>%
+  sub_missing(columns = everything(), missing_text = "-") %>%
+  tab_footnote(
+    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+  ) %>%
+  tab_footnote(
+    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(4:5, 8:9, 12:13, 16:17, 20:21)) 
+  ) %>%
+  tab_options(footnotes.padding = px(1),
+              footnotes.font.size = px(10))
+
+gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30,
+       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30.png" )
+
+######
+AUX <- AUX %>%
+  mutate(Código_IBGE = as.character(Código_IBGE),
+         Cancer_2020 = AUX$`2020`,
+         Cancer_2021 = AUX$`2021`,
+         Cancer_2022 = AUX$`2022`,
+         Cancer_2023 = AUX$`2023`,
+         Cancer_2024 = AUX$`2024`,
+         Cancer_2025 = AUX$`2025`,
+         Inc_16_20_Cancer_mun = (Inc_2016 + Inc_2017 + Inc_2018 + Inc_2019 + Inc_2020) / 5,
+         Inc_21_25_Cancer_mun = (Inc_2021 + Inc_2022 + Inc_2023 + Inc_2024 + Inc_2025) / 5) %>%
+  select(Código_IBGE, Inc_16_20_Cancer_mun, Inc_21_25_Cancer_mun, Cancer_2020, Cancer_2021, Cancer_2022, 
+         Cancer_2023, Cancer_2024, Cancer_2025)
+
+MAPA_BASE_PR <- left_join(MAPA_BASE_PR %>%
+                            mutate(CD_MUN = str_sub(CD_MUN, start = 1, end = 6)), 
+                          AUX %>% 
+                            select(Código_IBGE, contains("Cancer")),
+                          by = c("CD_MUN" = "Código_IBGE"))
+
+MAPA_BASE_PR <- left_join(MAPA_BASE_PR %>%
+                            mutate(CD_MUN = str_sub(CD_MUN, start = 1, end = 6)), 
+                          Base_Populacional %>% 
+                            mutate(Código_IBGE = as.character(Código_IBGE)) %>%
+                            select(Código_IBGE, X2020, X2021, X2024, X2025),
+                          by = c("CD_MUN" = "Código_IBGE"))
+
+MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = Inc_16_20_Cancer_mun,
+                                           breaks = c(0, 90, 115, 130, 145, 160, 185, 215, Inf),
+                                           labels = c("Até 89,9", 
+                                                      "90,0 a 114,9", 
+                                                      "115,0 a 129,9", 
+                                                      "130,0 a 144,9", 
+                                                      "145,0 a 159,9", 
+                                                      "160,0 a 184,9", 
+                                                      "185,0 a 214,9", 
+                                                      "215,0 ou mais"),
+                                           right = FALSE
+))
+
+PR_SIM_MAP_TAXA_CANCER_16_20_Mun <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR, 
+          color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Cat)) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.8,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno", 
+                       direction = -1,
+                       begin = 0.05,       
+                       end = 0.95,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2016 - 2020")  +
+  Theme() 
+
+MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = Inc_21_25_Cancer_mun,
+                                           breaks = c(0, 90, 115, 130, 145, 160, 185, 215, Inf),
+                                           labels = c("Até 89,9", 
+                                                      "90,0 a 114,9", 
+                                                      "115,0 a 129,9", 
+                                                      "130,0 a 144,9", 
+                                                      "145,0 a 159,9", 
+                                                      "160,0 a 184,9", 
+                                                      "185,0 a 214,9", 
+                                                      "215,0 ou mais"),
+                                           right = FALSE
+))
+
+PR_SIM_MAP_TAXA_CANCER_21_25_Mun <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR, 
+          color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Cat)) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.8,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "inferno", 
+                       direction = -1,
+                       begin = 0.05,       
+                       end = 0.95,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2021 - 2025")  +
+  Theme() 
+
+PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN <- PR_SIM_MAP_TAXA_CANCER_16_20_Mun + 
+  PR_SIM_MAP_TAXA_CANCER_21_25_Mun + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Taxa de Mortalidade por Câncer em Municípios do Paraná',
+                  subtitle = 'Comparativo entre os quinquênios 2016-2020 e 2021-2025 (Óbitos/100.000 Habitantes)',
+                  caption =  Fonte,
+                  theme = theme(
+                    plot.title = element_text(size = 20, 
+                                              face = "bold"),
+                    plot.subtitle = element_text(size = 14),
+                    legend.position = "bottom",
+                    plot.caption = element_text(hjust = 0, 
+                                                face = "italic", 
+                                                size = 10)
+                  ))
+
+# ##### Trabalhando Global Moran/LISA
+# 
+# ### Criando Matriz de vizinhança (QUEEN) Verificar se o queen é padrão no spdep
+# 
+# Matriz_Viz_MAPA_BASE_PR <- poly2nb(MAPA_BASE_PR, ## Definindo quem faz fronteira com quem.
+#                                    queen = TRUE)
+# 
+# ### Verificando a malha queen
+# 
+# Centroides_Matriz_VIZ <- st_centroid(MAPA_BASE_PR)  ## Estabelecendo centróides
+# 
+# Centroides_Matriz_VIZ_coordenadas <- st_coordinates(Centroides_Matriz_VIZ) ## Coordenadas dos centróides
+# 
+# Matriz_VIZ_Linhas <- nb2lines(nb = Matriz_Viz_MAPA_BASE_PR,  ## Une os centróides com lines
+#                               coords = Centroides_Matriz_VIZ_coordenadas) %>%
+#   st_as_sf()  ## transforma tudo em objeto sf
+# 
+# st_crs(Matriz_VIZ_Linhas) <- st_crs(MAPA_BASE_PR) ## atribui Sistema de referência de coordenadas do MAPA_BASE_PR no matriz VIZ Linhas
+# 
+# PR_PEVASPEA_SINASC_MAP_MAPA_VIZINHANCA <-ggplot(MAPA_BASE_PR, 
+#                                                 aes(geometry = geometry)) +
+#   geom_sf(fill = "lightblue") +
+#   geom_sf(data = Matriz_VIZ_Linhas, 
+#           aes(geometry = geometry)) +
+#   ggtitle("Matriz de Vizinhança Queen, Paraná.") +
+#   theme_void()
+# 
+# ### Explicação do Gemini para usar o style = "W"
+# 
+# # 3. style = "W" (A Padronização por Linha)
+# # Este é o ponto mais importante. O estilo "W" (Row-standardized) faz o seguinte:
+# #   Atribui pesos iguais para todos os vizinhos de uma unidade, de modo 
+# # que a soma dos pesos de cada linha seja igual a 1.
+# # Na prática: Se um município tem 4 vizinhos, cada um recebe peso 0, 25. 
+# # Se outro tem 10 vizinhos, cada um recebe peso 0,1
+# # Por que usar? Isso é padrão para o Índice de Moran Global pois 
+# # permite comparar regiões com diferentes números de vizinhos de 
+# # forma justa (evita que municípios muito "conectados" distorçam o 
+# # resultado apenas por terem mais fronteiras).
+# 
+# Matriz_Viz_Pesos <- Matriz_Viz_MAPA_BASE_PR %>% 
+#   nb2listw(style = "W")  ##define matriz de pesos espaciais para rodar moran e local moran
+# 
+# #####  Análise Global e Local Moran
+# 
+# #### 2016 a 2020 INÍCIO
+# 
+# ### Realizando a suavização dos dados com Método Bayesiano Empírico 2016 - 2020
+# 
+#  Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Cancer_2025 + MAPA_BASE_PR$Cancer_2024 +
+#                            MAPA_BASE_PR$Cancer_2023 + MAPA_BASE_PR$Cancer_2022 +
+#                              MAPA_BASE_PR$Cancer_2021,
+#                            ni = as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2025)) + as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2024)) +
+#                              as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2021)) + as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2024)) + 
+#                              as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2024)),
+#                            nb = Matriz_Viz_MAPA_BASE_PR)
+# 
+#  MAPA_BASE_PR$TAXA_RAW_2025_Cancer <- Taxa_Suavizada$raw * 100000
+#  
+#  MAPA_BASE_PR$TAXA_EST_2025_Cancer <- Taxa_Suavizada$est * 100000
+# 
+# Global_Moran_CANCER_2025 <- moran.test(MAPA_BASE_PR$TAXA_EST_2025_Cancer,
+#                                  Matriz_Viz_Pesos)
+# 
+# ### Scatterplot
+# 
+# moran.plot(MAPA_BASE_PR$TAXA_EST_2025_Cancer, 
+#            Matriz_Viz_Pesos, 
+#            labels = FALSE, 
+#            pch = 15, 
+#            col = "blue", 
+#            xlab = "Variável Original", 
+#            ylab = "Média dos Vizinhos (Spatial Lag)",
+#            main = "Moran Scatterplot")
+# 
+# #### Calculando o Local Moran
+# ### Travando o local moran
+# set.seed(55)
+# 
+# Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_2025_Cancer, 
+#                         Matriz_Viz_Pesos, 
+#                         nsim = 9999,
+#                         zero.policy = TRUE)
+# 
+# MAPA_BASE_PR$local_I_2025_Cancer <- Lisa[,1]
+# 
+# MAPA_BASE_PR$local_I_p_valor_2025_Cancer <- Lisa[,5]
+# 
+# ggplot(MAPA_BASE_PR, 
+#        aes(geometry = geometry)) +
+#   geom_sf(aes(fill = local_I_2025_Cancer)) +
+#   scale_fill_gradient2(low = "blue", high = "red", 
+#                        mid = "white", 
+#                        midpoint = 0,
+#                        name = "I local") +
+#   theme_void() +
+#   theme(legend.position = "bottom",
+#         legend.key.width = unit(1.5, "cm"))
+# 
+# quadrantes <- attr(Lisa, 
+#                    "quadr")$mean
+# 
+# MAPA_BASE_PR$quadrante_2025_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+#                                           quadrantes == "Low-Low" ~ "Baixo-Baixo",
+#                                           quadrantes == "High-Low" ~ "Alto-Baixo",
+#                                           quadrantes == "Low-High" ~ "Baixo-Alto")
+# 
+# MAPA_BASE_PR <- MAPA_BASE_PR %>%
+#   mutate(Lisa_resultado_2025_Cancer = case_when(
+#     local_I_p_valor_2025_Cancer < 0.05 ~ quadrante_16_20,
+#     local_I_p_valor_2025_Cancer >= 0.05 ~ "Não significativo"
+#   ))
+# 
+# Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não significativo")
+# 
+# MAPA_BASE_PR$Lisa_resultado_2025_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_2025_Cancer, 
+#                                             levels = Niveis_LISA)
+# 
+# PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2025 <- ggplot(MAPA_BASE_PR, 
+#                                                aes(geometry = geometry)) +
+#   geom_sf(color = "grey30", 
+#           linewidth = 0.1, 
+#           aes(fill = Lisa_resultado_2025_Cancer)) +
+#   scale_fill_manual(name = "LISA \nClusters",
+#                     drop = FALSE,
+#                     values = c("Alto-Alto" = "red",        
+#                                "Baixo-Baixo" = "blue",      
+#                                "Alto-Baixo" = "pink",       
+#                                "Baixo-Alto" = "lightblue",  
+#                                "Não significativo" = "grey90")
+#   ) +
+#   geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+#           color = "black",   
+#           linewidth = 0.5,   
+#           fill = NA) +
+#   annotation_scale(location = "bl") + 
+#   annotation_north_arrow(location = "tl", 
+#                          which_north = "true",
+#                          style = north_arrow_minimal()) +
+#   
+#   coord_sf(expand = FALSE)+
+#   labs(x = NULL,
+#        y = NULL,
+#        title = "2016 - 2020",
+#        subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.63 (p < 0.001) \n9999 permutações") +
+#   Theme() +
+#   theme(legend.key.width = unit(1.5, "cm")) +
+#   theme(legend.position = "bottom")
+# 
+# #### Fim da análise Global and Local Moran 2018 - 2021
+# 
+# ### Realizando a suavização dos dados com Método Bayesiano Empírico 2022 - 2025
+# 
+# # Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Anomalias_4a_21_25, 
+# #                           ni = MAPA_BASE_PR$Nascidos_4a_21_25,
+# #                           nb = Matriz_Viz_MAPA_BASE_PR)
+# # 
+# # MAPA_BASE_PR$TAXA_RAW_21_25 <- Taxa_Suavizada$raw * 1000
+# # 
+# # MAPA_BASE_PR$TAXA_EST_21_25 <- Taxa_Suavizada$est * 1000
+# 
+# Global_Moran <- moran.test(MAPA_BASE_PR$Inc_21_25_Cancer_mun,
+#                            Matriz_Viz_Pesos)
+# 
+# ### Scatterplot
+# 
+# moran.plot(MAPA_BASE_PR$Inc_21_25_Cancer_mun, 
+#            Matriz_Viz_Pesos, 
+#            labels = FALSE, 
+#            pch = 15, 
+#            col = "blue", 
+#            xlab = "Variável Original", 
+#            ylab = "Média dos Vizinhos (Spatial Lag)",
+#            main = "Moran Scatterplot")
+# 
+# #### Calculando o Local Moran
+# #### Travando o local moran
+# set.seed(5)
+# 
+# Lisa <- localmoran_perm(MAPA_BASE_PR$Inc_21_25_Cancer_mun, 
+#                         Matriz_Viz_Pesos, 
+#                         nsim = 9999,
+#                         zero.policy = TRUE)
+# 
+# MAPA_BASE_PR$local_I_21_25_Cancer <- Lisa[,1]
+# 
+# MAPA_BASE_PR$local_I_p_valor_21_25_Cancer <- Lisa[,5]
+# 
+# quadrantes <- attr(Lisa, 
+#                    "quadr")$mean
+# 
+# MAPA_BASE_PR$quadrante_21_25_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+#                                           quadrantes == "Low-Low" ~ "Baixo-Baixo",
+#                                           quadrantes == "High-Low" ~ "Alto-Baixo",
+#                                           quadrantes == "Low-High" ~ "Baixo-Alto")
+# 
+# MAPA_BASE_PR <- MAPA_BASE_PR %>%
+#   mutate(Lisa_resultado_21_25_Cancer = case_when(
+#     local_I_p_valor_21_25_Cancer < 0.05 ~ quadrante_21_25,
+#     local_I_p_valor_21_25_Cancer >= 0.05 ~ "Não significativo"
+#   ))
+# 
+# MAPA_BASE_PR$Lisa_resultado_21_25_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_21_25_Cancer, 
+#                                             levels = Niveis_LISA)
+# 
+# PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_21_25 <- ggplot(MAPA_BASE_PR, 
+#                                                aes(geometry = geometry)) +
+#   geom_sf(color = "grey30", 
+#           linewidth = 0.1, 
+#           aes(fill = Lisa_resultado_21_25_Cancer)) +
+#   scale_fill_manual(name = "LISA \nClusters", 
+#                     drop = FALSE,
+#                     values = c("Alto-Alto" = "red",        
+#                                "Baixo-Baixo" = "blue",      
+#                                "Alto-Baixo" = "pink",       
+#                                "Baixo-Alto" = "lightblue",  
+#                                "Não significativo" = "grey90")
+#   ) +
+#   geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+#           color = "black",   
+#           linewidth = 0.5,   
+#           fill = NA) +
+#   annotation_scale(location = "bl") + 
+#   annotation_north_arrow(location = "tl", 
+#                          which_north = "true",
+#                          style = north_arrow_minimal()) +
+#   
+#   coord_sf(expand = FALSE)+
+#   labs(x = NULL,
+#        y = NULL,
+#        title = "2021 - 2025",
+#        subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001) \n9999 Permutações") +
+#   Theme() +
+#   theme(legend.key.width = unit(1.5, "cm")) +
+#   theme(legend.position = "bottom")
+# 
+# PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25 <- PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20 + 
+#   PR_PEVASPEA_SINASC_LOCAL_MORAN_21_25 + 
+#   plot_layout(ncol = 2, guides = "collect") + 
+#   plot_annotation(
+#     title = "Progressão de Agrupamentos das Taxas de Anomalias/1000 Nascidos no Paraná",
+#     subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025',
+#     caption = Fonte  
+#   ) & 
+#   theme(
+#     plot.title = element_text(size = 16, 
+#                               face = "bold", 
+#                               hjust = 0), 
+#     plot.subtitle = element_text(size = 12, 
+#                                  hjust = 0),
+#     plot.caption = element_text(hjust = 0, 
+#                                 face = "italic", 
+#                                 size = 10),
+#     legend.position = "bottom",        
+#     legend.box = "horizontal",
+#     legend.box.just = "center",
+#     legend.justification = "center",
+#     legend.key.width = unit(1.2, "cm")   
+#   )
+# 
+
+#### Salvando material
+ggsave(filename = "Imagens/SIM/PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN.png", 
+       plot = PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
 
 #########  Tabelas
 
@@ -4710,8 +5454,6 @@ gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20,
 
 gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25,
        filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25.pdf")
-
-
 
 ###############################################################################################
 ###############################################################################################
@@ -5720,7 +6462,6 @@ PR_PEVASPEA_DERAL_LOCAL_MORAN_16_20_21_25 <- PR_PEVASPEA_DERAL_LOCAL_MORAN_17_20
     legend.key.width = unit(1.2, "cm")   
   )
 
-
 #### Dados Regional
 
 AUX <- PR_DERAL_GERAL %>%
@@ -6687,7 +7428,1585 @@ PR_DERAL_MAP_HA_CANA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_CANA_17_20 +
     plot.caption = element_text(hjust = 0, face = "italic", size = 10)
   )
 
+
+####### SINAN
+
+PR_2016_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2016_GERAL.csv",
+                              header = TRUE,
+                              sep = ",")
+
+PR_2017_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2017_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_2018_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2018_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_2019_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2019_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_2020_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2020_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_2021_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2021_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_2022_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2022_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_2023_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2023_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_2024_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2024_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_2025_GERAL <- read.csv (file = "Tabulacoes_R/SINAN/PR_2025_GERAL.csv",
+                           header = TRUE,
+                           sep = ",")
+
+PR_SINAN_GERAL_Serie_Hist <- read.csv (file = "Tabulacoes_R/SINAN/PR_SINAN_GERAL_Serie_Hist.csv",
+                           header = TRUE,
+                           sep = ",")
+
+AUX <- PR_SINAN_GERAL_Serie_Hist %>%
+  select(c(1, 4:20))
+
+AUX$RS <- as.numeric(as.character(AUX$RS))
+
+PR_SINAN_GRAF_SERIE_HIST_Geral <- ggplot(AUX, 
+                                           aes(x = RS, 
+                                               y = Notificados, 
+                                               group = 1)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black") +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21) +
+  geom_text(aes(label = Notificados), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(7000, 30000), 
+                     breaks = seq(0, 30000, 5000)) +
+  scale_x_continuous(breaks = 2016:2025) +
+  labs(title = "Série Histórica Paraná - Intoxicações Exógenas",
+       y = "Casos", 
+       x = NULL,
+       caption = Fonte4) +
+  Theme()
+
+AUX01 <- AUX %>%
+  mutate(Int_Agro = AUX$Agrotóxicos_Agr + AUX$Agrotóxicos_Domes + AUX$Agrotóxicos_Saude)
+
+PR_SINAN_GRAF_SERIE_HIST_AGROT <- ggplot(AUX01, 
+                                         aes(x = RS, 
+                                             y = Int_Agro, 
+                                             group = 1)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black") +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21) +
+  geom_text(aes(label = Int_Agro), 
+            size = 4, 
+            vjust = -2, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(500, 1400), 
+                     breaks = seq(0, 1400, 200)) +
+  scale_x_continuous(breaks = 2016:2025) +
+  labs(title = "Série Histórica Paraná - Intoxicações Exógenas por Agrotóxicos",
+       y = "Casos", 
+       x = NULL,
+       caption = Fonte4) +
+  Theme()
+
+###########  Tipo de exposição por idade
+
+arquivos_iexog <- list.files(
+  path = "Base_de_Dados/DBF/", 
+  pattern = "^IEXOG.*\\.dbf$", 
+  full.names = TRUE,
+  ignore.case = TRUE          
+)
+
+IEXOG_completo <- arquivos_iexog %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      select(NU_IDADE_N, CIRCUNSTAN) %>%
+      mutate(Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+IEXOG_Completo <- IEXOG_completo %>%
+  filter(CIRCUNSTAN == "01" |
+           CIRCUNSTAN == "02" |
+           CIRCUNSTAN == "10" |
+           CIRCUNSTAN == "03") %>%
+  mutate(Circunstancia_Nome = case_when(
+      CIRCUNSTAN == "01" ~ "Uso Habitual",
+      CIRCUNSTAN == "02" ~ "Acidental",
+      CIRCUNSTAN == "03" ~ "Ambiental",
+      CIRCUNSTAN == "10" ~ "Tentativa Suicídio",
+      TRUE ~ "Outras / Ignoradas"
+    ),
+    Idade_Anos = ifelse(NU_IDADE_N %/% 1000 == 4, NU_IDADE_N %% 1000, 0),
+    Faixa_Etaria = cut(Idade_Anos, 
+                       breaks = c(-1, 0, 4, 9, 14, 19, 34, 49, 64, 79, Inf), 
+                       labels = c("< 1 ano", "1 a 4", "5 a 9", "10 a 14", "15 a 19", 
+                 "20 a 34", "35 a 49", "50 to 64", "65 a 79", "> 80")))
+    
+PR_SINAN_GRAF_IDADE_CIRCUNS <- IEXOG_Completo %>%
+  count(Ano, Circunstancia_Nome) %>%
+  ggplot(aes(x = Ano, 
+             y = n, 
+             group = Circunstancia_Nome)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.25))) +
+  facet_wrap(~ Circunstancia_Nome, ncol = 2) + 
+  labs(caption = Fonte4, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Intoxicações Exógenas de Acordo com Circunstância de Exposição",
+       subtitle = "Paraná (2016-2025).") +
+  Theme() 
+
+PR_SINAN_GRAF_IDADE_CIRCUNS_II <- IEXOG_Completo %>%
+  filter(Circunstancia_Nome != "Outras / Ignoradas" & !is.na(Faixa_Etaria)) %>%
+  ggplot(aes(x = Faixa_Etaria, 
+             fill = Circunstancia_Nome)) +
+  geom_bar(position = "fill", 
+           color = NA, 
+           width = 0.75) + 
+  scale_y_continuous(labels = percent, expand = c(0, 0)) +
+  coord_flip() + 
+  scale_fill_brewer(palette = "BuGn", direction = -1) + 
+  
+  labs(title = "Distribuição Proporcional das Intoxicações Exógenas por Faixa Etária no Paraná",
+       x = "Grupo Etário",
+       y = "Percentual de Casos",
+       fill = "Circunstância",
+       caption = Fonte4) +
+  Theme() +
+  theme(
+    legend.box.background = element_blank(),
+    legend.key = element_blank()
+  )
+
+IEXOG_completo <- arquivos_iexog %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      filter(AGENTE_TOX == "02" |
+               AGENTE_TOX == "03" |
+               AGENTE_TOX == "04") %>%
+      select(NU_IDADE_N, CIRCUNSTAN) %>%
+      mutate(Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+IEXOG_Completo <- IEXOG_completo %>%
+  filter(CIRCUNSTAN == "01" |
+           CIRCUNSTAN == "02" |
+           CIRCUNSTAN == "10" |
+           CIRCUNSTAN == "03") %>%
+  mutate(Circunstancia_Nome = case_when(
+    CIRCUNSTAN == "01" ~ "Uso Habitual",
+    CIRCUNSTAN == "02" ~ "Acidental",
+    CIRCUNSTAN == "03" ~ "Ambiental",
+    CIRCUNSTAN == "10" ~ "Tentativa Suicídio",
+    TRUE ~ "Outras / Ignoradas"
+  ),
+  Idade_Anos = ifelse(NU_IDADE_N %/% 1000 == 4, NU_IDADE_N %% 1000, 0),
+  Faixa_Etaria = cut(Idade_Anos, 
+                     breaks = c(-1, 0, 4, 9, 14, 19, 34, 49, 64, 79, Inf), 
+                     labels = c("< 1 ano", "1 a 4", "5 a 9", "10 a 14", "15 a 19", 
+                                "20 a 34", "35 a 49", "50 to 64", "65 a 79", "> 80")))
+
+PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO <- IEXOG_Completo %>%
+  count(Ano, Circunstancia_Nome) %>%
+  ggplot(aes(x = Ano, y = n, group = Circunstancia_Nome)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.25))) +
+  facet_wrap(~ Circunstancia_Nome, ncol = 2) + 
+  labs(caption = Fonte, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Intoxicações Exógenas por Agrotóxicos de Acordo com Circunstância de Exposição",
+       subtitle = "Paraná (2016-2025).") +
+  Theme() 
+
+PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II <- IEXOG_Completo %>%
+  filter(Circunstancia_Nome != "Outras / Ignoradas" & !is.na(Faixa_Etaria)) %>%
+  ggplot(aes(x = Faixa_Etaria, 
+             fill = Circunstancia_Nome)) +
+  geom_bar(position = "fill", 
+           color = NA, 
+           width = 0.75) + 
+  scale_y_continuous(labels = percent, expand = c(0, 0)) +
+  coord_flip() + 
+  scale_fill_brewer(palette = "BuGn", direction = -1) + 
+  
+  labs(title = "Distribuição Proporcional das Intoxicações Exógenas com Agrotóxicos por Faixa Etária no Paraná",
+       x = "Grupo Etário",
+       y = "Percentual de Casos",
+       fill = "Circunstância") +
+  Theme() +
+  theme(
+    legend.box.background = element_blank(),
+    legend.key = element_blank()
+  )
+
+#### Circunstância Regional
+
+IEXOG_completo <- arquivos_iexog %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      filter(ID_REGIONA == "1376") %>%
+      select(NU_IDADE_N, CIRCUNSTAN) %>%
+      mutate(Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+IEXOG_Completo <- IEXOG_completo %>%
+  filter(CIRCUNSTAN == "01" |
+           CIRCUNSTAN == "02" |
+           CIRCUNSTAN == "10" |
+           CIRCUNSTAN == "03") %>%
+  mutate(Circunstancia_Nome = case_when(
+    CIRCUNSTAN == "01" ~ "Uso Habitual",
+    CIRCUNSTAN == "02" ~ "Acidental",
+    CIRCUNSTAN == "03" ~ "Ambiental",
+    CIRCUNSTAN == "10" ~ "Tentativa Suicídio",
+    TRUE ~ "Outras / Ignoradas"
+  ),
+  Idade_Anos = ifelse(NU_IDADE_N %/% 1000 == 4, NU_IDADE_N %% 1000, 0),
+  Faixa_Etaria = cut(Idade_Anos, 
+                     breaks = c(-1, 0, 4, 9, 14, 19, 34, 49, 64, 79, Inf), 
+                     labels = c("< 1 ano", "1 a 4", "5 a 9", "10 a 14", "15 a 19", 
+                                "20 a 34", "35 a 49", "50 to 64", "65 a 79", "> 80")))
+
+RS_SINAN_GRAF_IDADE_CIRCUNS <- IEXOG_Completo %>%
+  count(Ano, Circunstancia_Nome) %>%
+  complete(
+    Ano = as.character(2016:2025), 
+    Circunstancia_Nome, 
+    fill = list(n = 0)
+  ) %>%
+  ggplot(aes(x = Ano, 
+             y = n, 
+             group = Circunstancia_Nome)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.25))) +
+  facet_wrap(~ Circunstancia_Nome, ncol = 2) + 
+  labs(caption = Fonte, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Intoxicações Exógenas de Acordo com Circunstância de Exposição",
+       subtitle = "22ª Regional de Saúde (2016-2025).") +
+  Theme() 
+
+RS_SINAN_GRAF_IDADE_CIRCUNS_II <- IEXOG_Completo %>%
+  filter(Circunstancia_Nome != "Outras / Ignoradas" & !is.na(Faixa_Etaria)) %>%
+  ggplot(aes(x = Faixa_Etaria, 
+             fill = Circunstancia_Nome)) +
+  geom_bar(position = "fill", 
+           color = NA, 
+           width = 0.75) + 
+  scale_y_continuous(labels = percent, expand = c(0, 0)) +
+  coord_flip() + 
+  scale_fill_brewer(palette = "BuGn", direction = -1) + 
+  
+  labs(title = "Distribuição das Intoxicações Exógenas por Faixa Etária na 22ª Regional de Saúde",
+       x = "Grupo Etário",
+       y = "Percentual de Casos",
+       fill = "Circunstância") +
+  Theme() +
+  theme(
+    legend.box.background = element_blank(),
+    legend.key = element_blank()
+  )
+
+IEXOG_completo <- arquivos_iexog %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      filter(ID_REGIONA == "1376",
+        AGENTE_TOX == "02" |
+          AGENTE_TOX == "03" |
+          AGENTE_TOX == "04") %>%
+      select(NU_IDADE_N, CIRCUNSTAN) %>%
+      mutate(Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+IEXOG_Completo <- IEXOG_completo %>%
+  filter(CIRCUNSTAN == "01" |
+           CIRCUNSTAN == "02" |
+           CIRCUNSTAN == "10" |
+           CIRCUNSTAN == "03") %>%
+  mutate(Circunstancia_Nome = case_when(
+    CIRCUNSTAN == "01" ~ "Uso Habitual",
+    CIRCUNSTAN == "02" ~ "Acidental",
+    CIRCUNSTAN == "03" ~ "Ambiental",
+    CIRCUNSTAN == "10" ~ "Tentativa Suicídio",
+    TRUE ~ "Outras / Ignoradas"
+  ),
+  Idade_Anos = ifelse(NU_IDADE_N %/% 1000 == 4, NU_IDADE_N %% 1000, 0),
+  Faixa_Etaria = cut(Idade_Anos, 
+                     breaks = c(-1, 0, 4, 9, 14, 19, 34, 49, 64, 79, Inf), 
+                     labels = c("< 1 ano", "1 a 4", "5 a 9", "10 a 14", "15 a 19", 
+                                "20 a 34", "35 a 49", "50 to 64", "65 a 79", "> 80")))
+
+RS_SINAN_GRAF_IDADE_CIRCUNS_AGRO <- IEXOG_Completo %>%
+  count(Ano, Circunstancia_Nome) %>%
+  complete(
+    Ano = as.character(2016:2025), 
+    Circunstancia_Nome, 
+    fill = list(n = 0)
+  ) %>%
+  ggplot(aes(x = Ano, y = n, group = Circunstancia_Nome)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.25))) +
+  facet_wrap(~ Circunstancia_Nome, ncol = 2) + 
+  labs(caption = Fonte, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Intoxicações Exógenas por Agrotóxicos de Acordo com Circunstância de Exposição",
+       subtitle = "22ª Regional de Saúde (2016-2025).") +
+  Theme() 
+
+
+RS_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II <- IEXOG_Completo %>%
+  filter(Circunstancia_Nome != "Outras / Ignoradas" & !is.na(Faixa_Etaria)) %>%
+  ggplot(aes(x = Faixa_Etaria, 
+             fill = Circunstancia_Nome)) +
+  geom_bar(position = "fill", 
+           color = NA, 
+           width = 0.75) + 
+  scale_y_continuous(labels = percent, expand = c(0, 0)) +
+  coord_flip() + 
+  scale_fill_brewer(palette = "BuGn", direction = -1) + 
+  
+  labs(title = "Distribuição das Intoxicações Exógenas com Agrotóxicos por Faixa Etária na 22ª Regional de Saúde",
+       x = "Grupo Etário",
+       y = "Percentual de Casos",
+       fill = "Circunstância") +
+  Theme() +
+  theme(
+    legend.box.background = element_blank(),
+    legend.key = element_blank()
+  )
+
+#######################  Pirâmide Etária
+
+IEXOG_completo <- arquivos_iexog %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      select(NU_IDADE_N, CS_SEXO) %>%
+      mutate(Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+AUX <- c("< 01", "< 01", "01 - 04", "01 - 04", "05 - 09", "05 - 09", "10 - 14", "10 - 14", "15 - 19", "15 - 19", "20 - 24", "20 - 24", 
+         "25 - 29", "25 - 29", "30 - 34", "30 - 34", "35 - 39", "35 - 39", "40 - 44", "40 - 44", "45 - 49", "45 - 49", "50 - 54", "50 - 54",
+         "55 - 59", "55 - 59", "60 - 64", "60 - 64", "65 - 69", "65 - 69", "70 - 74",  "70 - 74", "75 - 79", "75 - 79", "80 - 84", 
+         "80 - 84", "> 84", "> 84")
+
+AUX <- as.data.frame(AUX)
+
+AUX[, 2] <- c("M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", 
+              "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F")
+
+AUX[1, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N <= 4000 & CS_SEXO == "M") %>%
+  count()
+
+AUX[2, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N <= 4000 & CS_SEXO == "F") %>%
+  count()
+
+AUX[3, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4000 & NU_IDADE_N <= 4004 & CS_SEXO == "M") %>%
+  count()
+
+AUX[4, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4000 & NU_IDADE_N <= 4004 & CS_SEXO == "F") %>%
+  count()
+
+AUX[5, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4004 & NU_IDADE_N <= 4009 & CS_SEXO == "M") %>%
+  count()
+
+AUX[6, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4004 & NU_IDADE_N <= 4009 & CS_SEXO == "F") %>%
+  count()
+
+AUX[7, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4009 & NU_IDADE_N <= 4014 & CS_SEXO == "M") %>%
+  count()
+
+AUX[8, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4009 & NU_IDADE_N <= 4014 & CS_SEXO == "F") %>%
+  count()
+
+AUX[9, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4014 & NU_IDADE_N <= 4019 & CS_SEXO == "M") %>%
+  count()
+
+AUX[10, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4014 & NU_IDADE_N <= 4019 & CS_SEXO == "F") %>%
+  count()
+
+AUX[11, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4019 & NU_IDADE_N <= 4024 & CS_SEXO == "M") %>%
+  count()
+
+AUX[12, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4019 & NU_IDADE_N <= 4024 & CS_SEXO == "F") %>%
+  count()
+
+AUX[13, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4024 & NU_IDADE_N <= 4029 & CS_SEXO == "M") %>%
+  count()
+
+AUX[14, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4024 & NU_IDADE_N <= 4029 & CS_SEXO == "F") %>%
+  count()
+
+AUX[15, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4029 & NU_IDADE_N <= 4034 & CS_SEXO == "M") %>%
+  count()
+
+AUX[16, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4029 & NU_IDADE_N <= 4034 & CS_SEXO == "F") %>%
+  count()
+
+AUX[17, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4034 & NU_IDADE_N <= 4039 & CS_SEXO == "M") %>%
+  count()
+
+AUX[18, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4034 & NU_IDADE_N <= 4039 & CS_SEXO == "F") %>%
+  count()
+
+AUX[19, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4039 & NU_IDADE_N <= 4044 & CS_SEXO == "M") %>%
+  count()
+
+AUX[20, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4039 & NU_IDADE_N <= 4044 & CS_SEXO == "F") %>%
+  count()
+
+AUX[21, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4044 & NU_IDADE_N <= 4049 & CS_SEXO == "M") %>%
+  count()
+
+AUX[22, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4044 & NU_IDADE_N <= 4049 & CS_SEXO == "F") %>%
+  count()
+
+AUX[23, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4049 & NU_IDADE_N <= 4054 & CS_SEXO == "M") %>%
+  count()
+
+AUX[24, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4049 & NU_IDADE_N <= 4054 & CS_SEXO == "F") %>%
+  count()
+
+AUX[25, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4054 & NU_IDADE_N <= 4059 & CS_SEXO == "M") %>%
+  count()
+
+AUX[26, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4054 & NU_IDADE_N <= 4059 & CS_SEXO == "F") %>%
+  count()
+
+AUX[27, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4059 & NU_IDADE_N <= 4064 & CS_SEXO == "M") %>%
+  count()
+
+AUX[28, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4059 & NU_IDADE_N <= 4064 & CS_SEXO == "F") %>%
+  count()
+
+AUX[29, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4064 & NU_IDADE_N <= 4069 & CS_SEXO == "M") %>%
+  count()
+
+AUX[30, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4064 & NU_IDADE_N <= 4069 & CS_SEXO == "F") %>%
+  count()
+
+AUX[31, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4069 & NU_IDADE_N <= 4074 & CS_SEXO == "M") %>%
+  count()
+
+AUX[32, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4069 & NU_IDADE_N <= 4074 & CS_SEXO == "F") %>%
+  count()
+
+AUX[33, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4074 & NU_IDADE_N <= 4079 & CS_SEXO == "M") %>%
+  count()
+
+AUX[34, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4074 & NU_IDADE_N <= 4079 & CS_SEXO == "F") %>%
+  count()
+
+AUX[35, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4079 & NU_IDADE_N <= 4084 & CS_SEXO == "M") %>%
+  count()
+
+AUX[36, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4079 & NU_IDADE_N <= 4084 & CS_SEXO == "F") %>%
+  count()
+
+AUX[37, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4084 & CS_SEXO == "M") %>%
+  count()
+
+AUX[38, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4084 & CS_SEXO == "F") %>%
+  count()
+
+colnames(AUX) <- c("Grupo_Idade", "Sexo", "Populacao")
+
+AUX <- AUX %>%
+  mutate(Pop = case_when(Sexo == "M" ~ Populacao * -1,
+                         Sexo == "F" ~ Populacao ))
+
+AUX <- AUX %>% 
+  mutate(Sexo_Legenda = case_when(Sexo == "M" ~ "Masculino",
+                                  Sexo == "F" ~ "Feminino"))
+
+AUX <- AUX %>%
+  mutate(grupo_Idade_FACT = factor(Grupo_Idade, 
+                                   levels = c(
+                                     "< 01",
+                                     "01 - 04",
+                                     "05 - 09",
+                                     "10 - 14",
+                                     "15 - 19",
+                                     "20 - 24",
+                                     "25 - 29",
+                                     "30 - 34",
+                                     "35 - 39",
+                                     "40 - 44",
+                                     "45 - 49",
+                                     "50 - 54",
+                                     "55 - 59",
+                                     "60 - 64",
+                                     "65 - 69",
+                                     "70 - 74",
+                                     "75 - 79",
+                                     "80 - 84",
+                                     "> 84")
+  )
+  )
+
+PR_SINAN_GRAF_PIRAMIDE <- ggplot(AUX, 
+                                aes(x = Pop,
+                                    y = grupo_Idade_FACT, 
+                                    fill = Sexo_Legenda)) +
+  geom_col(color = "black",
+           linewidth = 0.8) +
+  labs(title = "Intoxicações Exógenas - Paraná (2016 - 2025)",
+       y = "Faixa Etária",
+       x = "Nº de Notificações",
+       fill = "Sexo",
+       caption = Fonte) +
+  scale_x_continuous(labels = abs) +
+  Theme() 
+
+
+IEXOG_completo <- arquivos_iexog %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      filter(AGENTE_TOX == "02" |
+               AGENTE_TOX == "03" |
+               AGENTE_TOX == "04") %>%
+      select(NU_IDADE_N, CS_SEXO) %>%
+    mutate(Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+AUX <- c("< 01", "< 01", "01 - 04", "01 - 04", "05 - 09", "05 - 09", "10 - 14", "10 - 14", "15 - 19", "15 - 19", "20 - 24", "20 - 24", 
+         "25 - 29", "25 - 29", "30 - 34", "30 - 34", "35 - 39", "35 - 39", "40 - 44", "40 - 44", "45 - 49", "45 - 49", "50 - 54", "50 - 54",
+         "55 - 59", "55 - 59", "60 - 64", "60 - 64", "65 - 69", "65 - 69", "70 - 74",  "70 - 74", "75 - 79", "75 - 79", "80 - 84", 
+         "80 - 84", "> 84", "> 84")
+
+AUX <- as.data.frame(AUX)
+
+AUX[, 2] <- c("M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", 
+              "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F")
+
+AUX[1, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N <= 4000 & CS_SEXO == "M") %>%
+  count()
+
+AUX[2, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N <= 4000 & CS_SEXO == "F") %>%
+  count()
+
+AUX[3, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4000 & NU_IDADE_N <= 4004 & CS_SEXO == "M") %>%
+  count()
+
+AUX[4, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4000 & NU_IDADE_N <= 4004 & CS_SEXO == "F") %>%
+  count()
+
+AUX[5, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4004 & NU_IDADE_N <= 4009 & CS_SEXO == "M") %>%
+  count()
+
+AUX[6, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4004 & NU_IDADE_N <= 4009 & CS_SEXO == "F") %>%
+  count()
+
+AUX[7, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4009 & NU_IDADE_N <= 4014 & CS_SEXO == "M") %>%
+  count()
+
+AUX[8, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4009 & NU_IDADE_N <= 4014 & CS_SEXO == "F") %>%
+  count()
+
+AUX[9, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4014 & NU_IDADE_N <= 4019 & CS_SEXO == "M") %>%
+  count()
+
+AUX[10, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4014 & NU_IDADE_N <= 4019 & CS_SEXO == "F") %>%
+  count()
+
+AUX[11, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4019 & NU_IDADE_N <= 4024 & CS_SEXO == "M") %>%
+  count()
+
+AUX[12, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4019 & NU_IDADE_N <= 4024 & CS_SEXO == "F") %>%
+  count()
+
+AUX[13, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4024 & NU_IDADE_N <= 4029 & CS_SEXO == "M") %>%
+  count()
+
+AUX[14, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4024 & NU_IDADE_N <= 4029 & CS_SEXO == "F") %>%
+  count()
+
+AUX[15, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4029 & NU_IDADE_N <= 4034 & CS_SEXO == "M") %>%
+  count()
+
+AUX[16, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4029 & NU_IDADE_N <= 4034 & CS_SEXO == "F") %>%
+  count()
+
+AUX[17, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4034 & NU_IDADE_N <= 4039 & CS_SEXO == "M") %>%
+  count()
+
+AUX[18, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4034 & NU_IDADE_N <= 4039 & CS_SEXO == "F") %>%
+  count()
+
+AUX[19, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4039 & NU_IDADE_N <= 4044 & CS_SEXO == "M") %>%
+  count()
+
+AUX[20, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4039 & NU_IDADE_N <= 4044 & CS_SEXO == "F") %>%
+  count()
+
+AUX[21, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4044 & NU_IDADE_N <= 4049 & CS_SEXO == "M") %>%
+  count()
+
+AUX[22, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4044 & NU_IDADE_N <= 4049 & CS_SEXO == "F") %>%
+  count()
+
+AUX[23, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4049 & NU_IDADE_N <= 4054 & CS_SEXO == "M") %>%
+  count()
+
+AUX[24, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4049 & NU_IDADE_N <= 4054 & CS_SEXO == "F") %>%
+  count()
+
+AUX[25, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4054 & NU_IDADE_N <= 4059 & CS_SEXO == "M") %>%
+  count()
+
+AUX[26, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4054 & NU_IDADE_N <= 4059 & CS_SEXO == "F") %>%
+  count()
+
+AUX[27, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4059 & NU_IDADE_N <= 4064 & CS_SEXO == "M") %>%
+  count()
+
+AUX[28, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4059 & NU_IDADE_N <= 4064 & CS_SEXO == "F") %>%
+  count()
+
+AUX[29, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4064 & NU_IDADE_N <= 4069 & CS_SEXO == "M") %>%
+  count()
+
+AUX[30, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4064 & NU_IDADE_N <= 4069 & CS_SEXO == "F") %>%
+  count()
+
+AUX[31, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4069 & NU_IDADE_N <= 4074 & CS_SEXO == "M") %>%
+  count()
+
+AUX[32, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4069 & NU_IDADE_N <= 4074 & CS_SEXO == "F") %>%
+  count()
+
+AUX[33, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4074 & NU_IDADE_N <= 4079 & CS_SEXO == "M") %>%
+  count()
+
+AUX[34, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4074 & NU_IDADE_N <= 4079 & CS_SEXO == "F") %>%
+  count()
+
+AUX[35, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4079 & NU_IDADE_N <= 4084 & CS_SEXO == "M") %>%
+  count()
+
+AUX[36, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4079 & NU_IDADE_N <= 4084 & CS_SEXO == "F") %>%
+  count()
+
+AUX[37, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4084 & CS_SEXO == "M") %>%
+  count()
+
+AUX[38, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4084 & CS_SEXO == "F") %>%
+  count()
+
+colnames(AUX) <- c("Grupo_Idade", "Sexo", "Populacao")
+
+AUX <- AUX %>%
+  mutate(Pop = case_when(Sexo == "M" ~ Populacao * -1,
+                         Sexo == "F" ~ Populacao ))
+
+AUX <- AUX %>% 
+  mutate(Sexo_Legenda = case_when(Sexo == "M" ~ "Masculino",
+                                  Sexo == "F" ~ "Feminino"))
+
+AUX <- AUX %>%
+  mutate(grupo_Idade_FACT = factor(Grupo_Idade, 
+                                   levels = c(
+                                     "< 01",
+                                     "01 - 04",
+                                     "05 - 09",
+                                     "10 - 14",
+                                     "15 - 19",
+                                     "20 - 24",
+                                     "25 - 29",
+                                     "30 - 34",
+                                     "35 - 39",
+                                     "40 - 44",
+                                     "45 - 49",
+                                     "50 - 54",
+                                     "55 - 59",
+                                     "60 - 64",
+                                     "65 - 69",
+                                     "70 - 74",
+                                     "75 - 79",
+                                     "80 - 84",
+                                     "> 84")
+  )
+  )
+
+PR_SINAN_GRAF_PIRAMIDE_AGRO <- ggplot(AUX, 
+                                aes(x = Pop,
+                                    y = grupo_Idade_FACT, 
+                                    fill = Sexo_Legenda)) +
+  geom_col(color = "black",
+           linewidth = 0.8) +
+  labs(title = "Intoxicações Exógenas por Agrotóxicos - Paraná (2016 - 2025)",
+       y = "Faixa Etária",
+       x = "Nº de Notificações",
+       fill = "Sexo",
+       caption = Fonte) +
+  scale_x_continuous(labels = abs) +
+  Theme() 
+
+#####  Piramides Regional
+
+IEXOG_completo <- arquivos_iexog %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      filter(ID_REGIONA == "1376",
+             AGENTE_TOX == "02" |
+               AGENTE_TOX == "03" |
+               AGENTE_TOX == "04") %>%
+      select(NU_IDADE_N, CS_SEXO) %>%
+      mutate(Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+AUX <- c("< 01", "< 01", "01 - 04", "01 - 04", "05 - 09", "05 - 09", "10 - 14", "10 - 14", "15 - 19", "15 - 19", "20 - 24", "20 - 24", 
+         "25 - 29", "25 - 29", "30 - 34", "30 - 34", "35 - 39", "35 - 39", "40 - 44", "40 - 44", "45 - 49", "45 - 49", "50 - 54", "50 - 54",
+         "55 - 59", "55 - 59", "60 - 64", "60 - 64", "65 - 69", "65 - 69", "70 - 74",  "70 - 74", "75 - 79", "75 - 79", "80 - 84", 
+         "80 - 84", "> 84", "> 84")
+
+AUX <- as.data.frame(AUX)
+
+AUX[, 2] <- c("M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", 
+              "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F")
+
+AUX[1, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N <= 4000 & CS_SEXO == "M") %>%
+  count()
+
+AUX[2, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N <= 4000 & CS_SEXO == "F") %>%
+  count()
+
+AUX[3, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4000 & NU_IDADE_N <= 4004 & CS_SEXO == "M") %>%
+  count()
+
+AUX[4, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4000 & NU_IDADE_N <= 4004 & CS_SEXO == "F") %>%
+  count()
+
+AUX[5, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4004 & NU_IDADE_N <= 4009 & CS_SEXO == "M") %>%
+  count()
+
+AUX[6, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4004 & NU_IDADE_N <= 4009 & CS_SEXO == "F") %>%
+  count()
+
+AUX[7, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4009 & NU_IDADE_N <= 4014 & CS_SEXO == "M") %>%
+  count()
+
+AUX[8, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4009 & NU_IDADE_N <= 4014 & CS_SEXO == "F") %>%
+  count()
+
+AUX[9, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4014 & NU_IDADE_N <= 4019 & CS_SEXO == "M") %>%
+  count()
+
+AUX[10, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4014 & NU_IDADE_N <= 4019 & CS_SEXO == "F") %>%
+  count()
+
+AUX[11, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4019 & NU_IDADE_N <= 4024 & CS_SEXO == "M") %>%
+  count()
+
+AUX[12, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4019 & NU_IDADE_N <= 4024 & CS_SEXO == "F") %>%
+  count()
+
+AUX[13, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4024 & NU_IDADE_N <= 4029 & CS_SEXO == "M") %>%
+  count()
+
+AUX[14, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4024 & NU_IDADE_N <= 4029 & CS_SEXO == "F") %>%
+  count()
+
+AUX[15, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4029 & NU_IDADE_N <= 4034 & CS_SEXO == "M") %>%
+  count()
+
+AUX[16, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4029 & NU_IDADE_N <= 4034 & CS_SEXO == "F") %>%
+  count()
+
+AUX[17, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4034 & NU_IDADE_N <= 4039 & CS_SEXO == "M") %>%
+  count()
+
+AUX[18, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4034 & NU_IDADE_N <= 4039 & CS_SEXO == "F") %>%
+  count()
+
+AUX[19, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4039 & NU_IDADE_N <= 4044 & CS_SEXO == "M") %>%
+  count()
+
+AUX[20, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4039 & NU_IDADE_N <= 4044 & CS_SEXO == "F") %>%
+  count()
+
+AUX[21, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4044 & NU_IDADE_N <= 4049 & CS_SEXO == "M") %>%
+  count()
+
+AUX[22, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4044 & NU_IDADE_N <= 4049 & CS_SEXO == "F") %>%
+  count()
+
+AUX[23, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4049 & NU_IDADE_N <= 4054 & CS_SEXO == "M") %>%
+  count()
+
+AUX[24, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4049 & NU_IDADE_N <= 4054 & CS_SEXO == "F") %>%
+  count()
+
+AUX[25, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4054 & NU_IDADE_N <= 4059 & CS_SEXO == "M") %>%
+  count()
+
+AUX[26, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4054 & NU_IDADE_N <= 4059 & CS_SEXO == "F") %>%
+  count()
+
+AUX[27, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4059 & NU_IDADE_N <= 4064 & CS_SEXO == "M") %>%
+  count()
+
+AUX[28, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4059 & NU_IDADE_N <= 4064 & CS_SEXO == "F") %>%
+  count()
+
+AUX[29, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4064 & NU_IDADE_N <= 4069 & CS_SEXO == "M") %>%
+  count()
+
+AUX[30, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4064 & NU_IDADE_N <= 4069 & CS_SEXO == "F") %>%
+  count()
+
+AUX[31, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4069 & NU_IDADE_N <= 4074 & CS_SEXO == "M") %>%
+  count()
+
+AUX[32, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4069 & NU_IDADE_N <= 4074 & CS_SEXO == "F") %>%
+  count()
+
+AUX[33, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4074 & NU_IDADE_N <= 4079 & CS_SEXO == "M") %>%
+  count()
+
+AUX[34, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4074 & NU_IDADE_N <= 4079 & CS_SEXO == "F") %>%
+  count()
+
+AUX[35, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4079 & NU_IDADE_N <= 4084 & CS_SEXO == "M") %>%
+  count()
+
+AUX[36, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4079 & NU_IDADE_N <= 4084 & CS_SEXO == "F") %>%
+  count()
+
+AUX[37, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4084 & CS_SEXO == "M") %>%
+  count()
+
+AUX[38, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4084 & CS_SEXO == "F") %>%
+  count()
+
+colnames(AUX) <- c("Grupo_Idade", "Sexo", "Populacao")
+
+AUX <- AUX %>%
+  mutate(Pop = case_when(Sexo == "M" ~ Populacao * -1,
+                         Sexo == "F" ~ Populacao ))
+
+AUX <- AUX %>% 
+  mutate(Sexo_Legenda = case_when(Sexo == "M" ~ "Masculino",
+                                  Sexo == "F" ~ "Feminino"))
+
+AUX <- AUX %>%
+  mutate(grupo_Idade_FACT = factor(Grupo_Idade, 
+                                   levels = c(
+                                     "< 01",
+                                     "01 - 04",
+                                     "05 - 09",
+                                     "10 - 14",
+                                     "15 - 19",
+                                     "20 - 24",
+                                     "25 - 29",
+                                     "30 - 34",
+                                     "35 - 39",
+                                     "40 - 44",
+                                     "45 - 49",
+                                     "50 - 54",
+                                     "55 - 59",
+                                     "60 - 64",
+                                     "65 - 69",
+                                     "70 - 74",
+                                     "75 - 79",
+                                     "80 - 84",
+                                     "> 84")
+  )
+  )
+
+RS_SINAN_GRAF_PIRAMIDE_AGRO <- ggplot(AUX, 
+                                     aes(x = Pop,
+                                         y = grupo_Idade_FACT, 
+                                         fill = Sexo_Legenda)) +
+  geom_col(color = "black",
+           linewidth = 0.8) +
+  labs(title = "Intoxicações Exógenas por Agrotóxicos - 22ª RS (2016 - 2025)",
+       y = "Faixa Etária",
+       x = "Nº de Notificações",
+       fill = "Sexo",
+       caption = Fonte) +
+  scale_x_continuous(labels = abs) +
+  Theme() 
+
+IEXOG_completo <- arquivos_iexog %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      filter(ID_REGIONA == "1376") %>%
+      select(NU_IDADE_N, CS_SEXO) %>%
+      mutate(Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+AUX <- c("< 01", "< 01", "01 - 04", "01 - 04", "05 - 09", "05 - 09", "10 - 14", "10 - 14", "15 - 19", "15 - 19", "20 - 24", "20 - 24", 
+         "25 - 29", "25 - 29", "30 - 34", "30 - 34", "35 - 39", "35 - 39", "40 - 44", "40 - 44", "45 - 49", "45 - 49", "50 - 54", "50 - 54",
+         "55 - 59", "55 - 59", "60 - 64", "60 - 64", "65 - 69", "65 - 69", "70 - 74",  "70 - 74", "75 - 79", "75 - 79", "80 - 84", 
+         "80 - 84", "> 84", "> 84")
+
+AUX <- as.data.frame(AUX)
+
+AUX[, 2] <- c("M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", 
+              "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F", "M", "F")
+
+AUX[1, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N <= 4000 & CS_SEXO == "M") %>%
+  count()
+
+AUX[2, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N <= 4000 & CS_SEXO == "F") %>%
+  count()
+
+AUX[3, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4000 & NU_IDADE_N <= 4004 & CS_SEXO == "M") %>%
+  count()
+
+AUX[4, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4000 & NU_IDADE_N <= 4004 & CS_SEXO == "F") %>%
+  count()
+
+AUX[5, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4004 & NU_IDADE_N <= 4009 & CS_SEXO == "M") %>%
+  count()
+
+AUX[6, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4004 & NU_IDADE_N <= 4009 & CS_SEXO == "F") %>%
+  count()
+
+AUX[7, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4009 & NU_IDADE_N <= 4014 & CS_SEXO == "M") %>%
+  count()
+
+AUX[8, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4009 & NU_IDADE_N <= 4014 & CS_SEXO == "F") %>%
+  count()
+
+AUX[9, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4014 & NU_IDADE_N <= 4019 & CS_SEXO == "M") %>%
+  count()
+
+AUX[10, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4014 & NU_IDADE_N <= 4019 & CS_SEXO == "F") %>%
+  count()
+
+AUX[11, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4019 & NU_IDADE_N <= 4024 & CS_SEXO == "M") %>%
+  count()
+
+AUX[12, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4019 & NU_IDADE_N <= 4024 & CS_SEXO == "F") %>%
+  count()
+
+AUX[13, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4024 & NU_IDADE_N <= 4029 & CS_SEXO == "M") %>%
+  count()
+
+AUX[14, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4024 & NU_IDADE_N <= 4029 & CS_SEXO == "F") %>%
+  count()
+
+AUX[15, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4029 & NU_IDADE_N <= 4034 & CS_SEXO == "M") %>%
+  count()
+
+AUX[16, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4029 & NU_IDADE_N <= 4034 & CS_SEXO == "F") %>%
+  count()
+
+AUX[17, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4034 & NU_IDADE_N <= 4039 & CS_SEXO == "M") %>%
+  count()
+
+AUX[18, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4034 & NU_IDADE_N <= 4039 & CS_SEXO == "F") %>%
+  count()
+
+AUX[19, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4039 & NU_IDADE_N <= 4044 & CS_SEXO == "M") %>%
+  count()
+
+AUX[20, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4039 & NU_IDADE_N <= 4044 & CS_SEXO == "F") %>%
+  count()
+
+AUX[21, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4044 & NU_IDADE_N <= 4049 & CS_SEXO == "M") %>%
+  count()
+
+AUX[22, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4044 & NU_IDADE_N <= 4049 & CS_SEXO == "F") %>%
+  count()
+
+AUX[23, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4049 & NU_IDADE_N <= 4054 & CS_SEXO == "M") %>%
+  count()
+
+AUX[24, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4049 & NU_IDADE_N <= 4054 & CS_SEXO == "F") %>%
+  count()
+
+AUX[25, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4054 & NU_IDADE_N <= 4059 & CS_SEXO == "M") %>%
+  count()
+
+AUX[26, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4054 & NU_IDADE_N <= 4059 & CS_SEXO == "F") %>%
+  count()
+
+AUX[27, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4059 & NU_IDADE_N <= 4064 & CS_SEXO == "M") %>%
+  count()
+
+AUX[28, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4059 & NU_IDADE_N <= 4064 & CS_SEXO == "F") %>%
+  count()
+
+AUX[29, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4064 & NU_IDADE_N <= 4069 & CS_SEXO == "M") %>%
+  count()
+
+AUX[30, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4064 & NU_IDADE_N <= 4069 & CS_SEXO == "F") %>%
+  count()
+
+AUX[31, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4069 & NU_IDADE_N <= 4074 & CS_SEXO == "M") %>%
+  count()
+
+AUX[32, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4069 & NU_IDADE_N <= 4074 & CS_SEXO == "F") %>%
+  count()
+
+AUX[33, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4074 & NU_IDADE_N <= 4079 & CS_SEXO == "M") %>%
+  count()
+
+AUX[34, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4074 & NU_IDADE_N <= 4079 & CS_SEXO == "F") %>%
+  count()
+
+AUX[35, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4079 & NU_IDADE_N <= 4084 & CS_SEXO == "M") %>%
+  count()
+
+AUX[36, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4079 & NU_IDADE_N <= 4084 & CS_SEXO == "F") %>%
+  count()
+
+AUX[37, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4084 & CS_SEXO == "M") %>%
+  count()
+
+AUX[38, 3] <- IEXOG_completo %>%
+  filter(NU_IDADE_N > 4084 & CS_SEXO == "F") %>%
+  count()
+
+colnames(AUX) <- c("Grupo_Idade", "Sexo", "Populacao")
+
+AUX <- AUX %>%
+  mutate(Pop = case_when(Sexo == "M" ~ Populacao * -1,
+                         Sexo == "F" ~ Populacao ))
+
+AUX <- AUX %>% 
+  mutate(Sexo_Legenda = case_when(Sexo == "M" ~ "Masculino",
+                                  Sexo == "F" ~ "Feminino"))
+
+AUX <- AUX %>%
+  mutate(grupo_Idade_FACT = factor(Grupo_Idade, 
+                                   levels = c(
+                                     "< 01",
+                                     "01 - 04",
+                                     "05 - 09",
+                                     "10 - 14",
+                                     "15 - 19",
+                                     "20 - 24",
+                                     "25 - 29",
+                                     "30 - 34",
+                                     "35 - 39",
+                                     "40 - 44",
+                                     "45 - 49",
+                                     "50 - 54",
+                                     "55 - 59",
+                                     "60 - 64",
+                                     "65 - 69",
+                                     "70 - 74",
+                                     "75 - 79",
+                                     "80 - 84",
+                                     "> 84")
+  )
+  )
+
+RS_SINAN_GRAF_PIRAMIDE <- ggplot(AUX, 
+                                     aes(x = Pop,
+                                         y = grupo_Idade_FACT, 
+                                         fill = Sexo_Legenda)) +
+  geom_col(color = "black",
+           linewidth = 0.8) +
+  labs(title = "Intoxicações Exógenas - 22ªRS (2016 - 2025)",
+       y = "Faixa Etária",
+       x = "Nº de Notificações",
+       fill = "Sexo",
+       caption = Fonte) +
+  scale_x_continuous(labels = abs) +
+  Theme() 
+
+##### Tabela regionais
+
+# arquivos_iexog <- list.files(
+#   path = "Tabulacoes_R/SINAN/",
+#   pattern = "^PR_.*GERAL.*\\.csv$",
+#   full.names = TRUE,
+#   ignore.case = TRUE
+# )
+ 
+ # IEXOG_completo <- arquivos_iexog %>%
+ #   map_df(function(caminho) {
+ #     read.csv (file = caminho,
+ #               header = TRUE,
+ #               sep = ",") %>%
+ #       select(NU_IDADE_N, CIRCUNSTAN) %>%
+ #       mutate(Ano = str_extract(caminho, "\\d{4}")) 
+ #   })
+
+AUX <- PR_2016_GERAL %>%
+  group_by(RS) %>% 
+  summarize(
+    Notificados_2016 = sum(Notificados, na.rm = TRUE),
+    Agro_2016 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) 
+
+AUX[, 4:5] <- PR_2017_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2017 = sum(Notificados, na.rm = TRUE),
+    Agro_2017 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2017, Agro_2017)
+
+AUX[, 6:7] <- PR_2018_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2018 = sum(Notificados, na.rm = TRUE),
+            Agro_2018 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2018, Agro_2018)
+
+AUX[, 8:9] <- PR_2019_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2019 = sum(Notificados, na.rm = TRUE),
+            Agro_2019 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2019, Agro_2019)
+
+AUX[, 10:11] <- PR_2020_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2020 = sum(Notificados, na.rm = TRUE),
+            Agro_2020 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2020, Agro_2020)
+
+AUX[, 12:13] <- PR_2021_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2021 = sum(Notificados, na.rm = TRUE),
+            Agro_2021 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2021, Agro_2021)
+
+AUX[, 14:15] <- PR_2022_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2022 = sum(Notificados, na.rm = TRUE),
+            Agro_2022 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2022, Agro_2022)
+
+AUX[, 16:17] <- PR_2023_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2023 = sum(Notificados, na.rm = TRUE),
+            Agro_2023 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2023, Agro_2023)
+
+AUX[, 18:19] <- PR_2024_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2024 = sum(Notificados, na.rm = TRUE),
+            Agro_2024 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2024, Agro_2024)
+
+AUX[, 20:21] <- PR_2025_GERAL %>% 
+  group_by(RS) %>% 
+  summarize(Notificados_2025 = sum(Notificados, na.rm = TRUE),
+            Agro_2025 = sum(Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude, na.rm = TRUE)
+  ) %>%
+  select(Notificados_2025, Agro_2025)
+
+AUX <- AUX %>%
+  mutate(RS = factor(as.numeric(RS), levels = 1:23)
+  ) %>%
+  filter(!is.na(RS)) %>%
+  arrange(RS)
+
+PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS <- gt(AUX) %>%
+  tab_header(
+    title = md("**Intoxicações Exógenas (Geral e por Agrotóxicos) nas Regionais de Saúde do Paraná**"),
+    subtitle = md("Paraná, 2016 – 2025")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "2016") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2017") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "2018") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "2019") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "2020") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "2021") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "2022") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "2023") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "2024") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "2025") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21) %>%
+  cols_label(contains("Notifi") ~ "Int. \nGeral",
+             contains("Agro") ~ "Int. \nAgrotóxico"
+  ) %>%
+  tab_footnote(
+    footnote = "Fonte: SINAN. Base DBF acessada em 04/02/2026. Dados sujeitos a alteração."
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#f9f9f9"),
+    locations = cells_body(
+      columns = c(
+        4, 5,   
+        8, 9,   
+        12, 13, 
+        16, 17, 
+        20, 21  
+      )
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "yellow", 
+                alpha = 0.2),
+      cell_text(weight = "bold")
+    ),
+    locations = cells_body(rows = RS == "22")
+  )
+
+gtsave(PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS,
+       filename = "Imagens/SINAN/PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS.png" )
+
 ##### Salvando objetos
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_SERIE_HIST_Geral.png",
+       PR_SINAN_GRAF_SERIE_HIST_Geral,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_SERIE_HIST_AGROT.png",
+       PR_SINAN_GRAF_SERIE_HIST_AGROT,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_PIRAMIDE_AGRO.png",
+       PR_SINAN_GRAF_PIRAMIDE_AGRO,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_PIRAMIDE.png",
+       PR_SINAN_GRAF_PIRAMIDE,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_IDADE_CIRCUNS_II.png",
+       PR_SINAN_GRAF_IDADE_CIRCUNS_II,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II.png",
+       PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO.png",
+       PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_IDADE_CIRCUNS.png",
+       PR_SINAN_GRAF_IDADE_CIRCUNS,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/RS_SINAN_GRAF_PIRAMIDE_AGRO.png",
+       RS_SINAN_GRAF_PIRAMIDE_AGRO,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/RS_SINAN_GRAF_PIRAMIDE.png",
+       RS_SINAN_GRAF_PIRAMIDE,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/RS_SINAN_GRAF_IDADE_CIRCUNS_II.png",
+       RS_SINAN_GRAF_IDADE_CIRCUNS_II,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/RS_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II.png",
+       RS_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/RS_SINAN_GRAF_IDADE_CIRCUNS_AGRO.png",
+       RS_SINAN_GRAF_IDADE_CIRCUNS_AGRO,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/RS_SINAN_GRAF_IDADE_CIRCUNS.png",
+       RS_SINAN_GRAF_IDADE_CIRCUNS,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/DERAL/RS_DERAL_GRAF_AGRO_HA_CULTIVADO.png",
        RS_DERAL_GRAF_AGRO_HA_CULTIVADO,
@@ -6790,7 +9109,7 @@ ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_HA_CANA_Mun_17_20_21_24.png",
        units = "cm",                               
        dpi = 300,                                   
        bg = "white"                                
-)
+) 
 
 ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_HA_FEIJAO_Mun_17_20_21_24.png", 
        plot = PR_DERAL_MAP_HA_FEIJAO_Mun_17_20_21_24, 
