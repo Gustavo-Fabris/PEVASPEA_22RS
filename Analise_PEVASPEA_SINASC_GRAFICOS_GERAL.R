@@ -2161,7 +2161,7 @@ Base_Populacional <- left_join(Base_Populacional,
 POP_RS_2016 <- Base_Populacional %>%
   as.data.frame() %>%
   group_by(RS) %>%
-  summarise(Pop_Total_2016 = sum(as.numeric(gsub("\\.", "", X2016)), na.rm = TRUE))
+  summarise(Pop_Total_2016 = sum(X2016, na.rm = TRUE))
 
 AUX <- AUX_2016 %>%
   select(RS, NEOPLASIAS) %>% 
@@ -2171,7 +2171,7 @@ AUX <- AUX_2016 %>%
   select(-Pop_Total_2016)
 
 for (ano in 2017:2025) {
-  nome_coluna_pop <- if (ano %in% c(2022, 2023)) "X2024" else paste0("X", ano)
+  nome_coluna_pop <- if (ano == 2023) "X2024" else paste0("X", ano)
   coluna_pop_sym  <- sym(nome_coluna_pop)
   tabela_obitos_ano <- get(paste0("AUX_", ano))
   pop_regional_atual <- Base_Populacional %>%
@@ -2192,7 +2192,7 @@ for (ano in 2017:2025) {
 
 PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist <- gt(AUX) %>%
   tab_header(
-    title = md("**Mortalidade por Neoplasias Malignas - Regionais de Saúde**"),
+    title = md("**Taxa de Mortalidade (Óbitos/100.000 Habitantes) por Neoplasias Malignas - Regionais de Saúde**"),
     subtitle = md("Paraná, 2016 – 2025")
   ) %>%
   tab_options(
@@ -2250,10 +2250,10 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist <- gt(AUX) %>%
   ) %>%
   sub_missing(columns = everything(), missing_text = "-") %>%
   tab_footnote(
-    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+    footnote = Fonte
   ) %>%
   tab_footnote(
-    footnote = "Nota¹: Incidência calculada por 100.000 habitantes (População estimada IBGE)."
+    footnote = "Nota¹: Incidência calculada por 100.000 habitantes (População estimada IBGE e Censo 2022)."
   ) %>%
   tab_style(
     style = cell_fill(color = "#F4F4F4"),
@@ -2386,7 +2386,7 @@ AUX <- PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 %>%
   select(Grupo_CID, TOTAL) %>%
   rename(`2016` = TOTAL) %>%
   mutate(`2016` = as.numeric(`2016`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2016)),
+         pop_limpa = AUX01$X2016,
          Inc_2016 = case_when(
            Grupo_CID == "Mama"    ~ (`2016` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2016` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2406,7 +2406,7 @@ AUX <- left_join(
 AUX <- AUX %>% 
   ungroup() %>%
   mutate(`2017` = as.numeric(`2017`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2017)),
+         pop_limpa = AUX01$X2017,
          Inc_2017 = case_when(
            Grupo_CID == "Mama"    ~ (`2017` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2017` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2426,7 +2426,7 @@ AUX <- left_join(
 AUX <- AUX %>%
   ungroup() %>%
   mutate(`2018` = as.numeric(`2018`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2018)),
+         pop_limpa = AUX01$X2018,
          Inc_2018 = case_when(
            Grupo_CID == "Mama"    ~ (`2018` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2018` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2446,7 +2446,7 @@ AUX <- left_join(
 AUX <- AUX %>%
   ungroup() %>%
   mutate(`2019` = as.numeric(`2019`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2019)),
+         pop_limpa = AUX01$X2019,
          Inc_2019 = case_when(
            Grupo_CID == "Mama"    ~ (`2019` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2019` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2466,7 +2466,7 @@ AUX <- left_join(
 AUX <- AUX %>%
   ungroup() %>%
   mutate(`2020` = as.numeric(`2020`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2020)),
+         pop_limpa = AUX01$X2020,
          Inc_2020 = case_when(
            Grupo_CID == "Mama"    ~ (`2020` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2020` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2486,7 +2486,7 @@ AUX <- left_join(
 AUX <- AUX %>%
   ungroup() %>%
   mutate(`2021` = as.numeric(`2021`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2021)),
+         pop_limpa = AUX01$X2021,
          Inc_2021 = case_when(
            Grupo_CID == "Mama"    ~ (`2021` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2021` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2506,7 +2506,7 @@ AUX <- left_join(
 AUX <- AUX %>%
   ungroup() %>%
   mutate(`2022` = as.numeric(`2022`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2021)),
+         pop_limpa = AUX01$X2022,
          Inc_2022 = case_when(
            Grupo_CID == "Mama"    ~ (`2022` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2022` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2526,7 +2526,7 @@ AUX <- left_join(
 AUX <- AUX %>%
   ungroup() %>%
   mutate(`2023` = as.numeric(`2023`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2021)),
+         pop_limpa = AUX01$X2024,
          Inc_2023 = case_when(
            Grupo_CID == "Mama"    ~ (`2023` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2023` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2546,7 +2546,7 @@ AUX <- left_join(
 AUX <- AUX %>%
   ungroup() %>%
   mutate(`2024` = as.numeric(`2024`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2024)),
+         pop_limpa = AUX01$X2024,
          Inc_2024 = case_when(
            Grupo_CID == "Mama"    ~ (`2024` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2024` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2566,7 +2566,7 @@ AUX <- left_join(
 AUX <- AUX %>%
   ungroup() %>%
   mutate(`2025` = as.numeric(`2025`),
-         pop_limpa = as.numeric(gsub("\\.", "", AUX01$X2025)),
+         pop_limpa = AUX01$X2025,
          Inc_2025 = case_when(
            Grupo_CID == "Mama"    ~ (`2025` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2025` / as.numeric(gsub("\\.", "", Base_Populacional_Feminina_2022[1, 2]))) * 100000,
@@ -2597,7 +2597,7 @@ AUX <- AUX %>%
 
 PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_header(
-    title = md("**Mortalidade por Neoplasias Malignas no Paraná**"),
+    title = md("**taxa de Mortalidade (Óbitos/100.000 Habitantes) por Grupos de Neoplasias Malignas no Paraná**"),
     subtitle = md("Paraná, 2016 – 2025")
   ) %>%
   tab_options(
@@ -2654,10 +2654,10 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
     dec_mark = ","
   ) %>%
   tab_footnote(
-    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+    footnote = Fonte5
   ) %>%
   tab_footnote(
-    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (População Estimada IBGE)."
+    footnote = "Nota¹:Incidência calculada por 100.000 habitantes (População Estimada IBGE e Censo 2022)."
   ) %>%
   tab_footnote(
     footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
@@ -2692,16 +2692,16 @@ Total <- data.frame(
   check.names = FALSE 
 )
 
-Total$Inc_2016 <- round((Total$`2016` / as.numeric(gsub("\\.", "", AUX01$X2016))) * 100000, 2)
-Total$Inc_2017 <- round((Total$`2017` / as.numeric(gsub("\\.", "", AUX01$X2017))) * 100000, 2)
-Total$Inc_2018 <- round((Total$`2018` / as.numeric(gsub("\\.", "", AUX01$X2018))) * 100000, 2)
-Total$Inc_2019 <- round((Total$`2019` / as.numeric(gsub("\\.", "", AUX01$X2019))) * 100000, 2)
-Total$Inc_2020 <- round((Total$`2020` / as.numeric(gsub("\\.", "", AUX01$X2020))) * 100000, 2)
-Total$Inc_2021 <- round((Total$`2021` / as.numeric(gsub("\\.", "", AUX01$X2021))) * 100000, 2)
-Total$Inc_2022 <- round((Total$`2022` / as.numeric(gsub("\\.", "", AUX01$X2024))) * 100000, 2)
-Total$Inc_2023 <- round((Total$`2023` / as.numeric(gsub("\\.", "", AUX01$X2024))) * 100000, 2)
-Total$Inc_2024 <- round((Total$`2024` / as.numeric(gsub("\\.", "", AUX01$X2024))) * 100000, 2)
-Total$Inc_2025 <- round((Total$`2025` / as.numeric(gsub("\\.", "", AUX01$X2025))) * 100000, 2)
+Total$Inc_2016 <- round((Total$`2016` / AUX01$X2016) * 100000, 2)
+Total$Inc_2017 <- round((Total$`2017` / AUX01$X2017) * 100000, 2)
+Total$Inc_2018 <- round((Total$`2018` / AUX01$X2018) * 100000, 2)
+Total$Inc_2019 <- round((Total$`2019` / AUX01$X2019) * 100000, 2)
+Total$Inc_2020 <- round((Total$`2020` / AUX01$X2020) * 100000, 2)
+Total$Inc_2021 <- round((Total$`2021` / AUX01$X2021) * 100000, 2)
+Total$Inc_2022 <- round((Total$`2022` / AUX01$X2022) * 100000, 2)
+Total$Inc_2023 <- round((Total$`2023` / AUX01$X2024) * 100000, 2)
+Total$Inc_2024 <- round((Total$`2024` / AUX01$X2024) * 100000, 2)
+Total$Inc_2025 <- round((Total$`2025` / AUX01$X2025) * 100000, 2)
 
 
 Total_Inc <- Total %>% 
@@ -2751,8 +2751,8 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
             size = 4, 
             vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 240), 
-                     breaks = seq(0, 240, 20),
+  scale_y_continuous(limits = c(0, 200), 
+                     breaks = seq(0, 200, 20),
                      sec.axis = sec_axis(~ . * fator_escala, 
                                          name = "Nº de Óbitos (Absoluto)",
                                          labels = label_number(big.mark = "."))) +
@@ -2925,7 +2925,7 @@ AUX <- left_join(
 
 AUX <- AUX %>%
   mutate(`2022` = as.numeric(`2022`),
-         pop_limpa = AUX02$X2024,
+         pop_limpa = AUX02$X2022,
          Inc_2022 = case_when(
            Grupo_CID == "Mama"    ~ (`2022` / AUX03) * 100000,
            Grupo_CID == "Gen_Fem" ~ (`2022` / AUX03) * 100000,
@@ -3014,7 +3014,7 @@ AUX <- AUX %>%
 RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_header(
     title = md("**Mortalidade por Neoplasias Malignas na 22ª Regional de Saúde**"),
-    subtitle = md("22 ª Regional de Saúde, 2016 – 2025")
+    subtitle = md("2016 – 2025")
   ) %>%
   tab_options(
     heading.align = "left",
@@ -3071,10 +3071,10 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   ) %>%
   sub_missing(columns = everything(), missing_text = "-") %>%
   tab_footnote(
-    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+    footnote = Fonte5
   ) %>%
   tab_footnote(
-    footnote = "Nota¹: Incidência calculada por 100.000 habitantes (População Estimada IBGE)."
+    footnote = "Nota¹: Incidência calculada por 100.000 habitantes (População Estimada IBGE e Censo 2022)."
   ) %>%
   tab_footnote(
     footnote = "Nota²: Incidência de câncer de mama e genitais femininos calculada usando a população feminina do Censo de 2022."
@@ -3109,16 +3109,16 @@ Total <- data.frame(
   check.names = FALSE 
 )
 
-Total$Inc_2016 <- round((Total$`2016` / as.numeric(gsub("\\.", "", AUX02$X2016))) * 100000, 2)
-Total$Inc_2017 <- round((Total$`2017` / as.numeric(gsub("\\.", "", AUX02$X2017))) * 100000, 2)
-Total$Inc_2018 <- round((Total$`2018` / as.numeric(gsub("\\.", "", AUX02$X2018))) * 100000, 2)
-Total$Inc_2019 <- round((Total$`2019` / as.numeric(gsub("\\.", "", AUX02$X2019))) * 100000, 2)
-Total$Inc_2020 <- round((Total$`2020` / as.numeric(gsub("\\.", "", AUX02$X2020))) * 100000, 2)
-Total$Inc_2021 <- round((Total$`2021` / as.numeric(gsub("\\.", "", AUX02$X2021))) * 100000, 2)
-Total$Inc_2022 <- round((Total$`2022` / as.numeric(gsub("\\.", "", AUX02$X2024))) * 100000, 2)
-Total$Inc_2023 <- round((Total$`2023` / as.numeric(gsub("\\.", "", AUX02$X2024))) * 100000, 2)
-Total$Inc_2024 <- round((Total$`2024` / as.numeric(gsub("\\.", "", AUX02$X2024))) * 100000, 2)
-Total$Inc_2025 <- round((Total$`2025` / as.numeric(gsub("\\.", "", AUX02$X2025))) * 100000, 2)
+Total$Inc_2016 <- round((Total$`2016` / AUX02$X2016) * 100000, 2)
+Total$Inc_2017 <- round((Total$`2017` / AUX02$X2017) * 100000, 2)
+Total$Inc_2018 <- round((Total$`2018` / AUX02$X2018) * 100000, 2)
+Total$Inc_2019 <- round((Total$`2019` / AUX02$X2019) * 100000, 2)
+Total$Inc_2020 <- round((Total$`2020` / AUX02$X2020) * 100000, 2)
+Total$Inc_2021 <- round((Total$`2021` / AUX02$X2021) * 100000, 2)
+Total$Inc_2022 <- round((Total$`2022` / AUX02$X2022) * 100000, 2)
+Total$Inc_2023 <- round((Total$`2023` / AUX02$X2024) * 100000, 2)
+Total$Inc_2024 <- round((Total$`2024` / AUX02$X2024) * 100000, 2)
+Total$Inc_2025 <- round((Total$`2025` / AUX02$X2025) * 100000, 2)
 
 Total_Inc <- Total %>% 
   select(contains("Inc")) %>%
@@ -3168,8 +3168,8 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
             size = 4, 
             vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 280), 
-                     breaks = seq(0, 280, 20),
+  scale_y_continuous(limits = c(0, 240), 
+                     breaks = seq(0, 240, 20),
                      sec.axis = sec_axis(~ . * fator_escala, 
                                          name = "Nº de Óbitos (Absoluto)",
                                          breaks = c(0, 100, 200, 300),
@@ -3208,8 +3208,7 @@ Base_Populacional_Feminina_2022_30_69 <- Base_Populacional_Feminina_2022 %>%
   )
 
 AUX <-  PS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 %>%
-  mutate(Óbitos_Menores_30 = rowSums(across(c(X0.4, X5.9, X10.14, X15.19, X20.24, X25.29)), na.rm = TRUE),
-         `2016` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)
+  mutate(`2016` = rowSums(across(c(X30.34, X35.39, X40.44, X45.49, X50.54, X55.59, X60.64, X65.69)), na.rm = TRUE)
   ) %>%
   select(Grupo_CID, 
          `2016`) %>%
@@ -3428,7 +3427,7 @@ AUX <- AUX %>%
 PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_header(
     title = md("**Mortalidade por Neoplasias Malignas em População de 30 a 69 anos - Paraná**"),
-    subtitle = md("Paraná, 2016 – 2025")
+    subtitle = md("2016 – 2025")
   ) %>%
   tab_options(
     heading.align = "left",
@@ -3579,8 +3578,8 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y
             size = 4, 
             vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 240), 
-                     breaks = seq(0, 240, 20),
+  scale_y_continuous(limits = c(0, 200), 
+                     breaks = seq(0, 200, 20),
                      sec.axis = sec_axis(~ . * fator_escala, 
                                          name = "Nº de Óbitos (Absoluto)",
                                          labels = label_number(big.mark = "."))) +
@@ -3888,7 +3887,7 @@ AUX <- AUX %>%
 RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_header(
     title = md("**Mortalidade por Neoplasias Malignas em  População de 30 a 69 anos na 22ª Regional de Saúde**"),
-    subtitle = md("22ª Regional de Saúde, 2016 – 2025")
+    subtitle = md("2016 – 2025")
   ) %>%
   tab_options(
     heading.align = "left",
@@ -3945,7 +3944,7 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   ) %>%
   sub_missing(columns = everything(), missing_text = "-") %>%
   tab_footnote(
-    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+    footnote = Fonte5
   ) %>%
   tab_footnote(
     footnote = "Nota¹:Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
@@ -4039,8 +4038,8 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y
             size = 4, 
             vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 280), 
-                     breaks = seq(0, 280, 20),
+  scale_y_continuous(limits = c(0, 220), 
+                     breaks = seq(0, 220, 20),
                      sec.axis = sec_axis(~ . * fator_escala, 
                                          name = "Nº de Óbitos (Absoluto)",
                                          breaks = c(0, 100, 200, 300),
@@ -4294,7 +4293,7 @@ AUX <- AUX %>%
 PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
   tab_header(
     title = md("**Mortalidade por Neoplasias Malignas em População Menor de 30 Anos - Paraná**"),
-    subtitle = md("Paraná, 2016 – 2025")
+    subtitle = md("2016 – 2025")
   ) %>%
   tab_options(
     heading.align = "left",
@@ -4447,8 +4446,8 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
             size = 4, 
             vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 20), 
-                     breaks = seq(0, 20, 5),
+  scale_y_continuous(limits = c(0, 12), 
+                     breaks = seq(0, 12, 3),
                      sec.axis = sec_axis(~ . * fator_escala, 
                                          name = "Nº de Óbitos (Absoluto)",
                                          labels = label_number(big.mark = "."))) +
@@ -4754,7 +4753,7 @@ AUX <- AUX %>%
 RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
   tab_header(
     title = md("**Mortalidade por Neoplasias Malignas em  População Menor de 30 anos - 22ª Regional de Saúde**"),
-    subtitle = md("22ª Regional de Saúde, 2016 – 2025")
+    subtitle = md("2016 – 2025")
   ) %>%
   tab_options(
     heading.align = "left",
@@ -4907,8 +4906,8 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
             size = 4, 
             vjust = -1.5, 
             fontface = "bold")  + 
-  scale_y_continuous(limits = c(0, 25), 
-                     breaks = seq(0, 25, 5),
+  scale_y_continuous(limits = c(0, 18), 
+                     breaks = seq(0, 18, 3),
                      sec.axis = sec_axis(~ . * fator_escala, 
                                          name = "Nº de Óbitos (Absoluto)",
                                          breaks = c(0, 100, 200, 300),
@@ -4984,7 +4983,7 @@ AUX01 <- AUX01 %>%
 
 RS_PEVASPEA_SIM_TAB_NEOPLASIAS_Serie_Historica <- gt(AUX01[, c(22, 2:21)]) %>%
   tab_header(
-    title = md("**Óbitos por Neoplasias - 22ª Regional de Saúde**"),
+    title = md("**Óbitos e Incidência (Óbitos/100.000 Habitantes) por Neoplasias - 22ª Regional de Saúde**"),
     subtitle = md("2016 – 2025")
   ) %>%
   tab_options(
@@ -5043,7 +5042,7 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_Serie_Historica <- gt(AUX01[, c(22, 2:21)]) %>%
   ) %>%
   sub_missing(columns = everything(), missing_text = "-") %>%
   tab_footnote(
-    footnote = "Fonte: Sistema de Informações de Mortalidade. Base DBF acessada em 04/05/2026."
+    footnote = Fonte5
   ) %>%
   tab_footnote(
     footnote = "Nota¹:Incidência calculada por 100.000 habitantes (IBGE Censo 2022)."
@@ -5082,7 +5081,7 @@ MAPA_BASE_PR <- left_join(MAPA_BASE_PR %>%
                             mutate(CD_MUN = str_sub(CD_MUN, start = 1, end = 6)), 
                           Base_Populacional %>% 
                             mutate(Código_IBGE = as.character(Código_IBGE)) %>%
-                            select(Código_IBGE, X2020, X2021, X2024, X2025),
+                            select(Código_IBGE, X2018, X2019, X2020, X2021, X2022, X2024, X2025),
                           by = c("CD_MUN" = "Código_IBGE"))
 
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = Inc_16_20_Cancer_mun,
@@ -5176,267 +5175,620 @@ PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN <- PR_SIM_MAP_TAXA_CANCER_16_20_Mun +
                                                 size = 10)
                   ))
 
-# ##### Trabalhando Global Moran/LISA
-# 
-# ### Criando Matriz de vizinhança (QUEEN) Verificar se o queen é padrão no spdep
-# 
-# Matriz_Viz_MAPA_BASE_PR <- poly2nb(MAPA_BASE_PR, ## Definindo quem faz fronteira com quem.
-#                                    queen = TRUE)
-# 
-# ### Verificando a malha queen
-# 
-# Centroides_Matriz_VIZ <- st_centroid(MAPA_BASE_PR)  ## Estabelecendo centróides
-# 
-# Centroides_Matriz_VIZ_coordenadas <- st_coordinates(Centroides_Matriz_VIZ) ## Coordenadas dos centróides
-# 
-# Matriz_VIZ_Linhas <- nb2lines(nb = Matriz_Viz_MAPA_BASE_PR,  ## Une os centróides com lines
-#                               coords = Centroides_Matriz_VIZ_coordenadas) %>%
-#   st_as_sf()  ## transforma tudo em objeto sf
-# 
-# st_crs(Matriz_VIZ_Linhas) <- st_crs(MAPA_BASE_PR) ## atribui Sistema de referência de coordenadas do MAPA_BASE_PR no matriz VIZ Linhas
-# 
-# PR_PEVASPEA_SINASC_MAP_MAPA_VIZINHANCA <-ggplot(MAPA_BASE_PR, 
-#                                                 aes(geometry = geometry)) +
-#   geom_sf(fill = "lightblue") +
-#   geom_sf(data = Matriz_VIZ_Linhas, 
-#           aes(geometry = geometry)) +
-#   ggtitle("Matriz de Vizinhança Queen, Paraná.") +
-#   theme_void()
-# 
-# ### Explicação do Gemini para usar o style = "W"
-# 
-# # 3. style = "W" (A Padronização por Linha)
-# # Este é o ponto mais importante. O estilo "W" (Row-standardized) faz o seguinte:
-# #   Atribui pesos iguais para todos os vizinhos de uma unidade, de modo 
-# # que a soma dos pesos de cada linha seja igual a 1.
-# # Na prática: Se um município tem 4 vizinhos, cada um recebe peso 0, 25. 
-# # Se outro tem 10 vizinhos, cada um recebe peso 0,1
-# # Por que usar? Isso é padrão para o Índice de Moran Global pois 
-# # permite comparar regiões com diferentes números de vizinhos de 
-# # forma justa (evita que municípios muito "conectados" distorçam o 
-# # resultado apenas por terem mais fronteiras).
-# 
-# Matriz_Viz_Pesos <- Matriz_Viz_MAPA_BASE_PR %>% 
-#   nb2listw(style = "W")  ##define matriz de pesos espaciais para rodar moran e local moran
-# 
-# #####  Análise Global e Local Moran
-# 
-# #### 2016 a 2020 INÍCIO
-# 
-# ### Realizando a suavização dos dados com Método Bayesiano Empírico 2016 - 2020
-# 
-#  Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Cancer_2025 + MAPA_BASE_PR$Cancer_2024 +
-#                            MAPA_BASE_PR$Cancer_2023 + MAPA_BASE_PR$Cancer_2022 +
-#                              MAPA_BASE_PR$Cancer_2021,
-#                            ni = as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2025)) + as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2024)) +
-#                              as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2021)) + as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2024)) + 
-#                              as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2024)),
-#                            nb = Matriz_Viz_MAPA_BASE_PR)
-# 
-#  MAPA_BASE_PR$TAXA_RAW_2025_Cancer <- Taxa_Suavizada$raw * 100000
-#  
-#  MAPA_BASE_PR$TAXA_EST_2025_Cancer <- Taxa_Suavizada$est * 100000
-# 
-# Global_Moran_CANCER_2025 <- moran.test(MAPA_BASE_PR$TAXA_EST_2025_Cancer,
-#                                  Matriz_Viz_Pesos)
-# 
-# ### Scatterplot
-# 
-# moran.plot(MAPA_BASE_PR$TAXA_EST_2025_Cancer, 
-#            Matriz_Viz_Pesos, 
-#            labels = FALSE, 
-#            pch = 15, 
-#            col = "blue", 
-#            xlab = "Variável Original", 
-#            ylab = "Média dos Vizinhos (Spatial Lag)",
-#            main = "Moran Scatterplot")
-# 
-# #### Calculando o Local Moran
-# ### Travando o local moran
-# set.seed(55)
-# 
-# Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_2025_Cancer, 
-#                         Matriz_Viz_Pesos, 
-#                         nsim = 9999,
-#                         zero.policy = TRUE)
-# 
-# MAPA_BASE_PR$local_I_2025_Cancer <- Lisa[,1]
-# 
-# MAPA_BASE_PR$local_I_p_valor_2025_Cancer <- Lisa[,5]
-# 
-# ggplot(MAPA_BASE_PR, 
-#        aes(geometry = geometry)) +
-#   geom_sf(aes(fill = local_I_2025_Cancer)) +
-#   scale_fill_gradient2(low = "blue", high = "red", 
-#                        mid = "white", 
-#                        midpoint = 0,
-#                        name = "I local") +
-#   theme_void() +
-#   theme(legend.position = "bottom",
-#         legend.key.width = unit(1.5, "cm"))
-# 
-# quadrantes <- attr(Lisa, 
-#                    "quadr")$mean
-# 
-# MAPA_BASE_PR$quadrante_2025_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
-#                                           quadrantes == "Low-Low" ~ "Baixo-Baixo",
-#                                           quadrantes == "High-Low" ~ "Alto-Baixo",
-#                                           quadrantes == "Low-High" ~ "Baixo-Alto")
-# 
-# MAPA_BASE_PR <- MAPA_BASE_PR %>%
-#   mutate(Lisa_resultado_2025_Cancer = case_when(
-#     local_I_p_valor_2025_Cancer < 0.05 ~ quadrante_16_20,
-#     local_I_p_valor_2025_Cancer >= 0.05 ~ "Não significativo"
-#   ))
-# 
-# Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não significativo")
-# 
-# MAPA_BASE_PR$Lisa_resultado_2025_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_2025_Cancer, 
-#                                             levels = Niveis_LISA)
-# 
-# PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2025 <- ggplot(MAPA_BASE_PR, 
-#                                                aes(geometry = geometry)) +
-#   geom_sf(color = "grey30", 
-#           linewidth = 0.1, 
-#           aes(fill = Lisa_resultado_2025_Cancer)) +
-#   scale_fill_manual(name = "LISA \nClusters",
-#                     drop = FALSE,
-#                     values = c("Alto-Alto" = "red",        
-#                                "Baixo-Baixo" = "blue",      
-#                                "Alto-Baixo" = "pink",       
-#                                "Baixo-Alto" = "lightblue",  
-#                                "Não significativo" = "grey90")
-#   ) +
-#   geom_sf(data = SHAPEFILE_ESTADUAL_RS,
-#           color = "black",   
-#           linewidth = 0.5,   
-#           fill = NA) +
-#   annotation_scale(location = "bl") + 
-#   annotation_north_arrow(location = "tl", 
-#                          which_north = "true",
-#                          style = north_arrow_minimal()) +
-#   
-#   coord_sf(expand = FALSE)+
-#   labs(x = NULL,
-#        y = NULL,
-#        title = "2016 - 2020",
-#        subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.63 (p < 0.001) \n9999 permutações") +
-#   Theme() +
-#   theme(legend.key.width = unit(1.5, "cm")) +
-#   theme(legend.position = "bottom")
-# 
-# #### Fim da análise Global and Local Moran 2018 - 2021
-# 
-# ### Realizando a suavização dos dados com Método Bayesiano Empírico 2022 - 2025
-# 
-# # Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Anomalias_4a_21_25, 
-# #                           ni = MAPA_BASE_PR$Nascidos_4a_21_25,
-# #                           nb = Matriz_Viz_MAPA_BASE_PR)
-# # 
-# # MAPA_BASE_PR$TAXA_RAW_21_25 <- Taxa_Suavizada$raw * 1000
-# # 
-# # MAPA_BASE_PR$TAXA_EST_21_25 <- Taxa_Suavizada$est * 1000
-# 
-# Global_Moran <- moran.test(MAPA_BASE_PR$Inc_21_25_Cancer_mun,
-#                            Matriz_Viz_Pesos)
-# 
-# ### Scatterplot
-# 
-# moran.plot(MAPA_BASE_PR$Inc_21_25_Cancer_mun, 
-#            Matriz_Viz_Pesos, 
-#            labels = FALSE, 
-#            pch = 15, 
-#            col = "blue", 
-#            xlab = "Variável Original", 
-#            ylab = "Média dos Vizinhos (Spatial Lag)",
-#            main = "Moran Scatterplot")
-# 
-# #### Calculando o Local Moran
-# #### Travando o local moran
-# set.seed(5)
-# 
-# Lisa <- localmoran_perm(MAPA_BASE_PR$Inc_21_25_Cancer_mun, 
-#                         Matriz_Viz_Pesos, 
-#                         nsim = 9999,
-#                         zero.policy = TRUE)
-# 
-# MAPA_BASE_PR$local_I_21_25_Cancer <- Lisa[,1]
-# 
-# MAPA_BASE_PR$local_I_p_valor_21_25_Cancer <- Lisa[,5]
-# 
-# quadrantes <- attr(Lisa, 
-#                    "quadr")$mean
-# 
-# MAPA_BASE_PR$quadrante_21_25_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
-#                                           quadrantes == "Low-Low" ~ "Baixo-Baixo",
-#                                           quadrantes == "High-Low" ~ "Alto-Baixo",
-#                                           quadrantes == "Low-High" ~ "Baixo-Alto")
-# 
-# MAPA_BASE_PR <- MAPA_BASE_PR %>%
-#   mutate(Lisa_resultado_21_25_Cancer = case_when(
-#     local_I_p_valor_21_25_Cancer < 0.05 ~ quadrante_21_25,
-#     local_I_p_valor_21_25_Cancer >= 0.05 ~ "Não significativo"
-#   ))
-# 
-# MAPA_BASE_PR$Lisa_resultado_21_25_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_21_25_Cancer, 
-#                                             levels = Niveis_LISA)
-# 
-# PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_21_25 <- ggplot(MAPA_BASE_PR, 
-#                                                aes(geometry = geometry)) +
-#   geom_sf(color = "grey30", 
-#           linewidth = 0.1, 
-#           aes(fill = Lisa_resultado_21_25_Cancer)) +
-#   scale_fill_manual(name = "LISA \nClusters", 
-#                     drop = FALSE,
-#                     values = c("Alto-Alto" = "red",        
-#                                "Baixo-Baixo" = "blue",      
-#                                "Alto-Baixo" = "pink",       
-#                                "Baixo-Alto" = "lightblue",  
-#                                "Não significativo" = "grey90")
-#   ) +
-#   geom_sf(data = SHAPEFILE_ESTADUAL_RS,
-#           color = "black",   
-#           linewidth = 0.5,   
-#           fill = NA) +
-#   annotation_scale(location = "bl") + 
-#   annotation_north_arrow(location = "tl", 
-#                          which_north = "true",
-#                          style = north_arrow_minimal()) +
-#   
-#   coord_sf(expand = FALSE)+
-#   labs(x = NULL,
-#        y = NULL,
-#        title = "2021 - 2025",
-#        subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001) \n9999 Permutações") +
-#   Theme() +
-#   theme(legend.key.width = unit(1.5, "cm")) +
-#   theme(legend.position = "bottom")
-# 
-# PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25 <- PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20 + 
-#   PR_PEVASPEA_SINASC_LOCAL_MORAN_21_25 + 
-#   plot_layout(ncol = 2, guides = "collect") + 
-#   plot_annotation(
-#     title = "Progressão de Agrupamentos das Taxas de Anomalias/1000 Nascidos no Paraná",
-#     subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025',
-#     caption = Fonte  
-#   ) & 
-#   theme(
-#     plot.title = element_text(size = 16, 
-#                               face = "bold", 
-#                               hjust = 0), 
-#     plot.subtitle = element_text(size = 12, 
-#                                  hjust = 0),
-#     plot.caption = element_text(hjust = 0, 
-#                                 face = "italic", 
-#                                 size = 10),
-#     legend.position = "bottom",        
-#     legend.box = "horizontal",
-#     legend.box.just = "center",
-#     legend.justification = "center",
-#     legend.key.width = unit(1.2, "cm")   
-#   )
-# 
+##### Trabalhando Global Moran/LISA
 
+### Criando Matriz de vizinhança (QUEEN) Verificar se o queen é padrão no spdep
+
+Matriz_Viz_MAPA_BASE_PR <- poly2nb(MAPA_BASE_PR, ## Definindo quem faz fronteira com quem.
+                                   queen = TRUE)
+
+### Verificando a malha queen
+
+Centroides_Matriz_VIZ <- st_centroid(MAPA_BASE_PR)  ## Estabelecendo centróides
+
+Centroides_Matriz_VIZ_coordenadas <- st_coordinates(Centroides_Matriz_VIZ) ## Coordenadas dos centróides
+
+Matriz_VIZ_Linhas <- nb2lines(nb = Matriz_Viz_MAPA_BASE_PR,  ## Une os centróides com lines
+                              coords = Centroides_Matriz_VIZ_coordenadas) %>%
+  st_as_sf()  ## transforma tudo em objeto sf
+
+st_crs(Matriz_VIZ_Linhas) <- st_crs(MAPA_BASE_PR) ## atribui Sistema de referência de coordenadas do MAPA_BASE_PR no matriz VIZ Linhas
+
+PR_PEVASPEA_SINASC_MAP_MAPA_VIZINHANCA <-ggplot(MAPA_BASE_PR,
+                                                aes(geometry = geometry)) +
+  geom_sf(fill = "lightblue") +
+  geom_sf(data = Matriz_VIZ_Linhas,
+          aes(geometry = geometry)) +
+  ggtitle("Matriz de Vizinhança Queen, Paraná.") +
+  theme_void()
+
+### Explicação do Gemini para usar o style = "W"
+
+# 3. style = "W" (A Padronização por Linha)
+# Este é o ponto mais importante. O estilo "W" (Row-standardized) faz o seguinte:
+#   Atribui pesos iguais para todos os vizinhos de uma unidade, de modo
+# que a soma dos pesos de cada linha seja igual a 1.
+# Na prática: Se um município tem 4 vizinhos, cada um recebe peso 0, 25.
+# Se outro tem 10 vizinhos, cada um recebe peso 0,1
+# Por que usar? Isso é padrão para o Índice de Moran Global pois
+# permite comparar regiões com diferentes números de vizinhos de
+# forma justa (evita que municípios muito "conectados" distorçam o
+# resultado apenas por terem mais fronteiras).
+
+Matriz_Viz_Pesos <- Matriz_Viz_MAPA_BASE_PR %>%
+  nb2listw(style = "W")  ##define matriz de pesos espaciais para rodar moran e local moran
+
+#####  Análise Global e Local Moran
+
+#### 2016 a 2020 INÍCIO
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2016 - 2020
+
+ Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Cancer_2025,
+                           ni = as.numeric(gsub("\\.", "", MAPA_BASE_PR$X2025)),
+                           nb = Matriz_Viz_MAPA_BASE_PR)
+
+ MAPA_BASE_PR$TAXA_RAW_2025_Cancer <- Taxa_Suavizada$raw * 100000
+
+ MAPA_BASE_PR$TAXA_EST_2025_Cancer <- Taxa_Suavizada$est * 100000
+
+Global_Moran_CANCER_2025 <- moran.test(MAPA_BASE_PR$TAXA_EST_2025_Cancer,
+                                 Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_2025_Cancer,
+           Matriz_Viz_Pesos,
+           labels = FALSE,
+           pch = 15,
+           col = "blue",
+           xlab = "Variável Original",
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+### Travando o local moran
+set.seed(55)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_2025_Cancer,
+                        Matriz_Viz_Pesos,
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_2025_Cancer <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_2025_Cancer <- Lisa[,5]
+
+ggplot(MAPA_BASE_PR,
+       aes(geometry = geometry)) +
+  geom_sf(aes(fill = local_I_2025_Cancer)) +
+  scale_fill_gradient2(low = "blue", high = "red",
+                       mid = "white",
+                       midpoint = 0,
+                       name = "I local") +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(1.5, "cm"))
+
+quadrantes <- attr(Lisa,
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_2025_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                          quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                          quadrantes == "High-Low" ~ "Alto-Baixo",
+                                          quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_2025_Cancer = case_when(
+    local_I_p_valor_2025_Cancer < 0.05 ~ quadrante_2025_Cancer,
+    local_I_p_valor_2025_Cancer >= 0.05 ~ "Não significativo"
+  ))
+
+Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não significativo")
+
+MAPA_BASE_PR$Lisa_resultado_2025_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_2025_Cancer,
+                                            levels = Niveis_LISA)
+
+PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2025 <- ggplot(MAPA_BASE_PR,
+                                               aes(geometry = geometry)) +
+  geom_sf(color = "grey30",
+          linewidth = 0.1,
+          aes(fill = Lisa_resultado_2025_Cancer)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",
+                               "Baixo-Baixo" = "blue",
+                               "Alto-Baixo" = "pink",
+                               "Baixo-Alto" = "lightblue",
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",
+          linewidth = 0.5,
+          fill = NA) +
+  annotation_scale(location = "bl") +
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2025",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.63 (p < 0.001) \n9999 permutações") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+#### Fim da análise Global and Local Moran 2018 - 2021
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2022 - 2025
+
+ Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Cancer_2024,
+                           ni = MAPA_BASE_PR$X2024,
+                           nb = Matriz_Viz_MAPA_BASE_PR)
+
+ MAPA_BASE_PR$TAXA_RAW_2024_Cancer <- Taxa_Suavizada$raw * 100000
+
+ MAPA_BASE_PR$TAXA_EST_2024_Cancer <- Taxa_Suavizada$est * 100000
+
+Global_Moran <- moran.test(MAPA_BASE_PR$TAXA_EST_2024_Cancer,
+                           Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_2024_Cancer,
+           Matriz_Viz_Pesos,
+           labels = FALSE,
+           pch = 15,
+           col = "blue",
+           xlab = "Variável Original",
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+#### Travando o local moran
+set.seed(5)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_2024_Cancer,
+                        Matriz_Viz_Pesos,
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_2024_Cancer <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_2024_Cancer <- Lisa[,5]
+
+quadrantes <- attr(Lisa,
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_2024_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                          quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                          quadrantes == "High-Low" ~ "Alto-Baixo",
+                                          quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_2024_Cancer = case_when(
+    local_I_p_valor_2024_Cancer < 0.05 ~ quadrante_2024_Cancer,
+    local_I_p_valor_2024_Cancer >= 0.05 ~ "Não significativo"
+  ))
+
+MAPA_BASE_PR$Lisa_resultado_2024_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_2024_Cancer,
+                                            levels = Niveis_LISA)
+
+PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2024 <- ggplot(MAPA_BASE_PR,
+                                               aes(geometry = geometry)) +
+  geom_sf(color = "grey30",
+          linewidth = 0.1,
+          aes(fill = Lisa_resultado_2024_Cancer)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",
+                               "Baixo-Baixo" = "blue",
+                               "Alto-Baixo" = "pink",
+                               "Baixo-Alto" = "lightblue",
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",
+          linewidth = 0.5,
+          fill = NA) +
+  annotation_scale(location = "bl") +
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2024",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001) \n9999 Permutações") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+#### Fim da análise Global and Local Moran 2024
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2023
+
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Cancer_2023,
+                          ni = MAPA_BASE_PR$X2022,
+                          nb = Matriz_Viz_MAPA_BASE_PR)
+
+MAPA_BASE_PR$TAXA_RAW_2023_Cancer <- Taxa_Suavizada$raw * 100000
+
+MAPA_BASE_PR$TAXA_EST_2023_Cancer <- Taxa_Suavizada$est * 100000
+
+Global_Moran <- moran.test(MAPA_BASE_PR$TAXA_EST_2023_Cancer,
+                           Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_2023_Cancer,
+           Matriz_Viz_Pesos,
+           labels = FALSE,
+           pch = 15,
+           col = "blue",
+           xlab = "Variável Original",
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+#### Travando o local moran
+set.seed(5)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_2023_Cancer,
+                        Matriz_Viz_Pesos,
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_2023_Cancer <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_2023_Cancer <- Lisa[,5]
+
+quadrantes <- attr(Lisa,
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_2023_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                                quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                                quadrantes == "High-Low" ~ "Alto-Baixo",
+                                                quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_2023_Cancer = case_when(
+    local_I_p_valor_2023_Cancer < 0.05 ~ quadrante_2023_Cancer,
+    local_I_p_valor_2023_Cancer >= 0.05 ~ "Não significativo"
+  ))
+
+MAPA_BASE_PR$Lisa_resultado_2023_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_2023_Cancer,
+                                                  levels = Niveis_LISA)
+
+PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2023 <- ggplot(MAPA_BASE_PR,
+                                                  aes(geometry = geometry)) +
+  geom_sf(color = "grey30",
+          linewidth = 0.1,
+          aes(fill = Lisa_resultado_2023_Cancer)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",
+                               "Baixo-Baixo" = "blue",
+                               "Alto-Baixo" = "pink",
+                               "Baixo-Alto" = "lightblue",
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",
+          linewidth = 0.5,
+          fill = NA) +
+  annotation_scale(location = "bl") +
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2024",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001) \n9999 Permutações") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+#### Fim da análise Global and Local Moran 2023
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2022
+
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Cancer_2022,
+                          ni = MAPA_BASE_PR$X2022,
+                          nb = Matriz_Viz_MAPA_BASE_PR)
+
+MAPA_BASE_PR$TAXA_RAW_2022_Cancer <- Taxa_Suavizada$raw * 100000
+
+MAPA_BASE_PR$TAXA_EST_2022_Cancer <- Taxa_Suavizada$est * 100000
+
+Global_Moran <- moran.test(MAPA_BASE_PR$TAXA_EST_2022_Cancer,
+                           Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_2022_Cancer,
+           Matriz_Viz_Pesos,
+           labels = FALSE,
+           pch = 15,
+           col = "blue",
+           xlab = "Variável Original",
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+#### Travando o local moran
+set.seed(5)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_2022_Cancer,
+                        Matriz_Viz_Pesos,
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_2022_Cancer <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_2022_Cancer <- Lisa[,5]
+
+quadrantes <- attr(Lisa,
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_2022_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                                quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                                quadrantes == "High-Low" ~ "Alto-Baixo",
+                                                quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_2022_Cancer = case_when(
+    local_I_p_valor_2022_Cancer < 0.05 ~ quadrante_2022_Cancer,
+    local_I_p_valor_2022_Cancer >= 0.05 ~ "Não significativo"
+  ))
+
+MAPA_BASE_PR$Lisa_resultado_2022_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_2022_Cancer,
+                                                  levels = Niveis_LISA)
+
+PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2022 <- ggplot(MAPA_BASE_PR,
+                                                  aes(geometry = geometry)) +
+  geom_sf(color = "grey30",
+          linewidth = 0.1,
+          aes(fill = Lisa_resultado_2022_Cancer)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",
+                               "Baixo-Baixo" = "blue",
+                               "Alto-Baixo" = "pink",
+                               "Baixo-Alto" = "lightblue",
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",
+          linewidth = 0.5,
+          fill = NA) +
+  annotation_scale(location = "bl") +
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2024",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001) \n9999 Permutações") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+#### Fim da análise Global and Local Moran 2022
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2021
+
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Cancer_2021,
+                          ni = MAPA_BASE_PR$X2021,
+                          nb = Matriz_Viz_MAPA_BASE_PR)
+
+MAPA_BASE_PR$TAXA_RAW_2021_Cancer <- Taxa_Suavizada$raw * 100000
+
+MAPA_BASE_PR$TAXA_EST_2021_Cancer <- Taxa_Suavizada$est * 100000
+
+Global_Moran <- moran.test(MAPA_BASE_PR$TAXA_EST_2021_Cancer,
+                           Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_2021_Cancer,
+           Matriz_Viz_Pesos,
+           labels = FALSE,
+           pch = 15,
+           col = "blue",
+           xlab = "Variável Original",
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+#### Travando o local moran
+set.seed(5)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_2021_Cancer,
+                        Matriz_Viz_Pesos,
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_2021_Cancer <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_2021_Cancer <- Lisa[,5]
+
+quadrantes <- attr(Lisa,
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_2021_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                                quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                                quadrantes == "High-Low" ~ "Alto-Baixo",
+                                                quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_2021_Cancer = case_when(
+    local_I_p_valor_2021_Cancer < 0.05 ~ quadrante_2021_Cancer,
+    local_I_p_valor_2021_Cancer >= 0.05 ~ "Não significativo"
+  ))
+
+MAPA_BASE_PR$Lisa_resultado_2021_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_2021_Cancer,
+                                                  levels = Niveis_LISA)
+
+PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2021 <- ggplot(MAPA_BASE_PR,
+                                                  aes(geometry = geometry)) +
+  geom_sf(color = "grey30",
+          linewidth = 0.1,
+          aes(fill = Lisa_resultado_2021_Cancer)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",
+                               "Baixo-Baixo" = "blue",
+                               "Alto-Baixo" = "pink",
+                               "Baixo-Alto" = "lightblue",
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",
+          linewidth = 0.5,
+          fill = NA) +
+  annotation_scale(location = "bl") +
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2024",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001) \n9999 Permutações") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+#### Fim da análise Global and Local Moran 2021
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2020
+
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Cancer_2020,
+                          ni = MAPA_BASE_PR$X2020,
+                          nb = Matriz_Viz_MAPA_BASE_PR)
+
+MAPA_BASE_PR$TAXA_RAW_2020_Cancer <- Taxa_Suavizada$raw * 100000
+
+MAPA_BASE_PR$TAXA_EST_2020_Cancer <- Taxa_Suavizada$est * 100000
+
+Global_Moran <- moran.test(MAPA_BASE_PR$TAXA_EST_2020_Cancer,
+                           Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_2020_Cancer,
+           Matriz_Viz_Pesos,
+           labels = FALSE,
+           pch = 15,
+           col = "blue",
+           xlab = "Variável Original",
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+#### Travando o local moran
+set.seed(5)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_2020_Cancer,
+                        Matriz_Viz_Pesos,
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_2020_Cancer <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_2020_Cancer <- Lisa[,5]
+
+quadrantes <- attr(Lisa,
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_2020_Cancer <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                                quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                                quadrantes == "High-Low" ~ "Alto-Baixo",
+                                                quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_2020_Cancer = case_when(
+    local_I_p_valor_2020_Cancer < 0.05 ~ quadrante_2020_Cancer,
+    local_I_p_valor_2020_Cancer >= 0.05 ~ "Não significativo"
+  ))
+
+MAPA_BASE_PR$Lisa_resultado_2020_Cancer <- factor(MAPA_BASE_PR$Lisa_resultado_2020_Cancer,
+                                                  levels = Niveis_LISA)
+
+PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2020 <- ggplot(MAPA_BASE_PR,
+                                                  aes(geometry = geometry)) +
+  geom_sf(color = "grey30",
+          linewidth = 0.1,
+          aes(fill = Lisa_resultado_2020_Cancer)) +
+  scale_fill_manual(name = "LISA \nClusters",
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",
+                               "Baixo-Baixo" = "blue",
+                               "Alto-Baixo" = "pink",
+                               "Baixo-Alto" = "lightblue",
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",
+          linewidth = 0.5,
+          fill = NA) +
+  annotation_scale(location = "bl") +
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2020",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.580 (p < 0.001) \n9999 Permutações") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER <- PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2020 +
+  PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2021 + PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2022 +
+  PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2023 + PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2024 +
+  PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2025 +
+  plot_layout(ncol = 2, guides = "collect") +
+  plot_annotation(
+    title = "Progressão de Agrupamentos das Taxas de Anomalias/1000 Nascidos no Paraná",
+    subtitle = 'Comparativo entre os quadriênios 2018-2021 e 2022-2025',
+    caption = Fonte
+  ) &
+  theme(
+    plot.title = element_text(size = 16,
+                              face = "bold",
+                              hjust = 0),
+    plot.subtitle = element_text(size = 12,
+                                 hjust = 0),
+    plot.caption = element_text(hjust = 0,
+                                face = "italic",
+                                size = 10),
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    legend.box.just = "center",
+    legend.justification = "center",
+    legend.key.width = unit(1.2, "cm")
+  )
+
+ggsave(filename = "Imagens/SIM/PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER.png", 
+       plot = PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER, 
+       width = 35,                               
+       height = 48,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
 #### Salvando material
 ggsave(filename = "Imagens/SIM/PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN.png", 
        plot = PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN, 
