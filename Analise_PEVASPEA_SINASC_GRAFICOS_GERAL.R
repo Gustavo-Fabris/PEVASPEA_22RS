@@ -6275,16 +6275,14 @@ MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
                            by = c("NM_MUN" = "Município_sem_Código"))
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = AGRO_HA_17_20,
-                                             breaks = c(0, 1.5, 3.0, 4.5, 6.0, 7.5, 9.0, 10.5, Inf),
-                                             labels = c("Até 1,5", 
-                                                        "1,5 - 3,0", 
-                                                        "3,0 - 4,5", 
-                                                        "4,5 - 6,0", 
-                                                        "6,0 - 7,5", 
-                                                        "7,5 - 9,0", 
-                                                        "9,0 - 10,5", 
-                                                        "Acima de 10,5"), 
-                                             right = FALSE
+                                             breaks = c(0, 3.00, 5.50, 7.30, 9.20, 15.00, Inf),
+                                             labels = c("Até 2,99", 
+                                                        "3,00 a 5,49", 
+                                                        "5,50 a 7,29", 
+                                                        "7,30 a 9,19", 
+                                                        "9,20 a 14,99", 
+                                                        "Acima de 15,00"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_AGRO_HA_17_20 <- ggplot() + 
@@ -6303,21 +6301,19 @@ PR_DERAL_MAP_Mun_AGRO_HA_17_20 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "Kg/HA", 
+       fill = NULL, 
        title = "2017 - 2020")  +
   Theme()
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = AGRO_HA_21_24,
-                                             breaks = c(0, 1.5, 3.0, 4.5, 6.0, 7.5, 9.0, 10.5, Inf),
-                                             labels = c("Até 1,5", 
-                                                        "1,5 - 3,0", 
-                                                        "3,0 - 4,5", 
-                                                        "4,5 - 6,0", 
-                                                        "6,0 - 7,5", 
-                                                        "7,5 - 9,0", 
-                                                        "9,0 - 10,5", 
-                                                        "Acima de 10,5"), 
-                                             right = FALSE
+                                             breaks = c(0, 3.00, 5.50, 7.30, 9.20, 15.00, Inf),
+                                             labels = c("Até 2,99", 
+                                                        "3,00 a 5,49", 
+                                                        "5,50 a 7,29", 
+                                                        "7,30 a 9,19", 
+                                                        "9,20 a 14,99", 
+                                                        "Acima de 15,00"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_AGRO_HA_21_24 <- ggplot() + 
@@ -6336,7 +6332,7 @@ PR_DERAL_MAP_Mun_AGRO_HA_21_24 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "Kg/HA", 
+       fill = NULL, 
        title = "2021 - 2024")  +
   Theme()
 
@@ -6345,7 +6341,7 @@ PR_DERAL_MAP_AGRO_HA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_AGRO_HA_17_20 +
   plot_layout(ncol = 2, 
               guides = "collect") + 
   plot_annotation(title = 'Evolução Espacial do Consumo de Agrotóxico/Hectare no Paraná',
-                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (Kg/HA)',
+                  subtitle = 'Comparativo entre os quadriênios 2017 - 2020 e 2021 - 2024 (Kg/HA)',
                   caption =  Fonte3,
                   theme = theme(
                     plot.title = element_text(size = 20, 
@@ -6360,16 +6356,14 @@ PR_DERAL_MAP_AGRO_HA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_AGRO_HA_17_20 +
 ##### TON DE AGRO
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = TON_AGRO_17_20,
-                                             breaks = c(0, 250, 500, 750, 1000, 1750, 3500, 5500, Inf),
-                                             labels = c("Até 250", 
-                                                        "250 - 500",
-                                                        "500 - 750",    
-                                                        "750 - 1.000", 
-                                                        "1.000 - 1.750", 
-                                                        "1.750 - 3.500", 
-                                                        "3.500 - 5.500", 
-                                                        "Acima de 5.500"),
-                                             right = FALSE
+                                             breaks = c(0, 260, 675, 945, 1720, 4000, Inf),
+                                             labels = c("Até 259,9", 
+                                                        "260,0 a 674,9", 
+                                                        "675,0 a 944,9", 
+                                                        "945,0 a 1.719,9", 
+                                                        "1.720,0 a 3.999,9", 
+                                                        "Acima de 4.000,0"),
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_TON_AGRO_17_20 <- ggplot() + 
@@ -6388,21 +6382,19 @@ PR_DERAL_MAP_Mun_TON_AGRO_17_20 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "TONELADAS", 
+       fill = NULL, 
        title = "2017 - 2020")  +
   Theme()
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = TON_AGRO_21_24,
-                                             breaks = c(0, 250, 500, 750, 1000, 1750, 3500, 5500, Inf),
-                                             labels = c("Até 250", 
-                                                        "250 - 500",
-                                                        "500 - 750",    
-                                                        "750 - 1.000", 
-                                                        "1.000 - 1.750", 
-                                                        "1.750 - 3.500", 
-                                                        "3.500 - 5.500", 
-                                                        "Acima de 5.500"),
-                                             right = FALSE
+                                             breaks = c(0, 260, 675, 945, 1720, 4000, Inf),
+                                             labels = c("Até 259,9", 
+                                                        "260,0 a 674,9", 
+                                                        "675,0 a 944,9", 
+                                                        "945,0 a 1.719,9", 
+                                                        "1.720,0 a 3.999,9", 
+                                                        "Acima de 4.000,0"),
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_TON_AGRO_21_24 <- ggplot() + 
@@ -6421,7 +6413,7 @@ PR_DERAL_MAP_Mun_TON_AGRO_21_24 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "TONELADAS", 
+       fill = NULL, 
        title = "2021 - 2024")  +
   Theme()
 
@@ -6430,8 +6422,8 @@ PR_DERAL_MAP_TON_AGRO_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_TON_AGRO_17_20 +
   plot_layout(ncol = 2, 
               guides = "collect") + 
   plot_annotation(title = 'Evolução Espacial do Consumo de Agrotóxico no Paraná',
-                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (TONELADAS)',
-                  caption =  Fonte3) &
+                  subtitle = 'Comparativo entre os quadriênios 2017 - 2020 e 2021 - 2024 (TONELADAS)',
+                  caption =  Fonte1) &
   theme(
     plot.title = element_text(size = 20, 
                               face = "bold"),
@@ -6442,16 +6434,14 @@ PR_DERAL_MAP_TON_AGRO_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_TON_AGRO_17_20 +
 #### HA cultivado
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = HA_17_20,
-                                             breaks = c(0, 25000, 50000, 100000, 150000, 200000, 300000, 500000, Inf),
-                                             labels = c("Até 25.000", 
-                                                        "25.000 - 50.000", 
-                                                        "50.000 - 100.000", 
-                                                        "100.000 - 150.000", 
-                                                        "150.000 - 200.000", 
-                                                        "200.000 - 300.000", 
-                                                        "300.000 - 500.000", 
+                                             breaks = c(0, 78500, 133500, 173000, 214000, 500000, Inf),
+                                             labels = c("Até 78.499", 
+                                                        "78.500 a 133.499", 
+                                                        "133.500 a 172.999", 
+                                                        "173.000 a 213.999", 
+                                                        "214.000 a 499.999", 
                                                         "Acima de 500.000"), 
-                                             right = FALSE
+                                             right = TRUE
 ))
 PR_DERAL_MAP_Mun_HA_17_20 <- ggplot() + 
   geom_sf(data = MAPA_BASE_Mun, 
@@ -6474,16 +6464,14 @@ PR_DERAL_MAP_Mun_HA_17_20 <- ggplot() +
   Theme()
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = HA_21_24,
-                                             breaks = c(0, 25000, 50000, 100000, 150000, 200000, 300000, 500000, Inf),
-                                             labels = c("Até 25.000", 
-                                                        "25.000 - 50.000", 
-                                                        "50.000 - 100.000", 
-                                                        "100.000 - 150.000", 
-                                                        "150.000 - 200.000", 
-                                                        "200.000 - 300.000", 
-                                                        "300.000 - 500.000", 
+                                             breaks = c(0, 78500, 133500, 173000, 214000, 500000, Inf),
+                                             labels = c("Até 78.499", 
+                                                        "78.500 a 133.499", 
+                                                        "133.500 a 172.999", 
+                                                        "173.000 a 213.999", 
+                                                        "214.000 a 499.999", 
                                                         "Acima de 500.000"), 
-                                             right = FALSE
+                                             right = TRUE
 ))
 PR_DERAL_MAP_Mun_HA_21_24 <- ggplot() + 
   geom_sf(data = MAPA_BASE_Mun, 
@@ -6509,8 +6497,8 @@ PR_DERAL_MAP_HA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_17_20 +
   PR_DERAL_MAP_Mun_HA_21_24 + 
   plot_layout(ncol = 2, 
               guides = "collect") + 
-  plot_annotation(title = 'Evolução Espacial da Área Cultivada no Paraná',
-                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (TONELADAS)',
+  plot_annotation(title = 'Evolução Espacial da Área Cultivada (HA) no Paraná',
+                  subtitle = 'Comparativo entre os quadriênios 2017 - 2020 e 2021 - 2024',
                   caption =  Fonte3) &
   theme(
     plot.title = element_text(size = 20, 
@@ -6759,8 +6747,8 @@ PR_PEVASPEA_DERAL_LOCAL_MORAN_16_20_21_25 <- PR_PEVASPEA_DERAL_LOCAL_MORAN_17_20
   plot_layout(ncol = 2, guides = "collect") + 
   plot_annotation(
     title = "Progressão de Agrupamentos do Consumo de Agrotóxico/Hectare no Paraná",
-    subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024',
-    caption = Fonte  
+    subtitle = 'Comparativo entre os quadriênios 2017 - 2020 e 2021 - 2024',
+    caption = Fonte3  
   ) & 
   theme(
     plot.title = element_text(size = 16, 
@@ -6810,9 +6798,9 @@ RS_DERAL_GRAF_HA_CULTIVADO <- ggplot(AUX02, aes(x = str_replace(Variavel, "AREA_
   labs(caption = Fonte1, 
        y = "Hectares Cultivados",
        x = NULL,
-       title = "Total de Hectares Cultivados na 22ª RS - (2016 - 2024)",
-       subtitle = "Cultivos de interesse") +
-  scale_y_continuous(limits = c(200000, 1000000), 
+       title = "Total de Hectares Cultivados na 22ª RS",
+       subtitle = "Cultivos de interesse (2016 - 2024)") +
+  scale_y_continuous(limits = c(400000, 800000), 
                      labels = label_number(decimal.mark = ",", 
                                            big.mark = "."),
                      expand = expansion(mult = c(0.2, 0.2))) +
@@ -6824,9 +6812,10 @@ AUX03 <- AUX01 %>%
   select(contains("TON_AGRO")) %>% 
   pivot_longer(cols = contains("TON_AGRO"),
                names_to = "Variavel_1", 
-               values_to = "Total_1") 
+               values_to = "Total_1") %>%
+  mutate(Ano = str_replace(Variavel_1, "TON_AGRO_", ""))
 
-RS_DERAL_GRAF_TON_AGRO_CULTIVADO <- ggplot(AUX03, aes(x = str_replace(Variavel_1, "AREA_HA_", ""), 
+RS_DERAL_GRAF_TON_AGRO_CULTIVADO <- ggplot(AUX03, aes(x = Ano, 
                                                       y = Total_1,
                                                       group = 1)) +
   geom_line(color = "black",
@@ -6841,11 +6830,12 @@ RS_DERAL_GRAF_TON_AGRO_CULTIVADO <- ggplot(AUX03, aes(x = str_replace(Variavel_1
             vjust = -1.5, 
             size = 3.5,
             fontface = "bold") + 
-  labs(caption = Fonte2, 
+  labs(caption = Fonte1, 
        y = "Toneladas",
        x = NULL,
-       title = "Consumo de Agrotóxicos em Toneladas na 22ª RS - (2016 - 2024)") +
-  scale_y_continuous(limits = c(500, 8000), 
+       title = "Consumo de Agrotóxicos em Toneladas na 22ª RS",
+       subtitle = "2016 - 2024") +
+  scale_y_continuous(limits = c(2000, 7000), 
                      labels = label_number(decimal.mark = ",", 
                                            big.mark = "."),
                      expand = expansion(mult = c(0.2, 0.2))) +
@@ -6853,13 +6843,11 @@ RS_DERAL_GRAF_TON_AGRO_CULTIVADO <- ggplot(AUX03, aes(x = str_replace(Variavel_1
 
 ####  Agro/HA
 
-AUX02[, 3:4] <- AUX03 
+AUX02[, 3:4] <- AUX03[, -3] 
 
 AUX02[,5] <- (AUX02$Total_1/AUX02$Total) *1000
 
 colnames(AUX02)[5] <- "AGRO_HA"
-
-glimpse(AUX02)
 
 RS_DERAL_GRAF_AGRO_HA_CULTIVADO <- ggplot(AUX02, aes(x = str_replace(Variavel, "AREA_HA_", ""), 
                                                      y = AGRO_HA,
@@ -6876,11 +6864,11 @@ RS_DERAL_GRAF_AGRO_HA_CULTIVADO <- ggplot(AUX02, aes(x = str_replace(Variavel, "
             vjust = -1.5, 
             size = 3.5,
             fontface = "bold") + 
-  labs(caption = Fonte1, 
+  labs(caption = Fonte3, 
        y = "Kg/Hectare",
        x = NULL,
-       title = "Uso de Agrotóxicos/Hectare na 22ª RS - (2016 - 2024)",
-       subtitle = "Cultivos de interesse") +
+       title = "Uso de Agrotóxicos/Hectare na 22ª RS",
+       subtitle = "Cultivos de interesse (2016 - 2024)") +
   scale_y_continuous(limits = c(3, 10), 
                      labels = label_number(decimal.mark = ",", 
                                            big.mark = "."),
@@ -6889,8 +6877,8 @@ RS_DERAL_GRAF_AGRO_HA_CULTIVADO <- ggplot(AUX02, aes(x = str_replace(Variavel, "
 
 ###### SCATTERPLOT INCIDÊNCIA/CONSUMO DE HA
 
-
 library(ggrepel)
+
 AUX <- PR_PEVASPEA_SINASC_Serie_historica_Mun[, 1]
 
 AUX <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
@@ -7082,16 +7070,14 @@ MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
 
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_SOJA_17_20,
-                                             breaks = c(0, 1, 25000, 50000, 100000, 150000, 200000, 300000, Inf),
-                                             labels = c("Sem cultivo", 
-                                                        "Até 25.000", 
-                                                        "25.000 - 50.000", 
-                                                        "50.000 - 100.000", 
-                                                        "100.000 - 150.000", 
-                                                        "150.000 - 200.000", 
-                                                        "200.000 - 300.000", 
-                                                        "Acima de 300.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 15000, 41500, 78500, 150000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 14.999", 
+                                                        "15.000 a 41.499", 
+                                                        "41.500 a 78.499", 
+                                                        "78.500 a 149.999", 
+                                                        "Acima de 150.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_SOJA_17_20 <- ggplot() + 
@@ -7110,21 +7096,19 @@ PR_DERAL_MAP_Mun_HA_SOJA_17_20 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "HECTARES", 
+       fill = NULL, 
        title = "2017 - 2020")  +
   Theme()
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_SOJA_21_24,
-                                             breaks = c(0, 1, 25000, 50000, 100000, 150000, 200000, 300000, Inf),
-                                             labels = c("Sem cultivo", 
-                                                        "Até 25.000", 
-                                                        "25.000 - 50.000", 
-                                                        "50.000 - 100.000", 
-                                                        "100.000 - 150.000", 
-                                                        "150.000 - 200.000", 
-                                                        "200.000 - 300.000", 
-                                                        "Acima de 300.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 15000, 41500, 78500, 150000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 14.999", 
+                                                        "15.000 a 41.499", 
+                                                        "41.500 a 78.499", 
+                                                        "78.500 a 149.999", 
+                                                        "Acima de 150.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_SOJA_21_24 <- ggplot() + 
@@ -7143,7 +7127,7 @@ PR_DERAL_MAP_Mun_HA_SOJA_21_24 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "HECTARES", 
+       fill = NULL, 
        title = "2021 - 2024")  +
   Theme()
 
@@ -7152,8 +7136,8 @@ PR_DERAL_MAP_HA_SOJA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_SOJA_17_20 +
   plot_layout(ncol = 2, 
               guides = "collect") + 
   plot_annotation(title = 'Evolução Espacial da Área Cultivada de Soja no Paraná',
-                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HECTARES)',
-                  caption =  Fonte3) &
+                  subtitle = 'Comparativo entre os quadriênios 2017 - 2020 e 2021 - 2024 (HECTARES)',
+                  caption =  Fonte2) &
   theme(
     plot.title = element_text(size = 20, 
                               face = "bold"),
@@ -7226,18 +7210,15 @@ MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
     Area_MILHO_17_20 = replace_na(Area_MILHO_17_20, 0),
     Area_MILHO_21_24 = replace_na(Area_MILHO_21_24, 0))
 
-
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_MILHO_17_20,
-                                             breaks = c(0, 1, 10000, 25000, 50000, 100000, 150000, 200000, Inf),
-                                             labels = c("Sem cultivo", 
-                                                        "Até 10.000", 
-                                                        "10.000 - 25.000", 
-                                                        "25.000 - 50.000", 
-                                                        "50.000 - 100.000", 
-                                                        "100.000 - 150.000", 
-                                                        "150.000 - 200.000", 
-                                                        "Acima de 200.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 8000, 20000, 38500, 100000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 7.999", 
+                                                        "8.000 a 19.999", 
+                                                        "20.000 a 38.499", 
+                                                        "38.500 a 99.999", 
+                                                        "Acima de 100.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_MILHO_17_20 <- ggplot() + 
@@ -7261,16 +7242,14 @@ PR_DERAL_MAP_Mun_HA_MILHO_17_20 <- ggplot() +
   Theme()
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_MILHO_21_24,
-                                             breaks = c(0, 1, 10000, 25000, 50000, 100000, 150000, 200000, Inf),
-                                             labels = c("Sem cultivo", 
-                                                        "Até 10.000", 
-                                                        "10.000 - 25.000", 
-                                                        "25.000 - 50.000", 
-                                                        "50.000 - 100.000", 
-                                                        "100.000 - 150.000", 
-                                                        "150.000 - 200.000", 
-                                                        "Acima de 200.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 8000, 20000, 38500, 100000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 7.999", 
+                                                        "8.000 a 19.999", 
+                                                        "20.000 a 38.499", 
+                                                        "38.500 a 99.999", 
+                                                        "Acima de 100.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_MILHO_21_24 <- ggplot() + 
@@ -7372,18 +7351,15 @@ MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
     Area_Trigo_17_20 = replace_na(Area_Trigo_17_20, 0),
     Area_Trigo_21_24 = replace_na(Area_Trigo_21_24, 0))
 
-
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_Trigo_17_20,
-                                             breaks = c(0, 1, 1000, 5000, 15000, 30000, 60000, 100000, Inf),
-                                             labels = c("Sem cultivo", 
-                                                        "Até 1.000", 
-                                                        "1.000 - 5.000", 
-                                                        "5.000 - 15.000", 
-                                                        "15000 - 30.000", 
-                                                        "30.000 - 60.000", 
-                                                        "60.000 - 100.000", 
-                                                        "Acima de 100.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 315, 3700, 13100, 30000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 314", 
+                                                        "315 a 3.699", 
+                                                        "3.700 a 13.099", 
+                                                        "13.100 a 29.999", 
+                                                        "Acima de 30.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_Trigo_17_20 <- ggplot() + 
@@ -7402,21 +7378,19 @@ PR_DERAL_MAP_Mun_HA_Trigo_17_20 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "HECTARES", 
+       fill = NULL, 
        title = "2017 - 2020")  +
   Theme()
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_Trigo_21_24,
-                                             breaks = c(0, 1, 1000, 5000, 15000, 30000, 60000, 100000, Inf),
-                                             labels = c("Sem cultivo", 
-                                                        "Até 1.000", 
-                                                        "1.000 - 5.000", 
-                                                        "5.000 - 15.000", 
-                                                        "15000 - 30.000", 
-                                                        "30.000 - 60.000", 
-                                                        "60.000 - 100.000", 
-                                                        "Acima de 100.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 315, 3700, 13100, 30000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 314", 
+                                                        "315 a 3.699", 
+                                                        "3.700 a 13.099", 
+                                                        "13.100 a 29.999", 
+                                                        "Acima de 30.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_Trigo_21_24 <- ggplot() + 
@@ -7435,7 +7409,7 @@ PR_DERAL_MAP_Mun_HA_Trigo_21_24 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "HECTARES", 
+       fill = NULL, 
        title = "2021 - 2024")  +
   Theme()
 
@@ -7444,8 +7418,8 @@ PR_DERAL_MAP_HA_Trigo_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_Trigo_17_20 +
   plot_layout(ncol = 2, 
               guides = "collect") + 
   plot_annotation(title = 'Evolução Espacial da Área Cultivada de Trigo no Paraná',
-                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HECTARES)',
-                  caption =  Fonte3) &
+                  subtitle = 'Comparativo entre os quadriênios 2017 - 2020 e 2021 - 2024 (HECTARES)',
+                  caption =  Fonte2) &
   theme(
     plot.title = element_text(size = 20, 
                               face = "bold"),
@@ -7518,18 +7492,15 @@ MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
     Area_FEIJAO_17_20 = replace_na(Area_FEIJAO_17_20, 0),
     Area_FEIJAO_21_24 = replace_na(Area_FEIJAO_21_24, 0))
 
-
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_FEIJAO_17_20,
-                                             breaks = c(0, 1, 200, 1000, 3000, 10000, 30000, 60000, Inf),
-                                             labels = c("Sem cultivo", 
-                                                        "Até 200", 
-                                                        "200 - 1.000", 
-                                                        "1.000 - 3.000", 
-                                                        "3.000 - 10.000", 
-                                                        "10.000 - 30.000", 
-                                                        "30.000 - 60.000", 
-                                                        "Acima de 60.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 12, 215, 3100, 15000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                               "1 a 11", 
+                                               "12 a 214", 
+                                               "215 a 3.099", 
+                                               "3.100 a 14.999", 
+                                               "Acima de 15.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_FEIJAO_17_20 <- ggplot() + 
@@ -7548,21 +7519,19 @@ PR_DERAL_MAP_Mun_HA_FEIJAO_17_20 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "HECTARES", 
+       fill = NULL, 
        title = "2017 - 2020")  +
   Theme()
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_FEIJAO_21_24,
-                                             breaks = c(0, 1, 200, 1000, 3000, 10000, 30000, 60000, Inf),
-                                             labels = c("Sem cultivo", 
-                                                        "Até 200", 
-                                                        "200 - 1.000", 
-                                                        "1.000 - 3.000", 
-                                                        "3.000 - 10.000", 
-                                                        "10.000 - 30.000", 
-                                                        "30.000 - 60.000", 
-                                                        "Acima de 60.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 12, 215, 3100, 15000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 11", 
+                                                        "12 a 214", 
+                                                        "215 a 3.099", 
+                                                        "3.100 a 14.999", 
+                                                        "Acima de 15.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_FEIJAO_21_24 <- ggplot() + 
@@ -7581,7 +7550,7 @@ PR_DERAL_MAP_Mun_HA_FEIJAO_21_24 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "HECTARES", 
+       fill = NULL, 
        title = "2021 - 2024")  +
   Theme()
 
@@ -7599,6 +7568,8 @@ PR_DERAL_MAP_HA_FEIJAO_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_FEIJAO_17_20 +
     legend.position = "bottom",
     plot.caption = element_text(hjust = 0, face = "italic", size = 10)
   )
+
+#### Cana de açúcar
 
 AUX <- AUX_Cultivos_17_20 %>% 
   filter(str_detect(CULTURA, regex("A[CÇ][UÚ]CAR", ignore_case = TRUE))) %>%
@@ -7662,18 +7633,15 @@ MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun,
     Area_CANA_17_20 = replace_na(Area_CANA_17_20, 0),
     Area_CANA_21_24 = replace_na(Area_CANA_21_24, 0))
 
-
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_CANA_17_20,
-                                             breaks = c(0, 1, 500, 2000, 5000, 15000, 30000, 50000, Inf),
-                                             labels = c("Sem cultivo comercial", 
-                                                        "Até 500", 
-                                                        "500 - 2.000", 
-                                                        "2.000 - 5.000", 
-                                                        "5.000 - 15.000", 
-                                                        "15.000 - 30.000", 
-                                                        "30.000 - 50.000", 
-                                                        "Acima de 50.000"), 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 75, 1855, 10000, 30000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 75", 
+                                                        "76 a 1.854", 
+                                                        "1.855 a 9.999", 
+                                                        "10.000 a 29.999", 
+                                                        "Acima de 30.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_CANA_17_20 <- ggplot() + 
@@ -7692,21 +7660,19 @@ PR_DERAL_MAP_Mun_HA_CANA_17_20 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "HECTARES", 
+       fill = NULL, 
        title = "2017 - 2020")  +
   Theme()
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = Area_CANA_21_24,
-                                             breaks = c(0, 1, 500, 2000, 5000, 15000, 30000, 50000, Inf),
-                                             labels = c("Sem cultivo comercial", 
-                                                        "Até 500", 
-                                                        "500 - 2.000", 
-                                                        "2.000 - 5.000", 
-                                                        "5.000 - 15.000", 
-                                                        "15.000 - 30.000", 
-                                                        "30.000 - 50.000", 
-                                                        "Acima de 50.000"),, 
-                                             right = FALSE
+                                             breaks = c(-0.1, 0, 75, 1855, 10000, 30000, Inf),
+                                             labels = c("0 (Sem cultivo)", 
+                                                        "1 a 75", 
+                                                        "76 a 1.854", 
+                                                        "1.855 a 9.999", 
+                                                        "10.000 a 29.999", 
+                                                        "Acima de 30.000"), 
+                                             right = TRUE
 ))
 
 PR_DERAL_MAP_Mun_HA_CANA_21_24 <- ggplot() + 
@@ -7725,7 +7691,7 @@ PR_DERAL_MAP_Mun_HA_CANA_21_24 <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       fill = "HECTARES", 
+       fill = NULL, 
        title = "2021 - 2024")  +
   Theme()
 
@@ -7734,7 +7700,7 @@ PR_DERAL_MAP_HA_CANA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_CANA_17_20 +
   plot_layout(ncol = 2, 
               guides = "collect") + 
   plot_annotation(title = 'Evolução Espacial da Área Cultivada de Cana de Açucar no Paraná',
-                  subtitle = 'Comparativo entre os quadriênios 2017-2020 e 2021-2024 (HECTARES)',
+                  subtitle = 'Comparativo entre os quadriênios 2017 - 2020 e 2021 - 2024 (HECTARES)',
                   caption =  Fonte3) &
   theme(
     plot.title = element_text(size = 20, 
@@ -7743,7 +7709,6 @@ PR_DERAL_MAP_HA_CANA_Mun_17_20_21_24 <- PR_DERAL_MAP_Mun_HA_CANA_17_20 +
     legend.position = "bottom",
     plot.caption = element_text(hjust = 0, face = "italic", size = 10)
   )
-
 
 ####### SINAN
 
