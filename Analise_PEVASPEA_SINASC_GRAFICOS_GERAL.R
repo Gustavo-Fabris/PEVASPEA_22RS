@@ -1387,15 +1387,6 @@ PR_SINASC_MAP_TAXA_2025_ANOMAL_RS <- PR_SINASC_MAP_TAXA_2025_ANOMAL +
                                                 size = 10)
                   ))
 
-ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_2025_ANOMAL_RS.png", 
-       plot = PR_SINASC_MAP_TAXA_2025_ANOMAL_RS, 
-       width = 35,                               
-       height = 18,                               
-       units = "cm",                               
-       dpi = 300,                                   
-       bg = "white"                                
-)
-
 ######  Tabelas 
 ################################################################################
 ################################################################################
@@ -1877,93 +1868,6 @@ RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II <- wrap_plots(AUX_LIST, ncol = 2) +
                    )
   )
 
-####  Salvando os gráficos, mapas e tabelas
-ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS.png",
-       plot = PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS,
-       width = 26,
-       height = 35.7,
-       units = "cm",
-       dpi = 300) 
-
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc.png",
-       PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc,
-       width = 25,          
-       height = 15,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Anomal.png",
-       PR_PEVASPEA_SINASC_GRAF_Serie_Temp_ANOMAL,
-       width = 25,          
-       height = 15,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_SINASC_GRAF_SERIE_HIST_ANOMAL.png",
-       RS_SINASC_GRAF_SERIE_HIST_ANOMAL,
-       width = 25,
-       height = 15,
-       units = "cm",
-       bg = "white")
-
-ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_SINASC_GRAF_SERIE_HIST_ANOMAL.png",
-       PR_SINASC_GRAF_SERIE_HIST_ANOMAL,
-       width = 25,
-       height = 15,
-       units = "cm",
-       bg = "white")
-
-ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Taxa_Mun.png",
-       plot = RS_PEVASPEA_SINASC_GRAF_Taxa_Mun,
-       width = 38,
-       height = 50.7,
-       units = "cm",
-       dpi = 300) 
-
-ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun.png",
-       plot = RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun,
-       width = 38,
-       height = 50.7,
-       units = "cm",
-       dpi = 300) 
-
-ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II.png",
-       plot = RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II,
-       width = 38,
-       height = 50.7,
-       units = "cm",
-       dpi = 300) 
-
-ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25.png", 
-       plot = PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25, 
-       width = 35,                               
-       height = 18,                               
-       units = "cm",                               
-       dpi = 300,                                   
-       bg = "white"                                
-)
-
-
-ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS.png",
-       plot = PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS,
-       width = 35,        
-       height = 18,       
-       units = "cm",
-       dpi = 300,         
-       bg = "white"
-)
-
-#########  Tabelas
-
-gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20,
-       filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20.png")
-
-gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25,
-       filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25.png")
-
 ##################  SIM  
 
 PR_PEVASPEA_SIM_Congenitas_Geral_Serie_Hist <- read.csv (file = "Tabulacoes_R/SIM/PR_PEVASPEA_SIM_Congenitas_Geral_Serie_Hist.csv",
@@ -2235,10 +2139,6 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
-gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist,
-  filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist.png"
-)
-
 ##### Mapas de Médias do paraná (Regionais)
 
 AUX <- AUX %>%
@@ -2335,15 +2235,6 @@ PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS <- PR_SIM_MAP_TAXA_CANCER_2016_2020
                                                 face = "italic", 
                                                 size = 10)
                   ))
-
-ggsave(filename = "Imagens/SIM/PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS.png", 
-       plot = PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS, 
-       width = 35,                               
-       height = 18,                               
-       units = "cm",                               
-       dpi = 300,                                   
-       bg = "white"                                
-)
 
 ####
 
@@ -2640,11 +2531,6 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
-gtsave(
-  data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS,
-  filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS.png"
-)
-
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -2727,14 +2613,6 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
                                          labels = label_number(big.mark = "."))) +
   scale_x_discrete(breaks = as.character(2016:2025)) +
   Theme()
-
-ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia.png",
-       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia,
-       width = 26,          
-       height = 11,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
 
 ##### Regional
 
@@ -3058,11 +2936,6 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
-gtsave(
-  data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS,
-  filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS.png"
-)
-
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -3146,14 +3019,6 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
                                          labels = c("0", "100", "200", "300"))) +
   scale_x_discrete(breaks = as.character(2016:2025)) +
   Theme()
-
-ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia.png",
-       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia,
-       width = 26,          
-       height = 11,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
 
 ### Mesmo procedimento para idade de 30 a 69 anos
 
@@ -3472,9 +3337,6 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
-gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69,
-       filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69.png" )
-
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -3556,14 +3418,6 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y
                                          labels = label_number(big.mark = "."))) +
   scale_x_discrete(breaks = as.character(2016:2025)) +
   Theme()
-
-ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
-       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
-       width = 26,          
-       height = 11,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
 
 #### Mesmo procedimento para idade de 30 a 69 anos REGIONAL
 
@@ -3933,9 +3787,6 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
-gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69,
-       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69.png" )
-
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -4018,14 +3869,6 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69 <- ggplot(Total, aes(x = Ano, y
                                          labels = c("0", "100", "200", "300"))) +
   scale_x_discrete(breaks = as.character(2016:2025)) +
   Theme()
-
-ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
-       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
-       width = 26,         
-       height = 11,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
 
 #### Mesmo procedimento para menores de 30 anos
 
@@ -4340,9 +4183,6 @@ PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
-gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30,
-       filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30.png" )
-
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -4426,14 +4266,6 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
                                          labels = label_number(big.mark = "."))) +
   scale_x_discrete(breaks = as.character(2016:2025)) + 
   Theme()
-
-ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
-       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
-       width = 26,          
-       height = 11,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
 
 #### Mesmo procedimento para menores de 30 anos Regional
 
@@ -4801,9 +4633,6 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30 <- gt(AUX) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
 
-gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30,
-       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30.png" )
-
 Total <- data.frame(
   Grupo_CID = "TOTAL",
   `2016` = sum(AUX$`2016`, na.rm = TRUE),
@@ -4888,15 +4717,6 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
                                          labels = c("0", "100", "200", "300"))) +
   scale_x_discrete(breaks = as.character(2016:2025)) + 
   Theme()
-
-
-ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
-       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
-       width = 26,         
-       height = 11,          
-       units = "cm",
-       dpi = 300,            
-       bg = "white")
 
 #####  Preparando uma tabela para série histórica de municípios
 
@@ -5027,9 +4847,6 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_Serie_Historica_Mun <- gt(AUX01[, c(22, 2:21)]) %
   ) %>%
   tab_options(footnotes.padding = px(1),
               footnotes.font.size = px(10))
-
-gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_Serie_Historica_Mun,
-       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_Serie_Historica_Mun.png" )
 
 ######
 AUX <- AUX %>%
@@ -5750,24 +5567,6 @@ PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER <- PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2020 +
     legend.justification = "center",
     legend.key.width = unit(1.2, "cm")
   )
-
-ggsave(filename = "Imagens/SIM/PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER.png", 
-       plot = PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER, 
-       width = 35,                               
-       height = 48,                               
-       units = "cm",                               
-       dpi = 300,                                   
-       bg = "white"                                
-)
-#### Salvando material
-ggsave(filename = "Imagens/SIM/PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN.png", 
-       plot = PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN, 
-       width = 35,                               
-       height = 18,                               
-       units = "cm",                               
-       dpi = 300,                                   
-       bg = "white"                                
-)
 
 ###############################################################################################
 ###############################################################################################
@@ -7777,7 +7576,8 @@ PR_SINAN_GRAF_SERIE_HIST_Geral <- ggplot(AUX,
   scale_y_continuous(limits = c(7000, 30000), 
                      breaks = seq(0, 30000, 5000)) +
   scale_x_continuous(breaks = 2016:2025) +
-  labs(title = "Série Histórica Paraná - Intoxicações Exógenas",
+  labs(title = "Série Histórica - Intoxicações Exógenas Geral",
+       subtitle = "Paraná, 2016 - 2025",
        y = "Casos", 
        x = NULL,
        caption = Fonte4) +
@@ -7802,7 +7602,8 @@ PR_SINAN_GRAF_SERIE_HIST_AGROT <- ggplot(AUX01,
   scale_y_continuous(limits = c(500, 1400), 
                      breaks = seq(0, 1400, 200)) +
   scale_x_continuous(breaks = 2016:2025) +
-  labs(title = "Série Histórica Paraná - Intoxicações Exógenas por Agrotóxicos",
+  labs(title = "Série Histórica - Intoxicações Exógenas por Agrotóxicos",
+       subtitle = "Paraná, 2016 - 2025",
        y = "Casos", 
        x = NULL,
        caption = Fonte4) +
@@ -7866,7 +7667,7 @@ PR_SINAN_GRAF_IDADE_CIRCUNS <- IEXOG_Completo %>%
        y = "Número de Notificações",
        x = NULL,
        title = "Intoxicações Exógenas de Acordo com Circunstância de Exposição",
-       subtitle = "Paraná (2016-2025).") +
+       subtitle = "Paraná (2016-2025)") +
   Theme() 
 
 PR_SINAN_GRAF_IDADE_CIRCUNS_II <- IEXOG_Completo %>%
@@ -7880,7 +7681,8 @@ PR_SINAN_GRAF_IDADE_CIRCUNS_II <- IEXOG_Completo %>%
   coord_flip() + 
   scale_fill_brewer(palette = "BuGn", direction = -1) + 
   
-  labs(title = "Distribuição Proporcional das Intoxicações Exógenas por Faixa Etária no Paraná",
+  labs(title = "Distribuição Proporcional das Intoxicações Exógenas",
+       subtitle = "Faixa Etária e Circunstância de Exposição. Paraná, 2016 - 2025",
        x = "Grupo Etário",
        y = "Percentual de Casos",
        fill = "Circunstância",
@@ -7937,7 +7739,7 @@ PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO <- IEXOG_Completo %>%
   scale_x_discrete() +
   scale_y_continuous(expand = expansion(mult = c(0.1, 0.25))) +
   facet_wrap(~ Circunstancia_Nome, ncol = 2) + 
-  labs(caption = Fonte, 
+  labs(caption = Fonte4, 
        y = "Número de Notificações",
        x = NULL,
        title = "Intoxicações Exógenas por Agrotóxicos de Acordo com Circunstância de Exposição",
@@ -7955,7 +7757,8 @@ PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II <- IEXOG_Completo %>%
   coord_flip() + 
   scale_fill_brewer(palette = "BuGn", direction = -1) + 
   
-  labs(title = "Distribuição Proporcional das Intoxicações Exógenas com Agrotóxicos por Faixa Etária no Paraná",
+  labs(title = "Distribuição Proporcional das Intoxicações Exógenas com Agrotóxicos",
+       subtitle = "Faixa Etária e Circunstância de Exposição. Paraná, 2016 - 2025", 
        x = "Grupo Etário",
        y = "Percentual de Casos",
        fill = "Circunstância") +
@@ -8036,7 +7839,8 @@ RS_SINAN_GRAF_IDADE_CIRCUNS_II <- IEXOG_Completo %>%
   coord_flip() + 
   scale_fill_brewer(palette = "BuGn", direction = -1) + 
   
-  labs(title = "Distribuição das Intoxicações Exógenas por Faixa Etária na 22ª Regional de Saúde",
+  labs(title = "Distribuição das Intoxicações Exógenas por Faixa Etária",
+       subtitle = "Faixa Etária e Circunstância de Exposição. 22ª Regional de Saúde, 2016 - 2025", 
        x = "Grupo Etário",
        y = "Percentual de Casos",
        fill = "Circunstância") +
@@ -8117,7 +7921,8 @@ RS_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II <- IEXOG_Completo %>%
   coord_flip() + 
   scale_fill_brewer(palette = "BuGn", direction = -1) + 
   
-  labs(title = "Distribuição das Intoxicações Exógenas com Agrotóxicos por Faixa Etária na 22ª Regional de Saúde",
+  labs(title = "Distribuição das Intoxicações Exógenas com Agrotóxicos",
+       subtitle = "Faixa Etária e Circunstância de Exposição. 22ª Regional de Saúde, 2016 - 2025",
        x = "Grupo Etário",
        y = "Percentual de Casos",
        fill = "Circunstância") +
@@ -8339,7 +8144,8 @@ PR_SINAN_GRAF_PIRAMIDE <- ggplot(AUX,
                                     fill = Sexo_Legenda)) +
   geom_col(color = "black",
            linewidth = 0.8) +
-  labs(title = "Intoxicações Exógenas - Paraná (2016 - 2025)",
+  labs(title = "Intoxicações Exógenas ",
+       subtitle = "Paraná, 2016 - 2025", 
        y = "Faixa Etária",
        x = "Nº de Notificações",
        fill = "Sexo",
@@ -8561,7 +8367,8 @@ PR_SINAN_GRAF_PIRAMIDE_AGRO <- ggplot(AUX,
                                     fill = Sexo_Legenda)) +
   geom_col(color = "black",
            linewidth = 0.8) +
-  labs(title = "Intoxicações Exógenas por Agrotóxicos - Paraná (2016 - 2025)",
+  labs(title = "Intoxicações Exógenas por Agrotóxicos",
+       subtitle = "Paraná, 2016 - 2025",
        y = "Faixa Etária",
        x = "Nº de Notificações",
        fill = "Sexo",
@@ -8785,7 +8592,8 @@ RS_SINAN_GRAF_PIRAMIDE_AGRO <- ggplot(AUX,
                                          fill = Sexo_Legenda)) +
   geom_col(color = "black",
            linewidth = 0.8) +
-  labs(title = "Intoxicações Exógenas por Agrotóxicos - 22ª RS (2016 - 2025)",
+  labs(title = "Intoxicações Exógenas por Agrotóxicos",
+       subtitle = "22ª Regional de Saúde, 2016 - 2025",
        y = "Faixa Etária",
        x = "Nº de Notificações",
        fill = "Sexo",
@@ -9004,7 +8812,8 @@ RS_SINAN_GRAF_PIRAMIDE <- ggplot(AUX,
                                          fill = Sexo_Legenda)) +
   geom_col(color = "black",
            linewidth = 0.8) +
-  labs(title = "Intoxicações Exógenas - 22ªRS (2016 - 2025)",
+  labs(title = "Intoxicações Exógenas",
+       subtitle = "22ª Regional de Saúde, 2016 - 2025",
        y = "Faixa Etária",
        x = "Nº de Notificações",
        fill = "Sexo",
@@ -9108,7 +8917,7 @@ AUX <- AUX %>%
 
 PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS <- gt(AUX) %>%
   tab_header(
-    title = md("**Intoxicações Exógenas (Geral e por Agrotóxicos) nas Regionais de Saúde do Paraná**"),
+    title = md("**Intoxicações Exógenas (Geral e por Agrotóxicos) nas Regionais de Saúde**"),
     subtitle = md("Paraná, 2016 – 2025")
   ) %>%
   tab_options(
@@ -9186,10 +8995,231 @@ PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS <- gt(AUX) %>%
     locations = cells_body(rows = RS == "22")
   )
 
+##### Salvando objetos
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_16_20.png",
+       PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_16_20,
+       width = 25, 
+       height = 15, 
+       units = "cm", 
+       dpi = 300,
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_PR_21_25.png",
+       PR_PEVASPEA_SINASC_GRAF_PRIORITARIAS_21_25,
+       width = 25, 
+       height = 15, 
+       units = "cm", 
+       dpi = 300,
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Anomal.png",
+       PR_PEVASPEA_SINASC_GRAF_Serie_Temp_ANOMAL,
+       width = 25,          
+       height = 15,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc.png",
+       PR_PEVASPEA_SINASC_GRAF_Serie_Temp_Nasc,
+       width = 25,          
+       height = 15,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/RS_SINASC_GRAF_SERIE_HIST_ANOMAL.png",
+       RS_SINASC_GRAF_SERIE_HIST_ANOMAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINASC/PR_SINASC_GRAF_SERIE_HIST_ANOMAL.png",
+       PR_SINASC_GRAF_SERIE_HIST_ANOMAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white")
+
+ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS.png",
+       plot = PR_PEVASPEA_SINASC_GRAF_Serie_Hist_05_RS,
+       width = 26,
+       height = 35.7,
+       units = "cm",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Taxa_Mun.png",
+       plot = RS_PEVASPEA_SINASC_GRAF_Taxa_Mun,
+       width = 38,
+       height = 50.7,
+       units = "cm",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25.png", 
+       plot = PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS.png",
+       plot = PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS,
+       width = 35,        
+       height = 18,       
+       units = "cm",
+       dpi = 300,         
+       bg = "white"
+)
+
+ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_4A_ANOMAL_MUN_16_20_21_25.png", 
+       plot = PR_SINASC_MAP_TAXA_4A_ANOMAL_MUN_16_20_21_25, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SINASC/PR_SINASC_MAP_TAXA_2025_ANOMAL_RS.png", 
+       plot = PR_SINASC_MAP_TAXA_2025_ANOMAL_RS, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun.png",
+       plot = RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun,
+       width = 38,
+       height = 50.7,
+       units = "cm",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SINASC/RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II.png",
+       plot = RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun_II,
+       width = 38,
+       height = 50.7,
+       units = "cm",
+       dpi = 300)
+
+gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20,
+       filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20.png")
+
+gtsave(data = PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25,
+       filename = "Imagens/SINASC/PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_21_25.png")
+
+######  SIM
+
+gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_RS_Serie_Hist.png"
+)
+
+ggsave(filename = "Imagens/SIM/PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS.png", 
+       plot = PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS.png"
+)
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia.png",
+       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia,
+       width = 26,          
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS,
+       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS.png"
+)
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia.png",
+       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia,
+       width = 26,          
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69.png" )
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
+       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
+       width = 26,          
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69,
+       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69.png" )
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69.png",
+       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_30_69,
+       width = 26,         
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+gtsave(data = PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30.png" )
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
+       plot = PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
+       width = 26,          
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30,
+       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_Men_30.png" )
+
+ggsave(filename = "/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SIM/RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30.png",
+       plot = RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30,
+       width = 26,         
+       height = 11,          
+       units = "cm",
+       dpi = 300,            
+       bg = "white")
+
+gtsave(data = RS_PEVASPEA_SIM_TAB_NEOPLASIAS_Serie_Historica_Mun,
+       filename = "Imagens/SIM/RS_PEVASPEA_SIM_TAB_NEOPLASIAS_Serie_Historica_Mun.png" )
+
+ggsave(filename = "Imagens/SIM/PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER.png", 
+       plot = PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER, 
+       width = 35,                               
+       height = 48,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SIM/PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN.png", 
+       plot = PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
 gtsave(PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS,
        filename = "Imagens/SINAN/PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS.png" )
 
-##### Salvando objetos
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_SERIE_HIST_Geral.png",
        PR_SINAN_GRAF_SERIE_HIST_Geral,
