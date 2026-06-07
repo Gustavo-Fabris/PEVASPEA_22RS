@@ -78,6 +78,8 @@ Fonte3 <- "Fonte: DERAL. Acesso em 04/02/2026. Dados sujeitos a alteração.
                   SIAGRO. Base atualizada em 12/2025. Dados sujeitos a alteração."
 Fonte4 <- "Fonte: SINAN. Base DBF acessada em 10/04/2026. Dados sujeitos a alteração."
 Fonte5 <- "Fonte: SIM. Base DBF acessada em 10/04/2026. Dados sujeitos a alteração."
+Fonte6 <- "Fonte: SIM. Base DBF acessada em 10/04/2026. Dados sujeitos a alteração.
+           SINASC. Base DBF acessada em 10/04/2026. Dados sujeitos a alteração."
                
 #####   SHAPEFILES
 
@@ -5568,6 +5570,2025 @@ PR_PEVASPEA_SIM_LOCAL_MORAN_CANCER <- PR_PEVASPEA_SIM_CANCER_LOCAL_MORAN_2020 +
     legend.key.width = unit(1.2, "cm")
   )
 
+########SIM MORTALIDADE FETAL/INFANTIL
+
+arquivos_DO <- list.files(
+  path = "Base_de_Dados/DBF/", 
+  pattern = "^DOPR.*\\.dbf$", 
+  full.names = TRUE,
+  ignore.case = TRUE          
+)
+
+DO_completo <- arquivos_DO %>%
+  map_df(function(caminho) {
+    read.dbf(file = caminho, as.is = FALSE) %>%
+      select(TIPOBITO, DTOBITO, DTNASC, IDADE, CODMUNRES, QTDFILMORT, GESTACAO,
+             CAUSABAS, LINHAII, LINHAA, LINHAB, LINHAC, LINHAD) %>%
+      mutate(DTOBITO = dmy(as.character(DTOBITO)),
+             DTNASC  = dmy(as.character(DTNASC)),
+             Idade_Dias = as.numeric(DTOBITO - DTNASC),
+             Ano = str_extract(caminho, "\\d{4}")) 
+  })
+
+DO_completo <- left_join(DO_completo,
+                         Base_IBGE %>%
+                           select(Código_IBGE, RS) %>%
+                           mutate(Código_IBGE = as.factor(Código_IBGE)),
+                         by = c("CODMUNRES" = "Código_IBGE")) 
+
+DO_completo <- DO_completo %>%
+  filter(!is.na(RS))
+
+DO_FETAL <- DO_completo %>%
+  filter(TIPOBITO == "1",
+         Ano != 2026)
+
+####  Série Histórica PR DO Fetal
+
+AUX <- DO_FETAL %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  group_by(Ano) %>%
+  count(name = "Obitos_Fetais") 
+
+AUX <- left_join(AUX,
+                 PR_PEVASPEA_SINASC_Serie_Historica %>%
+                   select(Ano = RS, Nascidos),
+                 by = "Ano")
+
+AUX <- AUX %>%
+  mutate(Inc = round((Obitos_Fetais/Nascidos) * 1000, 2))
+
+fator_escala <- 145
+
+PR_SIM_GRAF_SERIE_HIST_FETAL_GERAL <- ggplot(AUX, aes(x = as.character(Ano), y = Inc)) + 
+  geom_col(aes(y = Obitos_Fetais / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.4) +
+  geom_text(aes(y = Obitos_Fetais / fator_escala / 2, 
+                label = format(Obitos_Fetais, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(group = 1), 
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(caption = Fonte5,
+       y = "Óbitos/1000 Nascidos Vivos",
+       x = NULL,
+       title = "Nº de Óbitos Fetais e Óbitos/1000 Nascidos Vivos",
+       subtitle = "Casos registrados em Declaração de Óbito. Paraná, 2016 - 2025") +
+  geom_text(aes(label = format(round(Inc, 2), decimal.mark = ",")), 
+            size = 4, 
+            vjust = -1.5, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 15), 
+                     breaks = seq(0, 15, 3),
+                     name = "Óbitos/1.000 Nascidos Vivos",
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Nº de Óbitos Absoluto",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
+  Theme()
+
+DO_FETAL_ANOMAL <- DO_completo %>%
+  filter(TIPOBITO == "1",
+         str_detect(CAUSABAS, "Q"),
+         Ano != 2026)
+
+AUX <- DO_FETAL_ANOMAL %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  group_by(Ano) %>%
+  count(name = "Obitos_Fetais_Anomal") 
+
+AUX <- left_join(AUX,
+                 PR_PEVASPEA_SINASC_Serie_Historica %>%
+                   select(Ano = RS, Nascidos),
+                 by = "Ano")
+
+AUX <- AUX %>%
+  mutate(Inc = round((Obitos_Fetais_Anomal/Nascidos) * 1000, 2))
+
+fator_escala <- 160
+
+PR_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL <- ggplot(AUX, aes(x = as.character(Ano), y = Inc)) + 
+  geom_col(aes(y = Obitos_Fetais_Anomal / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.4) +
+  geom_text(aes(y = Obitos_Fetais_Anomal / fator_escala / 2, 
+                label = format(Obitos_Fetais_Anomal, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(group = 1), 
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(caption = Fonte5,
+       y = "Óbitos/1000 Nascidos Vivos",
+       x = NULL,
+       title = "Nº de Óbitos Fetais por Anomalias Congênitas e Óbitos/1000 Nascidos Vivos",
+       subtitle = "Casos registrados como causa básica em Declaração de Óbito. Paraná, 2016 - 2025") +
+  geom_text(aes(label = format(round(Inc, 2), decimal.mark = ",")), 
+            size = 4, 
+            vjust = -1.5, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 1), 
+                     breaks = seq(0, 1, 1),
+                     name = "Óbitos por Anomalias Congênitas/1.000 Nascidos Vivos",
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Nº de Óbitos Absoluto",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
+  Theme()
+
+###### Tabela Anomalias
+
+AUX <- DO_FETAL_ANOMAL %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  filter(str_detect(CAUSABAS, "^(Q00|Q01|Q02|Q05|Q2|Q35|Q36|Q37|Q54|Q56|Q66|Q69|Q71|Q72|Q73|Q743|Q792|Q793|Q90)")) %>%
+  mutate(CAUSABAS = case_when( str_detect(CAUSABAS, "^(Q00|Q01|Q05)") ~ "Tubo Neural",
+                               str_detect(CAUSABAS, "^Q02")           ~ "Microcefalia",
+                               str_detect(CAUSABAS, "^Q2")            ~ "Cardiopatias",
+                               str_detect(CAUSABAS, "^(Q35|Q36|Q37)") ~ "Fendas Orais",
+                               str_detect(CAUSABAS, "^(Q54|Q56)")     ~ "Genitourinárias",
+                               str_detect(CAUSABAS, "^(Q66|Q69|Q71|Q72|Q73|Q743)") ~ "Membros",
+                               str_detect(CAUSABAS, "^(Q792|Q793)")   ~ "Parede Abdominal",
+                               str_detect(CAUSABAS, "^Q90")           ~ "Síndrome de Down",
+                               TRUE                                   ~ "Outras Anomalias" 
+  )) %>%
+  group_by(Ano, CAUSABAS) %>%
+  count(name = "Obitos_Fetais_Anomal") 
+
+AUX <- as.data.frame(pivot_wider(AUX,
+                                 names_from = Ano,
+                                 values_from = Obitos_Fetais_Anomal,
+                                 values_fill = 0))
+
+AUX <- AUX %>%
+  ungroup() %>%
+  bind_rows(
+    summarise(., 
+              CAUSABAS = "Total", 
+              across(where(is.numeric), sum)) 
+  )
+
+AUX01 <- AUX$CAUSABAS
+
+PR_PEVASPEA_SIM_DO_TAB_PRIORITARIAS <- gt(AUX) %>%
+  tab_header(
+    title = md("**Número de Óbitos Fetais por Anomalias Prioritárias como Causa Básica**"),
+    subtitle = md("Paraná, 2016 – 2025") 
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:11)  %>%
+  tab_footnote(
+    footnote = Fonte5) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(3, 5, 7, 9, 11)) 
+  ) 
+
+#########  22ª RS
+regex_Mun_RS <- "^(410165|410185|410440|410685|410855|411150|411250|411342|411375|411450|411573|411727|412217|412265|412385|412500)"
+
+DO_FETAL_RS <- DO_completo %>%
+  filter(TIPOBITO == "1",
+         str_detect(CODMUNRES, regex_Mun_RS),
+         Ano != 2026)
+
+####  Série Histórica PR DO Fetal
+
+AUX <- DO_FETAL_RS %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  group_by(Ano) %>%
+  count(name = "Obitos_Fetais") 
+
+AUX <- left_join(AUX,
+                 PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+                   filter(RS == 22) %>%
+                   select(contains("Nascidos_")) %>%
+                   summarize(across(everything(), sum)) %>%
+                   rename_with(~ str_extract(.x, "\\d{4}")) %>% 
+                   pivot_longer(cols = everything(),   
+                                names_to = "Ano",  
+                                values_to = "Nascidos") %>% 
+                   mutate(Ano = as.numeric(Ano)),
+                 by = "Ano")
+
+AUX <- AUX %>%
+  mutate(Inc = round((Obitos_Fetais/Nascidos) * 1000, 2))
+
+fator_escala <- 2
+
+RS_SIM_GRAF_SERIE_HIST_FETAL_GERAL <- ggplot(AUX, aes(x = as.character(Ano), y = Inc)) + 
+  geom_col(aes(y = Obitos_Fetais / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.4) +
+  geom_text(aes(y = Obitos_Fetais / fator_escala / 2, 
+                label = format(Obitos_Fetais, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(group = 1), 
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(caption = Fonte5,
+       y = "Óbitos/1000 Nascidos Vivos",
+       x = NULL,
+       title = "Nº de Óbitos Fetais e Óbitos/1000 Nascidos Vivos",
+       subtitle = "Casos registrados em Declaração de Óbito. 22ª Regional de Saúde, 2016 - 2025") +
+  geom_text(aes(label = format(round(Inc, 2), decimal.mark = ",")), 
+            size = 4, 
+            vjust = -1.5, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 12), 
+                     breaks = seq(0, 12, 3),
+                     name = "Óbitos/1.000 Nascidos Vivos",
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Nº de Óbitos Absoluto",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
+  Theme()
+
+DO_FETAL_ANOMAL_RS <- DO_completo %>%
+  filter(TIPOBITO == "1",
+         str_detect(CODMUNRES, regex_Mun_RS),
+         str_detect(CAUSABAS, "Q"),
+         Ano != 2026)
+
+AUX <- DO_FETAL_ANOMAL_RS %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  group_by(Ano) %>%
+  count(name = "Obitos_Fetais_Anomal") %>%
+  ungroup() %>%
+  complete(Ano = 2016:2025, fill = list(Obitos_Fetais_Anomal = 0))
+
+AUX <- left_join(AUX,
+                 PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+                   filter(RS == 22) %>%
+                   select(contains("Nascidos_")) %>%
+                   summarize(across(everything(), sum)) %>%
+                   rename_with(~ str_extract(.x, "\\d{4}")) %>% 
+                   pivot_longer(cols = everything(),   
+                                names_to = "Ano",  
+                                values_to = "Nascidos") %>% 
+                   mutate(Ano = as.numeric(Ano)),
+                 by = "Ano")
+
+AUX <- AUX %>%
+  mutate(Inc = round((Obitos_Fetais_Anomal/Nascidos) * 1000, 2))
+
+fator_escala <- 2
+
+RS_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL <- ggplot(AUX, aes(x = as.character(Ano), y = Inc)) + 
+  geom_col(aes(y = Obitos_Fetais_Anomal / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.4) +
+  geom_text(aes(y = Obitos_Fetais_Anomal / fator_escala / 2, 
+                label = format(Obitos_Fetais_Anomal, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(group = 1), 
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(caption = Fonte5,
+       y = "Óbitos/1000 Nascidos Vivos",
+       x = NULL,
+       title = "Nº de Óbitos Fetais por Anomalias Congênitas e Óbitos/1000 Nascidos Vivos",
+       subtitle = "Casos registrados como causa básica em Declaração de Óbito. 22ª Regional de Saúde, 2016 - 2025") +
+  geom_text(aes(label = format(round(Inc, 2), decimal.mark = ",")), 
+            size = 4, 
+            vjust = -1.5, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 2), 
+                     breaks = seq(0, 2, 1),
+                     name = "Óbitos por Anomalias Congênitas/1.000 Nascidos Vivos",
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Nº de Óbitos Absoluto",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
+  Theme()
+
+###### Tabela Anomalias
+todas_categorias <- c("Tubo Neural", "Microcefalia", "Cardiopatias", 
+                      "Fendas Orais", "Genitourinárias", "Membros", 
+                      "Parede Abdominal", "Síndrome de Down")
+
+AUX <- DO_FETAL_ANOMAL_RS %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  filter(str_detect(CAUSABAS, "^(Q00|Q01|Q02|Q05|Q2|Q35|Q36|Q37|Q54|Q56|Q66|Q69|Q71|Q72|Q73|Q743|Q792|Q793|Q90)"),
+         str_detect(CODMUNRES, regex_Mun_RS)) %>%
+  mutate(CAUSABAS = case_when( str_detect(CAUSABAS, "^(Q00|Q01|Q05)") ~ "Tubo Neural",
+                               str_detect(CAUSABAS, "^Q02")           ~ "Microcefalia",
+                               str_detect(CAUSABAS, "^Q2")            ~ "Cardiopatias",
+                               str_detect(CAUSABAS, "^(Q35|Q36|Q37)") ~ "Fendas Orais",
+                               str_detect(CAUSABAS, "^(Q54|Q56)")     ~ "Genitourinárias",
+                               str_detect(CAUSABAS, "^(Q66|Q69|Q71|Q72|Q73|Q743)") ~ "Membros",
+                               str_detect(CAUSABAS, "^(Q792|Q793)")   ~ "Parede Abdominal",
+                               str_detect(CAUSABAS, "^Q90")           ~ "Síndrome de Down",
+                               TRUE                                   ~ "Outras Anomalias" 
+  )) %>%
+  group_by(Ano, CAUSABAS) %>%
+  count(name = "Obitos_Fetais_Anomal")  %>% 
+  ungroup() %>% 
+  complete(
+    Ano = 2016:2025, 
+    CAUSABAS = todas_categorias, 
+    fill = list(Obitos_Fetais_Anomal = 0) 
+  )
+
+AUX <- as.data.frame(pivot_wider(AUX,
+                                 names_from = Ano,
+                                 values_from = Obitos_Fetais_Anomal,
+                                 values_fill = 0))
+
+AUX <- AUX %>%
+  ungroup() %>%
+  bind_rows(
+    summarise(., 
+              CAUSABAS = "Total", 
+              across(where(is.numeric), sum)) 
+  )
+
+
+RS_PEVASPEA_SIM_DO_TAB_PRIORITARIAS <- gt(AUX) %>%
+  tab_header(
+    title = md("**Número de Óbitos Fetais por Anomalias Prioritárias como Causa Básica**"),
+    subtitle = md("22ª Regional de Saúde, 2016 – 2025") 
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:11)  %>%
+  tab_footnote(
+    footnote = Fonte5) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(3, 5, 7, 9, 11)) 
+  ) 
+
+##################################################################################
+##############   Óbitos Infantis
+
+DO_INFANTIL <- DO_completo %>%
+  mutate(IDADE = as.numeric(as.character(IDADE)))%>%
+  filter(TIPOBITO == "2",
+         Idade_Dias <= 365,
+         Ano != 2026)
+
+####  Série Histórica PR DO Fetal
+
+AUX <- DO_INFANTIL %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  group_by(Ano) %>%
+  count(name = "Obitos_Infantis") 
+
+AUX <- left_join(AUX,
+                 PR_PEVASPEA_SINASC_Serie_Historica %>%
+                   select(Ano = RS, Nascidos),
+                 by = "Ano")
+
+AUX <- AUX %>%
+  mutate(Inc = round((Obitos_Infantis/Nascidos) * 1000, 2))
+
+fator_escala <- 140
+
+PR_SIM_GRAF_SERIE_HIST_INFANTIL_GERAL <- ggplot(AUX, aes(x = as.character(Ano), y = Inc)) + 
+  geom_col(aes(y = Obitos_Infantis / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.4) +
+  geom_text(aes(y = Obitos_Infantis / fator_escala / 2, 
+                label = format(Obitos_Infantis, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(group = 1), 
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(caption = Fonte5,
+       y = "Óbitos/1000 Nascidos Vivos",
+       x = NULL,
+       title = "Nº de Óbitos Infantis e Óbitos/1000 Nascidos Vivos",
+       subtitle = "Casos registrados em Declaração de Óbito. Paraná, 2016 - 2025") +
+  geom_text(aes(label = format(round(Inc, 2), decimal.mark = ",")), 
+            size = 4, 
+            vjust = -1.5, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 15), 
+                     breaks = seq(0, 15, 3),
+                     name = "Óbitos/1.000 Nascidos Vivos",
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Nº de Óbitos Absoluto",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
+  Theme()
+
+DO_INFANTIL_ANOMAL <- DO_completo %>%
+  mutate(IDADE = as.numeric(as.character(IDADE)))%>%
+  filter(TIPOBITO == "2",
+         Idade_Dias <= 365,
+         str_detect(CAUSABAS, "Q"),
+         Ano != 2026)
+
+AUX <- DO_INFANTIL_ANOMAL %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  group_by(Ano) %>%
+  count(name = "Obitos_Infantis_Anomal") 
+
+AUX <- left_join(AUX,
+                 PR_PEVASPEA_SINASC_Serie_Historica %>%
+                   select(Ano = RS, Nascidos),
+                 by = "Ano")
+
+AUX <- AUX %>%
+  mutate(Inc = round((Obitos_Infantis_Anomal/Nascidos) * 1000, 2))
+
+fator_escala <- 160
+
+PR_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL <- ggplot(AUX, aes(x = as.character(Ano), y = Inc)) + 
+  geom_col(aes(y = Obitos_Infantis_Anomal / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.4) +
+  geom_text(aes(y = Obitos_Infantis_Anomal / fator_escala / 2, 
+                label = format(Obitos_Infantis_Anomal, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(group = 1), 
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(caption = Fonte5,
+       y = "Óbitos/1000 Nascidos Vivos",
+       x = NULL,
+       title = "Nº de Óbitos Infantis por Anomalias Congênitas e Óbitos/1000 Nascidos Vivos",
+       subtitle = "Casos registrados como causa básica em Declaração de Óbito. Paraná, 2016 - 2025") +
+  geom_text(aes(label = format(round(Inc, 2), decimal.mark = ",")), 
+            size = 4, 
+            vjust = -1.5, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 5), 
+                     breaks = seq(0, 5, 1),
+                     name = "Óbitos por Anomalias Congênitas/1.000 Nascidos Vivos",
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Nº de Óbitos Absoluto",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
+  Theme()
+
+###### Tabela Anomalias
+
+AUX <- DO_INFANTIL_ANOMAL %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  filter(str_detect(CAUSABAS, "^(Q00|Q01|Q02|Q05|Q2|Q35|Q36|Q37|Q54|Q56|Q66|Q69|Q71|Q72|Q73|Q743|Q792|Q793|Q90)")) %>%
+  mutate(CAUSABAS = case_when( str_detect(CAUSABAS, "^(Q00|Q01|Q05)") ~ "Tubo Neural",
+                               str_detect(CAUSABAS, "^Q02")           ~ "Microcefalia",
+                               str_detect(CAUSABAS, "^Q2")            ~ "Cardiopatias",
+                               str_detect(CAUSABAS, "^(Q35|Q36|Q37)") ~ "Fendas Orais",
+                               str_detect(CAUSABAS, "^(Q54|Q56)")     ~ "Genitourinárias",
+                               str_detect(CAUSABAS, "^(Q66|Q69|Q71|Q72|Q73|Q743)") ~ "Membros",
+                               str_detect(CAUSABAS, "^(Q792|Q793)")   ~ "Parede Abdominal",
+                               str_detect(CAUSABAS, "^Q90")           ~ "Síndrome de Down",
+                               TRUE                                   ~ "Outras Anomalias" 
+  )) %>%
+  group_by(Ano, CAUSABAS) %>%
+  count(name = "Obitos_Fetais_Anomal") 
+
+AUX <- as.data.frame(pivot_wider(AUX,
+                                 names_from = Ano,
+                                 values_from = Obitos_Fetais_Anomal,
+                                 values_fill = 0))
+
+AUX <- AUX %>%
+  ungroup() %>%
+  bind_rows(
+    summarise(., 
+              CAUSABAS = "Total", 
+              across(where(is.numeric), sum)) 
+  )
+
+PR_PEVASPEA_SIM_DO_TAB_PRIORITARIAS_Infantis <- gt(AUX) %>%
+  tab_header(
+    title = md("**Número de Óbitos Infantis por Anomalias Prioritárias como Causa Básica**"),
+    subtitle = md("Paraná, 2016 – 2025") 
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:11)  %>%
+  tab_footnote(
+    footnote = Fonte5) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(3, 5, 7, 9, 11)) 
+  ) 
+
+######  Tabelas e mapas Regionais
+
+AUX <- DO_completo %>%
+  ungroup() %>%
+  filter(Idade_Dias <= 365,
+         Ano != 2026) %>%
+  group_by(Ano, RS) %>%
+  count() 
+
+AUX01 <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+  ungroup() %>%
+  filter(RS != "Total") %>%
+  select(RS, starts_with("Nascidos_20"))  %>%
+  group_by(RS) %>% 
+  summarise(across(starts_with("Nascidos_20"), sum, na.rm = TRUE), .groups = "drop") %>%
+  rename_with(~ str_extract(.x, "\\d{4}"), .cols = starts_with("Nascidos_")) %>% 
+  pivot_longer(cols = -RS,   
+               names_to = "Ano",  
+               values_to = "Nascidos") %>% 
+  mutate(Ano = as.character(Ano),
+         RS = as.integer(RS))
+
+AUX <- left_join(AUX,
+                 AUX01,
+                 by = c("RS" = "RS", "Ano" = "Ano")) %>%
+  mutate(TMI = round((n / Nascidos) * 1000, 2)
+  )
+
+AUX <- AUX %>%
+  ungroup() %>%
+  select(RS, Ano, n, TMI) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(n, TMI),
+    values_fill = 0
+  ) 
+
+PR_PEVASPEA_SIM_DO_TAB_SERIE_HIST_RS <- gt(AUX[, c(1, 2, 12, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17, 8, 18, 9, 19, 10, 20, 11, 21)]) %>%
+  tab_header(
+    title = md("**Número de Óbitos Infantis e TMI nas Regionais de Saúde**"),
+    subtitle = md("Paraná, 2016 – 2025") 
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "1") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "3") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "4") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "5") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "6") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "7") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "8") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "9") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "10") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21)  %>%
+  cols_label(contains("TMI_")     ~ "TMI",
+             matches("n_") ~ "n"
+  ) %>%
+  fmt_number(
+    columns = contains("TMI"),
+    decimals = 2,
+    sep_mark = ".",
+    dec_mark = ","
+  ) %>%
+  tab_footnote(
+    footnote = Fonte6) %>%
+  tab_footnote(
+    footnote = "Nota¹: n = número de óbitos Infantis") %>%
+  tab_footnote(
+    footnote = "Nota²: TMI = Taxa de Mortalidade Infantil (óbitos/1000 nascidos vivos)") %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(4, 5, 8, 9, 12, 13, 16, 17, 20, 21)) 
+  ) %>%
+  tab_options(footnotes.padding = px(1),
+              footnotes.font.size = px(10))
+
+#### Tabela Anomalias
+
+AUX <- DO_completo %>%
+  ungroup() %>%
+  filter(Idade_Dias <= 365,
+         str_detect(CAUSABAS, "Q"),
+         Ano != 2026) %>%
+  group_by(Ano, RS) %>%
+  count() 
+
+AUX01 <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+  ungroup() %>%
+  filter(RS != "Total") %>%
+  select(RS, starts_with("Nascidos_20"))  %>%
+  group_by(RS) %>% 
+  summarise(across(starts_with("Nascidos_20"), sum, na.rm = TRUE), .groups = "drop") %>%
+  rename_with(~ str_extract(.x, "\\d{4}"), .cols = starts_with("Nascidos_")) %>% 
+  pivot_longer(cols = -RS,   
+               names_to = "Ano",  
+               values_to = "Nascidos") %>% 
+  mutate(Ano = as.character(Ano),
+         RS = as.integer(RS))
+
+AUX <- left_join(AUX,
+                 AUX01,
+                 by = c("RS" = "RS", "Ano" = "Ano")) %>%
+  mutate(TMI = round((n / Nascidos) * 1000, 2)
+  )
+
+AUX <- AUX %>%
+  ungroup() %>%
+  select(RS, Ano, n, TMI) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(n, TMI),
+    values_fill = 0
+  ) 
+
+PR_PEVASPEA_SIM_DO_TAB_SERIE_HIST_ANOMAL_RS <- gt(AUX[, c(1, 2, 12, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17, 8, 18, 9, 19, 10, 20, 11, 21)]) %>%
+  tab_header(
+    title = md("**Número de Óbitos Infantis por Anomalias Congênitas e TMI nas Regionais de Saúde**"),
+    subtitle = md("Paraná, 2016 – 2025") 
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "1") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "3") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "4") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "5") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "6") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "7") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "8") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "9") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "10") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21)  %>%
+  cols_label(contains("TMI_")     ~ "TMI",
+             matches("n_") ~ "n"
+  ) %>%
+  fmt_number(
+    columns = contains("TMI"),
+    decimals = 2,
+    sep_mark = ".",
+    dec_mark = ","
+  ) %>%
+  tab_footnote(
+    footnote = Fonte6) %>%
+  tab_footnote(
+    footnote = "Nota¹: n = número de óbitos Infantis") %>%
+  tab_footnote(
+    footnote = "Nota²: TMI = Taxa de Mortalidade Infantil (óbitos/1000 nascidos vivos)") %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(4, 5, 8, 9, 12, 13, 16, 17, 20, 21)) 
+  ) %>%
+  tab_options(footnotes.padding = px(1),
+              footnotes.font.size = px(10))
+
+##### Mapas 5 anos TMI
+AUX <- DO_completo %>%
+  ungroup() %>%
+  filter(Idade_Dias <= 365,
+         Ano != 2026) %>%
+  group_by(Ano, RS) %>%
+  count() 
+
+AUX01 <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+  ungroup() %>%
+  filter(RS != "Total") %>%
+  select(RS, starts_with("Nascidos_20"))  %>%
+  group_by(RS) %>% 
+  summarise(across(starts_with("Nascidos_20"), sum, na.rm = TRUE), .groups = "drop") %>%
+  rename_with(~ str_extract(.x, "\\d{4}"), .cols = starts_with("Nascidos_")) %>% 
+  pivot_longer(cols = -RS,   
+               names_to = "Ano",  
+               values_to = "Nascidos") %>% 
+  mutate(Ano = as.character(Ano),
+         RS = as.integer(RS))
+
+AUX02 <- left_join(AUX,
+                   AUX01,
+                   by = c("RS" = "RS", "Ano" = "Ano")) %>%
+  filter(Ano %in% c("2016", "2017", "2018", "2019", "2020"))
+
+AUX02 <- AUX02 %>%
+  ungroup() %>%
+  select(RS, Ano, n, Nascidos) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(n, Nascidos),
+    values_fill = 0
+  ) %>%
+  mutate(RS = RS,
+         Obitos_16_20 = rowSums(across(starts_with("n_")), na.rm = TRUE),
+         Nascidos_16_20 = rowSums(across(starts_with("Nascidos_")), na.rm = TRUE),
+         TMI_16_20 = round((Obitos_16_20 / Nascidos_16_20) * 1000, 2)
+  )
+
+AUX03 <- left_join(AUX,
+                   AUX01,
+                   by = c("RS" = "RS", "Ano" = "Ano")) %>%
+  filter(Ano %in% c("2021", "2022", "2023", "2024", "2025"))
+
+AUX03 <- AUX03 %>%
+  ungroup() %>%
+  select(RS, Ano, n, Nascidos) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(n, Nascidos),
+    values_fill = 0
+  ) %>%
+  mutate(RS = RS,
+         Obitos_21_25 = rowSums(across(starts_with("n_")), na.rm = TRUE),
+         Nascidos_21_25 = rowSums(across(starts_with("Nascidos_")), na.rm = TRUE),
+         TMI_21_25 = round((Obitos_21_25 / Nascidos_21_25) * 1000, 2)
+  )
+
+AUX <- left_join(AUX02,
+                 AUX03,
+                 by = "RS")
+
+AUX$RS <- str_pad(AUX$RS, 
+                  width = 2, 
+                  side = "left", 
+                  pad = "0")
+
+MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS, 
+                             AUX %>%
+                               mutate(RS = as.character(RS)), 
+                             by = c("RS" = "RS"))
+
+MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = TMI_16_20,
+                                                 breaks = c(0, 9.50, 10.50, 11.20, 12.00, 13.50, Inf),
+                                                 labels = c("Até 9,50", 
+                                                            "9,51 a 10,50", 
+                                                            "10,51 a 11,20", 
+                                                            "11,21 a 12,00", 
+                                                            "12,01 a 13,50", 
+                                                            "Acima de 13,50"),
+                                                 right = TRUE))
+
+PR_SIM_DO_MAP_TMI_16_20_RS <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR_RS, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "plasma",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = NULL,
+       title = "2016 - 2020") +
+  Theme()
+
+MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = TMI_21_25,
+                                                 breaks = c(0, 9.50, 10.50, 11.20, 12.00, 13.50, Inf),
+                                                 labels = c("Até 9,50", 
+                                                            "9,51 a 10,50", 
+                                                            "10,51 a 11,20", 
+                                                            "11,21 a 12,00", 
+                                                            "12,01 a 13,50", 
+                                                            "Acima de 13,50"),
+                                                 right = TRUE))
+
+PR_SIM_DO_MAP_TMI_21_25_RS <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR_RS, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "plasma",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = NULL,
+       title = "2021 - 2025") +
+  Theme()
+
+PR_SIM_DO_MAP_TMI_RS_16_20_21_25 <- PR_SIM_DO_MAP_TMI_16_20_RS + 
+  PR_SIM_DO_MAP_TMI_21_25_RS + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Taxa de Mortalidade Infantil por Regional de Saúde',
+                  subtitle = 'Comparativo entre os quinquênios 2016 - 2020 e 2021 - 2025',
+                  caption =  Fonte6) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+##### Mapas 5 anos TMI ANOMAL
+AUX <- DO_completo %>%
+  ungroup() %>%
+  filter(Idade_Dias <= 365,
+         Ano != 2026,
+         str_detect(CAUSABAS, "Q")) %>%
+  group_by(Ano, RS) %>%
+  count() 
+
+AUX01 <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+  ungroup() %>%
+  filter(RS != "Total") %>%
+  select(RS, starts_with("Nascidos_20"))  %>%
+  group_by(RS) %>% 
+  summarise(across(starts_with("Nascidos_20"), sum, na.rm = TRUE), .groups = "drop") %>%
+  rename_with(~ str_extract(.x, "\\d{4}"), .cols = starts_with("Nascidos_")) %>% 
+  pivot_longer(cols = -RS,   
+               names_to = "Ano",  
+               values_to = "Nascidos") %>% 
+  mutate(Ano = as.character(Ano),
+         RS = as.integer(RS))
+
+AUX02 <- left_join(AUX,
+                   AUX01,
+                   by = c("RS" = "RS", "Ano" = "Ano")) %>%
+  filter(Ano %in% c("2016", "2017", "2018", "2019", "2020"))
+
+AUX02 <- AUX02 %>%
+  ungroup() %>%
+  select(RS, Ano, n, Nascidos) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(n, Nascidos),
+    values_fill = 0
+  ) %>%
+  mutate(RS = RS,
+         Obitos_ANOMAL_16_20 = rowSums(across(starts_with("n_")), na.rm = TRUE),
+         Nascidos_16_20 = rowSums(across(starts_with("Nascidos_")), na.rm = TRUE),
+         TMI_ANOMAL_16_20 = round((Obitos_ANOMAL_16_20 / Nascidos_16_20) * 1000, 2)
+  )
+
+AUX03 <- left_join(AUX,
+                   AUX01,
+                   by = c("RS" = "RS", "Ano" = "Ano")) %>%
+  filter(Ano %in% c("2021", "2022", "2023", "2024", "2025"))
+
+AUX03 <- AUX03 %>%
+  ungroup() %>%
+  select(RS, Ano, n, Nascidos) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(n, Nascidos),
+    values_fill = 0
+  ) %>%
+  mutate(RS = RS,
+         Obitos_ANOMAL_21_25 = rowSums(across(starts_with("n_")), na.rm = TRUE),
+         Nascidos_21_25 = rowSums(across(starts_with("Nascidos_")), na.rm = TRUE),
+         TMI_ANOMAL_21_25 = round((Obitos_ANOMAL_21_25 / Nascidos_21_25) * 1000, 2)
+  )
+
+AUX <- left_join(AUX02,
+                 AUX03,
+                 by = "RS")
+
+AUX$RS <- str_pad(AUX$RS, 
+                  width = 2, 
+                  side = "left", 
+                  pad = "0")
+
+MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS, 
+                             AUX %>%
+                               mutate(RS = as.character(RS)), 
+                             by = c("RS" = "RS"))
+
+MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = TMI_ANOMAL_16_20,
+                                                 breaks = c(0, 2.40, 2.75, 3.00, 3.35, 4.00, Inf),
+                                                 labels = c("Até 2,40", 
+                                                            "2,41 a 2,75", 
+                                                            "2,76 a 3,00", 
+                                                            "3,01 a 3,35", 
+                                                            "3,36 a 4,00", 
+                                                            "Acima de 4,00"),
+                                                 right = TRUE))
+
+PR_SIM_DO_MAP_TMI_ANOMAL_16_20_RS <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR_RS, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "plasma",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = NULL,
+       title = "2016 - 2020") +
+  Theme()
+
+MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = TMI_ANOMAL_21_25,
+                                                 breaks = c(0, 2.40, 2.75, 3.00, 3.35, 4.00, Inf),
+                                                 labels = c("Até 2,40", 
+                                                            "2,41 a 2,75", 
+                                                            "2,76 a 3,00", 
+                                                            "3,01 a 3,35", 
+                                                            "3,36 a 4,00", 
+                                                            "Acima de 4,00"),
+                                                 right = TRUE))
+
+PR_SIM_DO_MAP_TMI_ANOMAL_21_25_RS <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR_RS, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "plasma",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = NULL,
+       title = "2021 - 2025") +
+  Theme()
+
+PR_SIM_DO_MAP_TMI_RS_16_20_21_25 <- PR_SIM_DO_MAP_TMI_ANOMAL_16_20_RS + 
+  PR_SIM_DO_MAP_TMI_ANOMAL_21_25_RS + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Taxa de Mortalidade Infantil por Anomalias Congênitas por Regional de Saúde',
+                  subtitle = 'Comparativo entre os quinquênios 2016 - 2020 e 2021 - 2025',
+                  caption =  Fonte6) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+##### Mapas Municípios
+
+AUX <- DO_completo %>%
+  ungroup() %>%
+  filter(Idade_Dias <= 365,
+         Ano != 2026,
+         str_detect(CAUSABAS, "Q")) %>%
+  mutate(CODMUNRES = as.character(CODMUNRES)) %>% 
+  group_by(Ano, CODMUNRES) %>%
+  count(name = "Obitos_Anomal") %>% 
+  ungroup()
+
+AUX01 <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+  ungroup() %>%
+  filter(Código_IBGE != "Total") %>%
+  select(Código_IBGE, starts_with("Nascidos_20"))  %>%
+  group_by(Código_IBGE) %>% 
+  summarise(across(starts_with("Nascidos_20"), sum, na.rm = TRUE), .groups = "drop") %>%
+  rename_with(~ str_extract(.x, "\\d{4}"), .cols = starts_with("Nascidos_")) %>% 
+  pivot_longer(cols = -Código_IBGE, names_to = "Ano", values_to = "Nascidos") %>% 
+  mutate(Ano = as.character(Ano),
+         Código_IBGE = as.character(Código_IBGE)) 
+
+AUX02 <- left_join(AUX01, 
+                   AUX, 
+                   by = c("Código_IBGE" = "CODMUNRES", "Ano" = "Ano")) %>%
+  mutate(Obitos_Anomal = replace_na(Obitos_Anomal, 0))
+
+AUX03 <- AUX02 %>%
+  filter(Ano %in% c("2016", "2017", "2018", "2019", "2020")) %>%
+  select(Código_IBGE, Ano, Obitos_Anomal, Nascidos) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(Obitos_Anomal, Nascidos),
+    values_fill = 0
+  ) %>%
+  mutate(
+    Obitos_ANOMAL_16_20 = rowSums(across(starts_with("Obitos_Anomal_")), na.rm = TRUE),
+    Nascidos_16_20 = rowSums(across(starts_with("Nascidos_")), na.rm = TRUE),
+    TMI_ANOMAL_16_20 = ifelse(Nascidos_16_20 > 0, round((Obitos_ANOMAL_16_20 / Nascidos_16_20) * 1000, 2), 0)
+  )
+
+AUX02 <- AUX02 %>%
+  filter(Ano %in% c("2021", "2022", "2023", "2024", "2025")) %>%
+  select(Código_IBGE, Ano, Obitos_Anomal, Nascidos) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(Obitos_Anomal, Nascidos),
+    values_fill = 0
+  ) %>%
+  mutate(
+    Obitos_ANOMAL_21_25 = rowSums(across(starts_with("Obitos_Anomal_")), na.rm = TRUE),
+    Nascidos_21_25 = rowSums(across(starts_with("Nascidos_")), na.rm = TRUE),
+    TMI_ANOMAL_21_25 = ifelse(Nascidos_21_25 > 0, round((Obitos_ANOMAL_21_25 / Nascidos_21_25) * 1000, 2), 0)
+  )
+
+AUX <- left_join(AUX02, 
+                 AUX03, 
+                 by = "Código_IBGE")
+
+MAPA_BASE_PR <- left_join(MAPA_BASE_PR, 
+                          AUX %>%
+                            mutate(Código_IBGE = as.character(Código_IBGE)), 
+                          by = c("CD_MUN" = "Código_IBGE"))
+
+MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TMI_ANOMAL_16_20,
+                                           breaks = c(-Inf, 0.00, 1.50, 3.00, 4.50, 6.00, Inf),
+                                           labels = c("Taxa Zero (0,00)", 
+                                                      "0,01 a 1,50", 
+                                                      "1,51 a 3,00", 
+                                                      "3,01 a 4,50", 
+                                                      "4,51 a 6,00", 
+                                                      "Acima de 6,00"),
+                                           right = TRUE))
+
+PR_SIM_DO_MAP_TMI_ANOMAL_16_20_Mun <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "plasma",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = NULL,
+       title = "2016 - 2020") +
+  Theme()
+
+MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TMI_ANOMAL_21_25,
+                                           breaks = c(-Inf, 0.00, 1.50, 3.00, 4.50, 6.00, Inf),
+                                           labels = c("Taxa Zero (0,00)", 
+                                                      "0,01 a 1,50", 
+                                                      "1,51 a 3,00", 
+                                                      "3,01 a 4,50", 
+                                                      "4,51 a 6,00", 
+                                                      "Acima de 6,00"),
+                                           right = TRUE))
+
+PR_SIM_DO_MAP_TMI_ANOMAL_21_25_Mun <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "plasma",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = NULL,
+       title = "2021 - 2025") +
+  Theme()
+
+PR_SIM_DO_MAP_TMI_Mun_16_20_21_25 <- PR_SIM_DO_MAP_TMI_ANOMAL_16_20_Mun + 
+  PR_SIM_DO_MAP_TMI_ANOMAL_21_25_Mun + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Taxa de Mortalidade Infantil por Anomalias Congênitas por Municípios',
+                  subtitle = 'Comparativo entre os quinquênios 2016 - 2020 e 2021 - 2025',
+                  caption =  Fonte6) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+AUX <- AUX %>%
+  mutate(Nascidos_16_20_TMI_ANOMAL = Nascidos_2016 + Nascidos_2017 + Nascidos_2018 + Nascidos_2019 + Nascidos_2020,
+         Mortalidade_Infantil_ANOMAL_16_20 = Obitos_Anomal_2016 + Obitos_Anomal_2017 + Obitos_Anomal_2018 + Obitos_Anomal_2019 + Obitos_Anomal_2020,
+         Nascidos_21_25_TMI_ANOMAL = Nascidos_2021 + Nascidos_2022 + Nascidos_2023 + Nascidos_2024 + Nascidos_2025,
+         Mortalidade_Infantil_ANOMAL_21_25 = Obitos_Anomal_2021 + Obitos_Anomal_2022 + Obitos_Anomal_2023 + Obitos_Anomal_2024 + Obitos_Anomal_2025)
+
+MAPA_BASE_PR <- left_join(MAPA_BASE_PR,
+                          AUX %>%
+                            select(Código_IBGE, Nascidos_16_20_TMI_ANOMAL, Nascidos_21_25_TMI_ANOMAL, 
+                                   Mortalidade_Infantil_ANOMAL_16_20, Mortalidade_Infantil_ANOMAL_21_25),
+                          by = c("CD_MUN" = "Código_IBGE"))
+
+#### Suavização
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Mortalidade_Infantil_ANOMAL_16_20,
+                          ni = MAPA_BASE_PR$Nascidos_16_20_TMI_ANOMAL,
+                          nb = Matriz_Viz_MAPA_BASE_PR)
+
+MAPA_BASE_PR$TAXA_RAW_16_20_TMI_ANOMAL <- Taxa_Suavizada$raw * 1000
+
+MAPA_BASE_PR$TAXA_EST_16_20_TMI_ANOMAL <- Taxa_Suavizada$est * 1000
+
+Global_Moran_16_20_TMI_ANOMAL <- moran.test(MAPA_BASE_PR$TAXA_EST_16_20_TMI_ANOMAL,
+                                            Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_16_20_TMI_ANOMAL, 
+           Matriz_Viz_Pesos, 
+           labels = FALSE, 
+           pch = 15, 
+           col = "blue", 
+           xlab = "Variável Original", 
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+### Travando o local moran
+set.seed(1)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_16_20_TMI_ANOMAL, 
+                        Matriz_Viz_Pesos, 
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_16_20_TMI_ANOMAL <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_16_20_TMI_ANOMAL <- Lisa[,5]
+
+ggplot(MAPA_BASE_PR, 
+       aes(geometry = geometry)) +
+  geom_sf(aes(fill = local_I_16_20_TMI_ANOMAL)) +
+  scale_fill_gradient2(low = "blue", high = "red", 
+                       mid = "white", 
+                       midpoint = 0,
+                       name = "I local") +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(1.5, "cm"))
+
+quadrantes <- attr(Lisa, 
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_16_20_TMI_ANOMAL <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                                     quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                                     quadrantes == "High-Low" ~ "Alto-Baixo",
+                                                     quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_16_20_TMI_ANOMAL = case_when(
+    local_I_p_valor_16_20_TMI_ANOMAL < 0.05 ~ quadrante_16_20_TMI_ANOMAL,
+    local_I_p_valor_16_20_TMI_ANOMAL >= 0.05 ~ "Não significativo"
+  ))
+
+Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não significativo")
+
+MAPA_BASE_PR$Lisa_resultado_16_20_TMI_ANOMAL <- factor(MAPA_BASE_PR$Lisa_resultado_16_20_TMI_ANOMAL, 
+                                                       levels = Niveis_LISA)
+
+PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_TMI_ANOMAL <- ggplot(MAPA_BASE_PR, 
+                                                          aes(geometry = geometry)) +
+  geom_sf(color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Lisa_resultado_16_20_TMI_ANOMAL)) +
+  scale_fill_manual(name = NULL,
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",        
+                               "Baixo-Baixo" = "blue",      
+                               "Alto-Baixo" = "pink",       
+                               "Baixo-Alto" = "lightblue",  
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2016 - 2020",
+       subtitle = "Global Moran I = 0.301 (p < 0.001)") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+#### Fim da análise Global and Local Moran 2018 - 2021
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2021 - 2025
+
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Mortalidade_Infantil_ANOMAL_21_25,
+                          ni = MAPA_BASE_PR$Nascidos_21_25_TMI_ANOMAL,
+                          nb = Matriz_Viz_MAPA_BASE_PR)
+
+MAPA_BASE_PR$TAXA_RAW_21_25_TMI_ANOMAL <- Taxa_Suavizada$raw * 1000
+
+MAPA_BASE_PR$TAXA_EST_21_25_TMI_ANOMAL <- Taxa_Suavizada$est * 1000
+
+Global_Moran_21_25_TMI_ANOMAL <- moran.test(MAPA_BASE_PR$TAXA_EST_21_25_TMI_ANOMAL,
+                                            Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_21_25_TMI_ANOMAL, 
+           Matriz_Viz_Pesos, 
+           labels = FALSE, 
+           pch = 15, 
+           col = "blue", 
+           xlab = "Variável Original", 
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+#### Travando o local moran
+set.seed(5)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_21_25_TMI_ANOMAL, 
+                        Matriz_Viz_Pesos, 
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_21_25_TMI_ANOMAL <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_21_25_TMI_ANOMAL <- Lisa[,5]
+
+quadrantes <- attr(Lisa, 
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_21_25_TMI_ANOMAL <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                                     quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                                     quadrantes == "High-Low" ~ "Alto-Baixo",
+                                                     quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_21_25_TMI_ANOMAL = case_when(
+    local_I_p_valor_21_25_TMI_ANOMAL < 0.05 ~ quadrante_21_25_TMI_ANOMAL,
+    local_I_p_valor_21_25_TMI_ANOMAL >= 0.05 ~ "Não significativo"
+  ))
+
+MAPA_BASE_PR$Lisa_resultado_21_25_TMI_ANOMAL <- factor(MAPA_BASE_PR$Lisa_resultado_21_25_TMI_ANOMAL, 
+                                                       levels = Niveis_LISA)
+
+PR_PEVASPEA_SINASC_LOCAL_MORAN_21_25_TMI_ANOMAL <- ggplot(MAPA_BASE_PR, 
+                                                          aes(geometry = geometry)) +
+  geom_sf(color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Lisa_resultado_21_25_TMI_ANOMAL)) +
+  scale_fill_manual(name = NULL, 
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",        
+                               "Baixo-Baixo" = "blue",      
+                               "Alto-Baixo" = "pink",       
+                               "Baixo-Alto" = "lightblue",  
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2021 - 2025",
+       subtitle = "Global Moran I = 0.345 (p < 0.001)") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25_TMI_ANOMAL <- PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_TMI_ANOMAL + 
+  PR_PEVASPEA_SINASC_LOCAL_MORAN_21_25_TMI_ANOMAL + 
+  plot_layout(ncol = 2, guides = "collect") + 
+  plot_annotation(
+    title = "Progressão de Agrupamentos das Taxas de Mortalidade Infantil por Anomalias Congênitas no Paraná",
+    subtitle = 'Comparativo entre os quadriênios 2016 - 2020 e 2021 - 2025 \nÓbitos/1000 Nascidos Vivos \nTaxa Suavizada Utilizando Método Bayesiano Empírico \n9999 Permutações',
+    caption = Fonte6  
+  ) & 
+  theme(
+    plot.title = element_text(size = 16, 
+                              face = "bold", 
+                              hjust = 0), 
+    plot.subtitle = element_text(size = 12, 
+                                 hjust = 0),
+    plot.caption = element_text(hjust = 0, 
+                                face = "italic", 
+                                size = 10),
+    legend.position = "bottom",        
+    legend.box = "horizontal",
+    legend.box.just = "center",
+    legend.justification = "center",
+    legend.key.width = unit(1.2, "cm")   
+  )
+
+AUX <- DO_completo %>%
+  ungroup() %>%
+  filter(Idade_Dias <= 365,
+         Ano != 2026) %>%
+  mutate(CODMUNRES = as.character(CODMUNRES)) %>% 
+  group_by(Ano, CODMUNRES) %>%
+  count(name = "Obitos") %>% 
+  ungroup()
+
+AUX01 <- PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+  ungroup() %>%
+  filter(Código_IBGE != "Total") %>%
+  select(Código_IBGE, starts_with("Nascidos_20"))  %>%
+  group_by(Código_IBGE) %>% 
+  summarise(across(starts_with("Nascidos_20"), sum, na.rm = TRUE), .groups = "drop") %>%
+  rename_with(~ str_extract(.x, "\\d{4}"), .cols = starts_with("Nascidos_")) %>% 
+  pivot_longer(cols = -Código_IBGE, names_to = "Ano", values_to = "Nascidos") %>% 
+  mutate(Ano = as.character(Ano),
+         Código_IBGE = as.character(Código_IBGE)) 
+
+AUX02 <- left_join(AUX01, 
+                   AUX, 
+                   by = c("Código_IBGE" = "CODMUNRES", "Ano" = "Ano")) %>%
+  mutate(Obitos = replace_na(Obitos, 0))
+
+AUX03 <- AUX02 %>%
+  filter(Ano %in% c("2016", "2017", "2018", "2019", "2020")) %>%
+  select(Código_IBGE, Ano, Obitos, Nascidos) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(Obitos, Nascidos),
+    values_fill = 0
+  ) %>%
+  mutate(
+    Obitos_16_20 = rowSums(across(starts_with("Obitos_")), na.rm = TRUE),
+    Nascidos_16_20 = rowSums(across(starts_with("Nascidos_")), na.rm = TRUE),
+    TMI_16_20 = ifelse(Nascidos_16_20 > 0, round((Obitos_16_20 / Nascidos_16_20) * 1000, 2), 0)
+  )
+
+AUX02 <- AUX02 %>%
+  filter(Ano %in% c("2021", "2022", "2023", "2024", "2025")) %>%
+  select(Código_IBGE, Ano, Obitos, Nascidos) %>%
+  pivot_wider(
+    names_from = Ano,
+    values_from = c(Obitos, Nascidos),
+    values_fill = 0
+  ) %>%
+  mutate(
+    Obitos_21_25 = rowSums(across(starts_with("Obitos_")), na.rm = TRUE),
+    Nascidos_21_25 = rowSums(across(starts_with("Nascidos_")), na.rm = TRUE),
+    TMI_21_25 = ifelse(Nascidos_21_25 > 0, round((Obitos_21_25 / Nascidos_21_25) * 1000, 2), 0)
+  )
+
+AUX <- left_join(AUX02, 
+                 AUX03, 
+                 by = "Código_IBGE")
+
+MAPA_BASE_PR <- left_join(MAPA_BASE_PR, 
+                          AUX %>%
+                            mutate(Código_IBGE = as.character(Código_IBGE)), 
+                          by = c("CD_MUN" = "Código_IBGE"))
+
+MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TMI_16_20,
+                                           breaks = c(-Inf, 0.00, 7.50, 11.00, 14.00, 18.00, Inf),
+                                           labels = c("Taxa Zero (0,00)", 
+                                                      "0,01 a 7,50", 
+                                                      "7,51 a 11,00", 
+                                                      "11,01 a 14,00", 
+                                                      "14,01 a 18,00", 
+                                                      "Acima de 18,00"),
+                                           right = TRUE))
+
+PR_SIM_DO_MAP_TMI_16_20_Mun <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "plasma",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = NULL,
+       title = "2016 - 2020") +
+  Theme()
+
+MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = TMI_21_25,
+                                           breaks = c(-Inf, 0.00, 7.50, 11.00, 14.00, 18.00, Inf),
+                                           labels = c("Taxa Zero (0,00)", 
+                                                      "0,01 a 7,50", 
+                                                      "7,51 a 11,00", 
+                                                      "11,01 a 14,00", 
+                                                      "14,01 a 18,00", 
+                                                      "Acima de 18,00"),
+                                           right = TRUE))
+
+PR_SIM_DO_MAP_TMI_21_25_Mun <- ggplot() + 
+  geom_sf(data = MAPA_BASE_PR, 
+          color = "black", 
+          aes(fill = Cat)) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl",
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  scale_fill_viridis_d(option = "plasma",
+                       direction = -1,
+                       begin = 0.1,       
+                       end = 0.9,        
+                       drop = FALSE) +
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       fill = NULL,
+       title = "2021 - 2025") +
+  Theme()
+
+PR_SIM_DO_MAP_TMI_Mun_16_20_21_25 <- PR_SIM_DO_MAP_TMI_16_20_Mun + 
+  PR_SIM_DO_MAP_TMI_21_25_Mun + 
+  plot_layout(ncol = 2, 
+              guides = "collect") + 
+  plot_annotation(title = 'Evolução Espacial da Taxa de Mortalidade Infantil por Municípios',
+                  subtitle = 'Comparativo entre os quinquênios 2016 - 2020 e 2021 - 2025',
+                  caption =  Fonte6) &
+  theme(
+    plot.title = element_text(size = 20, 
+                              face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom",
+    plot.caption = element_text(hjust = 0, face = "italic", size = 10)
+  )
+
+
+AUX <- AUX %>%
+  mutate(Nascidos_16_20_TMI = Nascidos_2016 + Nascidos_2017 + Nascidos_2018 + Nascidos_2019 + Nascidos_2020,
+         Mortalidade_Infantil_16_20 = Obitos_2016 + Obitos_2017 + Obitos_2018 + Obitos_2019 + Obitos_2020,
+         Nascidos_21_25_TMI = Nascidos_2021 + Nascidos_2022 + Nascidos_2023 + Nascidos_2024 + Nascidos_2025,
+         Mortalidade_Infantil_21_25 = Obitos_2021 + Obitos_2022 + Obitos_2023 + Obitos_2024 + Obitos_2025)
+
+MAPA_BASE_PR <- left_join(MAPA_BASE_PR,
+                          AUX %>%
+                            select(Código_IBGE, Nascidos_16_20_TMI, Nascidos_21_25_TMI, 
+                                   Mortalidade_Infantil_16_20, Mortalidade_Infantil_21_25),
+                          by = c("CD_MUN" = "Código_IBGE"))
+
+#### Suavização
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Mortalidade_Infantil_16_20,
+                          ni = MAPA_BASE_PR$Nascidos_16_20_TMI,
+                          nb = Matriz_Viz_MAPA_BASE_PR)
+
+MAPA_BASE_PR$TAXA_RAW_16_20_TMI <- Taxa_Suavizada$raw * 1000
+
+MAPA_BASE_PR$TAXA_EST_16_20_TMI <- Taxa_Suavizada$est * 1000
+
+Global_Moran_16_20_TMI <- moran.test(MAPA_BASE_PR$TAXA_EST_16_20_TMI,
+                                     Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_16_20_TMI, 
+           Matriz_Viz_Pesos, 
+           labels = FALSE, 
+           pch = 15, 
+           col = "blue", 
+           xlab = "Variável Original", 
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+### Travando o local moran
+set.seed(1)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_16_20_TMI, 
+                        Matriz_Viz_Pesos, 
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_16_20_TMI <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_16_20_TMI <- Lisa[,5]
+
+ggplot(MAPA_BASE_PR, 
+       aes(geometry = geometry)) +
+  geom_sf(aes(fill = local_I_16_20_TMI)) +
+  scale_fill_gradient2(low = "blue", high = "red", 
+                       mid = "white", 
+                       midpoint = 0,
+                       name = "I local") +
+  theme_void() +
+  theme(legend.position = "bottom",
+        legend.key.width = unit(1.5, "cm"))
+
+quadrantes <- attr(Lisa, 
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_16_20_TMI <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                              quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                              quadrantes == "High-Low" ~ "Alto-Baixo",
+                                              quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_16_20_TMI = case_when(
+    local_I_p_valor_16_20_TMI < 0.05 ~ quadrante_16_20_TMI,
+    local_I_p_valor_16_20_TMI >= 0.05 ~ "Não significativo"
+  ))
+
+Niveis_LISA <- c("Alto-Alto", "Baixo-Baixo", "Alto-Baixo", "Baixo-Alto", "Não significativo")
+
+MAPA_BASE_PR$Lisa_resultado_16_20_TMI <- factor(MAPA_BASE_PR$Lisa_resultado_16_20_TMI, 
+                                                levels = Niveis_LISA)
+
+PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_TMI <- ggplot(MAPA_BASE_PR, 
+                                                   aes(geometry = geometry)) +
+  geom_sf(color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Lisa_resultado_16_20_TMI)) +
+  scale_fill_manual(name = NULL,
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",        
+                               "Baixo-Baixo" = "blue",      
+                               "Alto-Baixo" = "pink",       
+                               "Baixo-Alto" = "lightblue",  
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2016 - 2020",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.444 (p < 0.001)") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+#### Fim da análise Global and Local Moran 2018 - 2021
+
+### Realizando a suavização dos dados com Método Bayesiano Empírico 2021 - 2025
+
+Taxa_Suavizada <- EBlocal(ri = MAPA_BASE_PR$Mortalidade_Infantil_21_25,
+                          ni = MAPA_BASE_PR$Nascidos_21_25_TMI,
+                          nb = Matriz_Viz_MAPA_BASE_PR)
+
+MAPA_BASE_PR$TAXA_RAW_21_25_TMI <- Taxa_Suavizada$raw * 1000
+
+MAPA_BASE_PR$TAXA_EST_21_25_TMI <- Taxa_Suavizada$est * 1000
+
+Global_Moran_21_25_TMI <- moran.test(MAPA_BASE_PR$TAXA_EST_21_25_TMI,
+                                     Matriz_Viz_Pesos)
+
+### Scatterplot
+
+moran.plot(MAPA_BASE_PR$TAXA_EST_21_25_TMI, 
+           Matriz_Viz_Pesos, 
+           labels = FALSE, 
+           pch = 15, 
+           col = "blue", 
+           xlab = "Variável Original", 
+           ylab = "Média dos Vizinhos (Spatial Lag)",
+           main = "Moran Scatterplot")
+
+#### Calculando o Local Moran
+#### Travando o local moran
+set.seed(5)
+
+Lisa <- localmoran_perm(MAPA_BASE_PR$TAXA_EST_21_25_TMI, 
+                        Matriz_Viz_Pesos, 
+                        nsim = 9999,
+                        zero.policy = TRUE)
+
+MAPA_BASE_PR$local_I_21_25_TMI <- Lisa[,1]
+
+MAPA_BASE_PR$local_I_p_valor_21_25_TMI <- Lisa[,5]
+
+quadrantes <- attr(Lisa, 
+                   "quadr")$mean
+
+MAPA_BASE_PR$quadrante_21_25_TMI <- case_when(quadrantes == "High-High" ~ "Alto-Alto",
+                                              quadrantes == "Low-Low" ~ "Baixo-Baixo",
+                                              quadrantes == "High-Low" ~ "Alto-Baixo",
+                                              quadrantes == "Low-High" ~ "Baixo-Alto")
+
+MAPA_BASE_PR <- MAPA_BASE_PR %>%
+  mutate(Lisa_resultado_21_25_TMI = case_when(
+    local_I_p_valor_21_25_TMI < 0.05 ~ quadrante_21_25_TMI,
+    local_I_p_valor_21_25_TMI >= 0.05 ~ "Não significativo"
+  ))
+
+MAPA_BASE_PR$Lisa_resultado_21_25_TMI <- factor(MAPA_BASE_PR$Lisa_resultado_21_25_TMI, 
+                                                levels = Niveis_LISA)
+
+PR_PEVASPEA_SINASC_LOCAL_MORAN_21_25_TMI <- ggplot(MAPA_BASE_PR, 
+                                                   aes(geometry = geometry)) +
+  geom_sf(color = "grey30", 
+          linewidth = 0.1, 
+          aes(fill = Lisa_resultado_21_25_TMI)) +
+  scale_fill_manual(name = NULL, 
+                    drop = FALSE,
+                    values = c("Alto-Alto" = "red",        
+                               "Baixo-Baixo" = "blue",      
+                               "Alto-Baixo" = "pink",       
+                               "Baixo-Alto" = "lightblue",  
+                               "Não significativo" = "grey90")
+  ) +
+  geom_sf(data = SHAPEFILE_ESTADUAL_RS,
+          color = "black",   
+          linewidth = 0.5,   
+          fill = NA) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true",
+                         style = north_arrow_minimal()) +
+  
+  coord_sf(expand = FALSE)+
+  labs(x = NULL,
+       y = NULL,
+       title = "2021 - 2025",
+       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.565 (p < 0.001)") +
+  Theme() +
+  theme(legend.key.width = unit(1.5, "cm")) +
+  theme(legend.position = "bottom")
+
+PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25_TMI <- PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_TMI + 
+  PR_PEVASPEA_SINASC_LOCAL_MORAN_21_25_TMI + 
+  plot_layout(ncol = 2, guides = "collect") + 
+  plot_annotation(
+    title = "Progressão de Agrupamentos das Taxas de Mortalidade Infantil no Paraná",
+    subtitle = 'Comparativo entre os quadriênios 2016 - 2020 e 2021 - 2025 \nÓbitos/1000 Nascidos Vivos \n9999 Permutações',
+    caption = Fonte6  
+  ) & 
+  theme(
+    plot.title = element_text(size = 16, 
+                              face = "bold", 
+                              hjust = 0), 
+    plot.subtitle = element_text(size = 12, 
+                                 hjust = 0),
+    plot.caption = element_text(hjust = 0, 
+                                face = "italic", 
+                                size = 10),
+    legend.position = "bottom",        
+    legend.box = "horizontal",
+    legend.box.just = "center",
+    legend.justification = "center",
+    legend.key.width = unit(1.2, "cm")   
+  )
+
+#########  22ª RS
+regex_Mun_RS <- "^(410165|410185|410440|410685|410855|411150|411250|411342|411375|411450|411573|411727|412217|412265|412385|412500)"
+
+DO_INFANTIL_RS <- DO_completo %>%
+  filter(TIPOBITO == "2",
+         Idade_Dias <= 365,
+         str_detect(CODMUNRES, regex_Mun_RS),
+         Ano != 2026)
+
+####  Série Histórica PR DO Fetal
+
+AUX <- DO_INFANTIL_RS %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  group_by(Ano) %>%
+  count(name = "Obitos_Fetais") 
+
+AUX <- left_join(AUX,
+                 PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+                   filter(RS == 22) %>%
+                   select(contains("Nascidos_")) %>%
+                   summarize(across(everything(), sum)) %>%
+                   rename_with(~ str_extract(.x, "\\d{4}")) %>% 
+                   pivot_longer(cols = everything(),   
+                                names_to = "Ano",  
+                                values_to = "Nascidos") %>% 
+                   mutate(Ano = as.numeric(Ano)),
+                 by = "Ano")
+
+AUX <- AUX %>%
+  mutate(Inc = round((Obitos_Fetais/Nascidos) * 1000, 2))
+
+fator_escala <- 2
+
+RS_SIM_GRAF_SERIE_HIST_FETAL_GERAL <- ggplot(AUX, aes(x = as.character(Ano), y = Inc)) + 
+  geom_col(aes(y = Obitos_Fetais / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.4) +
+  geom_text(aes(y = Obitos_Fetais / fator_escala / 2, 
+                label = format(Obitos_Fetais, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(group = 1), 
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(caption = Fonte5,
+       y = "Óbitos/1000 Nascidos Vivos",
+       x = NULL,
+       title = "Nº de Óbitos Fetais e Óbitos/1000 Nascidos Vivos",
+       subtitle = "Casos registrados em Declaração de Óbito. 22ª Regional de Saúde, 2016 - 2025") +
+  geom_text(aes(label = format(round(Inc, 2), decimal.mark = ",")), 
+            size = 4, 
+            vjust = -1.5, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 12), 
+                     breaks = seq(0, 12, 3),
+                     name = "Óbitos/1.000 Nascidos Vivos",
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Nº de Óbitos Absoluto",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
+  Theme()
+
+DO_FETAL_ANOMAL_RS <- DO_completo %>%
+  filter(TIPOBITO == "1",
+         str_detect(CODMUNRES, regex_Mun_RS),
+         str_detect(CAUSABAS, "Q"),
+         Ano != 2026)
+
+AUX <- DO_FETAL_ANOMAL_RS %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  group_by(Ano) %>%
+  count(name = "Obitos_Fetais_Anomal") %>%
+  ungroup() %>%
+  complete(Ano = 2016:2025, fill = list(Obitos_Fetais_Anomal = 0))
+
+AUX <- left_join(AUX,
+                 PR_PEVASPEA_SINASC_Serie_historica_Mun %>%
+                   filter(RS == 22) %>%
+                   select(contains("Nascidos_")) %>%
+                   summarize(across(everything(), sum)) %>%
+                   rename_with(~ str_extract(.x, "\\d{4}")) %>% 
+                   pivot_longer(cols = everything(),   
+                                names_to = "Ano",  
+                                values_to = "Nascidos") %>% 
+                   mutate(Ano = as.numeric(Ano)),
+                 by = "Ano")
+
+AUX <- AUX %>%
+  mutate(Inc = round((Obitos_Fetais_Anomal/Nascidos) * 1000, 2))
+
+fator_escala <- 2
+
+RS_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL <- ggplot(AUX, aes(x = as.character(Ano), y = Inc)) + 
+  geom_col(aes(y = Obitos_Fetais_Anomal / fator_escala), 
+           fill = "#dcdde1", 
+           width = 0.4) +
+  geom_text(aes(y = Obitos_Fetais_Anomal / fator_escala / 2, 
+                label = format(Obitos_Fetais_Anomal, big.mark = ".")), 
+            size = 4, 
+            fontface = "bold") +
+  geom_line(aes(group = 1), 
+            colour = "black",
+            linewidth = 1.3) +
+  geom_point(fill = "grey",
+             size = 4,
+             shape = 21) + 
+  labs(caption = Fonte5,
+       y = "Óbitos/1000 Nascidos Vivos",
+       x = NULL,
+       title = "Nº de Óbitos Fetais por Anomalias Congênitas e Óbitos/1000 Nascidos Vivos",
+       subtitle = "Casos registrados como causa básica em Declaração de Óbito. 22ª Regional de Saúde, 2016 - 2025") +
+  geom_text(aes(label = format(round(Inc, 2), decimal.mark = ",")), 
+            size = 4, 
+            vjust = -1.5, 
+            fontface = "bold")  + 
+  scale_y_continuous(limits = c(0, 2), 
+                     breaks = seq(0, 2, 1),
+                     name = "Óbitos por Anomalias Congênitas/1.000 Nascidos Vivos",
+                     sec.axis = sec_axis(~ . * fator_escala, 
+                                         name = "Nº de Óbitos Absoluto",
+                                         labels = label_number(big.mark = "."))) +
+  scale_x_discrete(breaks = as.character(2016:2025)) +
+  Theme()
+
+###### Tabela Anomalias
+todas_categorias <- c("Tubo Neural", "Microcefalia", "Cardiopatias", 
+                      "Fendas Orais", "Genitourinárias", "Membros", 
+                      "Parede Abdominal", "Síndrome de Down")
+
+AUX <- DO_FETAL_ANOMAL_RS %>%
+  ungroup() %>% 
+  mutate(Ano = as.numeric(Ano)) %>%
+  filter(str_detect(CAUSABAS, "^(Q00|Q01|Q02|Q05|Q2|Q35|Q36|Q37|Q54|Q56|Q66|Q69|Q71|Q72|Q73|Q743|Q792|Q793|Q90)"),
+         str_detect(CODMUNRES, regex_Mun_RS)) %>%
+  mutate(CAUSABAS = case_when( str_detect(CAUSABAS, "^(Q00|Q01|Q05)") ~ "Tubo Neural",
+                               str_detect(CAUSABAS, "^Q02")           ~ "Microcefalia",
+                               str_detect(CAUSABAS, "^Q2")            ~ "Cardiopatias",
+                               str_detect(CAUSABAS, "^(Q35|Q36|Q37)") ~ "Fendas Orais",
+                               str_detect(CAUSABAS, "^(Q54|Q56)")     ~ "Genitourinárias",
+                               str_detect(CAUSABAS, "^(Q66|Q69|Q71|Q72|Q73|Q743)") ~ "Membros",
+                               str_detect(CAUSABAS, "^(Q792|Q793)")   ~ "Parede Abdominal",
+                               str_detect(CAUSABAS, "^Q90")           ~ "Síndrome de Down",
+                               TRUE                                   ~ "Outras Anomalias" 
+  )) %>%
+  group_by(Ano, CAUSABAS) %>%
+  count(name = "Obitos_Fetais_Anomal")  %>% 
+  ungroup() %>% 
+  complete(
+    Ano = 2016:2025, 
+    CAUSABAS = todas_categorias, 
+    fill = list(Obitos_Fetais_Anomal = 0) 
+  )
+
+AUX <- as.data.frame(pivot_wider(AUX,
+                                 names_from = Ano,
+                                 values_from = Obitos_Fetais_Anomal,
+                                 values_fill = 0))
+
+AUX <- AUX %>%
+  ungroup() %>%
+  bind_rows(
+    summarise(., 
+              CAUSABAS = "Total", 
+              across(where(is.numeric), sum)) 
+  )
+
+
+RS_PEVASPEA_SIM_DO_TAB_PRIORITARIAS <- gt(AUX) %>%
+  tab_header(
+    title = md("**Número de Óbitos Fetais por Anomalias Prioritárias como Causa Básica**"),
+    subtitle = md("22ª Regional de Saúde, 2016 – 2025") 
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:11)  %>%
+  tab_footnote(
+    footnote = Fonte5) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F4F4F4"),
+    locations = cells_body(columns = c(3, 5, 7, 9, 11)) 
+  ) 
+
 ###############################################################################################
 ###############################################################################################
 ################         DERAL     ############################################################
@@ -7666,8 +9687,8 @@ PR_SINAN_GRAF_IDADE_CIRCUNS <- IEXOG_Completo %>%
   labs(caption = Fonte4, 
        y = "Número de Notificações",
        x = NULL,
-       title = "Intoxicações Exógenas de Acordo com Circunstância de Exposição",
-       subtitle = "Paraná (2016-2025)") +
+       title = "Intoxicações Exógenas",
+       subtitle = "Circunstância de Exposição. Paraná (2016-2025)") +
   Theme() 
 
 PR_SINAN_GRAF_IDADE_CIRCUNS_II <- IEXOG_Completo %>%
@@ -7742,8 +9763,8 @@ PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO <- IEXOG_Completo %>%
   labs(caption = Fonte4, 
        y = "Número de Notificações",
        x = NULL,
-       title = "Intoxicações Exógenas por Agrotóxicos de Acordo com Circunstância de Exposição",
-       subtitle = "Paraná (2016-2025).") +
+       title = "Intoxicações Exógenas por Agrotóxicos",
+       subtitle = "Circunstância de Exposição. Paraná (2016-2025).") +
   Theme() 
 
 PR_SINAN_GRAF_IDADE_CIRCUNS_AGRO_II <- IEXOG_Completo %>%
@@ -7824,8 +9845,8 @@ RS_SINAN_GRAF_IDADE_CIRCUNS <- IEXOG_Completo %>%
   labs(caption = Fonte, 
        y = "Número de Notificações",
        x = NULL,
-       title = "Intoxicações Exógenas de Acordo com Circunstância de Exposição",
-       subtitle = "22ª Regional de Saúde (2016-2025).") +
+       title = "Intoxicações Exógenas",
+       subtitle = "Circunstância de Exposição. 22ª Regional de Saúde (2016-2025).") +
   Theme() 
 
 RS_SINAN_GRAF_IDADE_CIRCUNS_II <- IEXOG_Completo %>%
@@ -7905,8 +9926,8 @@ RS_SINAN_GRAF_IDADE_CIRCUNS_AGRO <- IEXOG_Completo %>%
   labs(caption = Fonte, 
        y = "Número de Notificações",
        x = NULL,
-       title = "Intoxicações Exógenas por Agrotóxicos de Acordo com Circunstância de Exposição",
-       subtitle = "22ª Regional de Saúde (2016-2025).") +
+       title = "Intoxicações Exógenas por Agrotóxicos",
+       subtitle = "Circunstância de Exposição. 22ª Regional de Saúde (2016-2025).") +
   Theme() 
 
 
@@ -8965,7 +10986,7 @@ PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS <- gt(AUX) %>%
   cols_align(align = "left", columns = 1) %>%
   cols_align(align = "center", columns = 2:21) %>%
   cols_label(contains("Notifi") ~ "Int. \nGeral",
-             contains("Agro") ~ "Int. \nAgrotóxico"
+             contains("Agro") ~ "Int. \nAgro"
   ) %>%
   tab_footnote(
     footnote = "Fonte: SINAN. Base DBF acessada em 04/02/2026. Dados sujeitos a alteração."
