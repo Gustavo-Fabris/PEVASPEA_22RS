@@ -101,39 +101,33 @@ SHAPEFILE_ESTADUAL_RS[14, 2] <- "22"
 ########     Gráficos
 
 ############ Criando uma função Theme para ser utilizado por todos os gráficos     
-
 Theme <- function(base_size = 12){
   theme_minimal(base_size = base_size) + 
     theme(
       panel.background = element_blank(),
-      panel.grid.major = element_line(color = "grey90", 
-                                      linewidth = 0.2),
+      panel.grid.major = element_line(color = "grey90", linewidth = 0.2),
       panel.grid.minor = element_blank(),
       legend.position = "bottom",
-      legend.title = element_text(face = "bold", 
-                                  size = 12), 
-      legend.text = element_text(size = 11),
+      legend.title = element_text(face = "bold", size = rel(1.0)), 
+      legend.text = element_text(size = rel(0.9)),
       legend.box.margin = margin(t = 10),
       plot.title = element_text(face = "bold",
-                                size = 18, 
+                                size = rel(1.5), # 1.5 vezes o base_size
                                 hjust = 0, 
                                 margin = margin(b = 10)),
-      plot.subtitle = element_text(size = 12, 
+      plot.subtitle = element_text(size = rel(1.1), 
                                    hjust = 0, 
                                    color = "grey30", 
                                    margin = margin(b = 15)),
-      plot.caption = element_text(size = 10, 
+      plot.caption = element_text(size = rel(0.8), 
                                   hjust = 0, 
                                   face = "italic", 
                                   margin = margin(t = 15)),
-      axis.title = element_text(face = "bold", 
-                                size = 11),
-      axis.text = element_text(size = 10, 
-                               color = "black"),
+      axis.title = element_text(face = "bold", size = rel(0.9)),
+      axis.text = element_text(size = rel(0.8), color = "black"),
       plot.margin = margin(20, 20, 20, 20)
     )
 }
-
 ################################################################################
 ################################################################################
 
@@ -143,7 +137,7 @@ AUX <- colSums(PR_PEVASPEA_SINASC_Serie_Historica[c(6, 7, 8, 9, 10), 3:13], na.r
 
 AUX01 <- data.frame( Evento = c("Anomalia Detectada", "Anomalias Prioritárias", "Tubo Neural", 
                                 "Microcefalia", "Cardiopatias", "Fendas Orais", 
-                                "Geniturinárias", "Membros", "Parede Abdominal", "Síndrome de Down"),
+                                "Genitais", "Membros", "Parede Abdominal", "Síndrome de Down"),
                      Absoluto = AUX[2:11], 
                      Nascidos = AUX[1] )
 
@@ -182,7 +176,7 @@ AUX <- colSums(PR_PEVASPEA_SINASC_Serie_Historica[c(1, 2, 3, 4, 5), 3:13], na.rm
 
 AUX01 <- data.frame( Evento = c("Anomalia Detectada", "Anomalias Prioritárias", "Tubo Neural", 
                                 "Microcefalia", "Cardiopatias", "Fendas Orais", 
-                                "Geniturinárias", "Membros", "Parede Abdominal", "Síndrome de Down"),
+                                "Genitais", "Membros", "Parede Abdominal", "Síndrome de Down"),
                      Absoluto = AUX[2:11], 
                      Nascidos = AUX[1] )
 
@@ -1042,7 +1036,7 @@ PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20 <- ggplot(MAPA_BASE_PR,
   labs(x = NULL,
        y = NULL,
        title = "2016 - 2020",
-       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.631 (p < 0.001)") +
+       subtitle = "Global Moran I = 0.631 (p < 0.001)") +
   Theme() +
   theme(legend.key.width = unit(1.5, "cm")) +
   theme(legend.position = "bottom")
@@ -1129,7 +1123,7 @@ PR_PEVASPEA_SINASC_LOCAL_MORAN_21_25 <- ggplot(MAPA_BASE_PR,
   labs(x = NULL,
        y = NULL,
        title = "2021 - 2025",
-       subtitle = "Taxa suavizada utilizando Método Bayesiano Empírico \nGlobal Moran I = 0.593 (p < 0.001)") +
+       subtitle = "Global Moran I = 0.593 (p < 0.001)") +
   Theme() +
   theme(legend.key.width = unit(1.5, "cm")) +
   theme(legend.position = "bottom")
@@ -1139,7 +1133,7 @@ PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25 <- PR_PEVASPEA_SINASC_LOCAL_MORAN_16_
   plot_layout(ncol = 2, guides = "collect") + 
   plot_annotation(
     title = "Progressão de Agrupamentos das Taxas de Anomalias/1000 Nascidos no Paraná",
-    subtitle = 'Comparativo entre os quadriênios 2016 - 2020 e 2021 - 2025 \n9999 Permutações',
+    subtitle = 'Comparativo entre os quinquênios 2016 - 2020 e 2021 - 2025 \nTaxa suavizada utilizando Método Bayesiano Empírico \n9999 Permutações',
     caption = Fonte  
   ) & 
   theme(
@@ -1358,7 +1352,7 @@ PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS <- PR_SINASC_MAP_TAXA_4_ANOS_16_
   plot_layout(ncol = 2, 
               guides = "collect") + 
   plot_annotation(title = 'Evolução Espacial da Taxa de Anomalias Congênitas em Regionais do Paraná',
-                  subtitle = 'Comparativo entre os quadriênios 2016 - 2020 e 2021  - 2025 (Casos/1000 Nascimentos)',
+                  subtitle = 'Comparativo entre os quinquênios 2016 - 2020 e 2021  - 2025 (Casos/1000 Nascimentos)',
                   caption =  Fonte,
                   theme = theme(
                     plot.title = element_text(size = 20, 
@@ -1369,8 +1363,6 @@ PR_SINASC_MAP_TAXA_4_ANOS_16_20_21_25_ANOMAL_RS <- PR_SINASC_MAP_TAXA_4_ANOS_16_
                                                 face = "italic", 
                                                 size = 10)
                   ))
-
-##### Salvando mapas de 2025
 
 PR_SINASC_MAP_TAXA_2025_ANOMAL_RS <- PR_SINASC_MAP_TAXA_2025_ANOMAL + 
   PR_SINASC_MAP_TAXA_2025_RS + 
@@ -1520,7 +1512,7 @@ AUX <- AUX[c(1, 12, 16:22, 2:11, 13, 14, 15, 23), c(1, 2, 3, 13, 4, 14, 5, 15, 6
 PR_PEVASPEA_SINASC_TAB_PRIORITARIAS_RS_16_20 <- gt(AUX[, c(1, 2, 7:22)]) %>%
   tab_header(
     title = md("**Incidência de Anomalias Congênitas Prioritárias por Regional de Saúde**"),
-    subtitle = md("2018 – 2021")
+    subtitle = md("2016 – 2020")
   ) %>%
   tab_options(
     heading.align = "left",
@@ -1685,7 +1677,6 @@ RS_PEVASPEA_SINASC_GRAF_Prioritarias_Mun <- wrap_plots(AUX_LIST, ncol = 2) +
   )
 
 #### Tabela ANomalias Regionais 2022 - 2025
-# 
 
 AUX <- bind_rows(AUX2021 %>% mutate(Ano = 2021),
                  AUX2022 %>% mutate(Ano = 2022),
@@ -2225,7 +2216,7 @@ PR_SIM_MAP_TAXA_5_ANOS_16_20_21_25_CANCER_RS <- PR_SIM_MAP_TAXA_CANCER_2016_2020
   PR_SIM_MAP_TAXA_CANCER_2021_2025_RS + 
   plot_layout(ncol = 2, 
               guides = "collect") + 
-  plot_annotation(title = 'Evolução Espacial da Taxa de Mortalidade por Câncer em Regionais do Paraná',
+  plot_annotation(title = 'Evolução Espacial da Média da Taxa de Mortalidade por Câncer em Regionais do Paraná',
                   subtitle = 'Comparativo entre os quinquênios 2016 - 2020 e 2021 - 2025 (Casos/100.000 Habitantes)',
                   caption =  Fonte5,
                   theme = theme(
@@ -2559,7 +2550,6 @@ Total$Inc_2023 <- round((Total$`2023` / AUX01$X2022) * 100000, 2)
 Total$Inc_2024 <- round((Total$`2024` / AUX01$X2024) * 100000, 2)
 Total$Inc_2025 <- round((Total$`2025` / AUX01$X2025) * 100000, 2)
 
-
 Total_Inc <- Total %>% 
   select(contains("Inc")) %>%
   t() %>%
@@ -2602,7 +2592,7 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
   labs(caption = Fonte5,
        y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Nº de Óbitos e Taxa de Mortalidade/100.000 Habitantes",
+       title = "Nº de Óbitos e Taxa de Mortalidade por Câncer/100.000 Habitantes",
        subtitle = "Paraná, 2016 - 2025") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
@@ -2862,7 +2852,7 @@ AUX <- AUX %>%
 
 RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS <- gt(AUX) %>%
   tab_header(
-    title = md("**Nº de Óbitos e Taxa de Mortalidade/100.000 Habitantes por Grupos de Neoplasias Malignas**"),
+    title = md("**Nº de Óbitos e Taxa de Mortalidade por Câncer/100.000 Habitantes por Grupos de Neoplasias Malignas**"),
     subtitle = md("22ª Regional de Saúde 2016 – 2025")
   ) %>%
   tab_options(
@@ -3007,7 +2997,7 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia <- ggplot(Total, aes(x = Ano, y = Inc
   labs(caption = Fonte5,
        y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Nº de Óbitos e Mortalidade/100.000 Habitantes",
+       title = "Nº de Óbitos e Mortalidade por Câncer/100.000 Habitantes",
        subtitle = "22ª Regional de Saúde 2016 - 2025") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
@@ -3769,7 +3759,7 @@ RS_PEVASPEA_SIM_TAB_NEOPLASIAS_GRUPOS_30_69 <- gt(AUX) %>%
     sep_mark = ".",
     dec_mark = ","
   ) %>%
-  sub_missing(columns = everything(), missing_text = "-") %>%
+  sub_missing(columns = everything(), missing_text = "0") %>%
   tab_footnote(
     footnote = Fonte5
   ) %>%
@@ -4255,7 +4245,7 @@ PR_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
   labs(caption = Fonte5,
        y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Nº de Óbitos e Taxa de Mortalidade por Neoplasias/100.000 habitantes em População Menor de 30 anos",
+       title = "Nº de Óbitos e Taxa de Mortalidade por Câncer/100.000 habitantes em População Menor de 30 anos",
        subtitle = "Paraná, 2016 - 2025") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
@@ -4705,7 +4695,7 @@ RS_PEVASPEA_SIM_GRAF_NEOPLASIAS_Incidencia_Men_30 <- ggplot(Total,
   labs(caption = Fonte5,
        y = "Óbitos/100.000 habitantes",
        x = NULL,
-       title = "Nº de Óbitos e Taxa de Mortalidade por Neoplasias/100.000 habitantes em População Menor de 30 Anos",
+       title = "Nº de Óbitos e Taxa de Mortalidade por Câncer/100.000 habitantes em População Menor de 30 Anos",
        subtitle = "22ª Regional de Saúde, 2016 - 2025") +
   geom_text(aes(label = format(round(Incidencia, 2), decimal.mark = ",")), 
             size = 4, 
@@ -4909,7 +4899,8 @@ PR_SIM_MAP_TAXA_CANCER_16_20_Mun <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       title = "2016 - 2020")  +
+       title = "2016 - 2020",
+       fill = NULL)  +
   Theme() 
 
 MAPA_BASE_PR$Cat <- with(MAPA_BASE_PR, cut(x = Inc_21_25_Cancer_mun,
@@ -4944,14 +4935,15 @@ PR_SIM_MAP_TAXA_CANCER_21_25_Mun <- ggplot() +
   coord_sf(expand = FALSE)+
   labs(x = NULL,
        y = NULL,
-       title = "2021 - 2025")  +
+       title = "2021 - 2025",
+       fill = NULL)  +
   Theme() 
 
 PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN <- PR_SIM_MAP_TAXA_CANCER_16_20_Mun + 
   PR_SIM_MAP_TAXA_CANCER_21_25_Mun + 
   plot_layout(ncol = 2, 
               guides = "collect") + 
-  plot_annotation(title = 'Evolução Espacial da Taxa de Mortalidade por Câncer em Municípios do Paraná',
+  plot_annotation(title = 'Evolução Espacial da Média da Taxa de Mortalidade por Câncer em Municípios do Paraná',
                   subtitle = 'Comparativo entre os quinquênios 2016 - 2020 e 2021 - 2025 (Óbitos/100.000 Habitantes)',
                   caption =  Fonte,
                   theme = theme(
@@ -6654,7 +6646,7 @@ PR_SIM_DO_MAP_TMI_ANOMAL_21_25_RS <- ggplot() +
        title = "2021 - 2025") +
   Theme()
 
-PR_SIM_DO_MAP_TMI_RS_16_20_21_25 <- PR_SIM_DO_MAP_TMI_ANOMAL_16_20_RS + 
+PR_SIM_DO_MAP_TMI_ANOMAL_RS_16_20_21_25 <- PR_SIM_DO_MAP_TMI_ANOMAL_16_20_RS + 
   PR_SIM_DO_MAP_TMI_ANOMAL_21_25_RS + 
   plot_layout(ncol = 2, 
               guides = "collect") + 
@@ -6794,7 +6786,7 @@ PR_SIM_DO_MAP_TMI_ANOMAL_21_25_Mun <- ggplot() +
        title = "2021 - 2025") +
   Theme()
 
-PR_SIM_DO_MAP_TMI_Mun_16_20_21_25 <- PR_SIM_DO_MAP_TMI_ANOMAL_16_20_Mun + 
+PR_SIM_DO_MAP_TMI_ANOMAL_Mun_16_20_21_25 <- PR_SIM_DO_MAP_TMI_ANOMAL_16_20_Mun + 
   PR_SIM_DO_MAP_TMI_ANOMAL_21_25_Mun + 
   plot_layout(ncol = 2, 
               guides = "collect") + 
@@ -6808,6 +6800,7 @@ PR_SIM_DO_MAP_TMI_Mun_16_20_21_25 <- PR_SIM_DO_MAP_TMI_ANOMAL_16_20_Mun +
     legend.position = "bottom",
     plot.caption = element_text(hjust = 0, face = "italic", size = 10)
   )
+#######   Global Moran
 
 AUX <- AUX %>%
   mutate(Nascidos_16_20_TMI_ANOMAL = Nascidos_2016 + Nascidos_2017 + Nascidos_2018 + Nascidos_2019 + Nascidos_2020,
@@ -7765,6 +7758,10 @@ MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS,
                              AUX, 
                              by = c("RS" = "RS"))
 
+Summary_AGRO_HA_21_24 <- summary(MAPA_BASE_PR_RS$AGRO_HA_21_24)
+Summary_TON_AGRO_21_24 <- summary(MAPA_BASE_PR_RS$TON_AGRO_21_24)
+Summary_HA_21_24 <- summary(MAPA_BASE_PR_RS$HA_21_24)
+
 MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = AGRO_HA_21_24,
                                                  breaks = c(0, 4.30, 6.05, 7.60, 8.30, 10.00, Inf),
                                                  labels = c("Até 4,29", 
@@ -7888,6 +7885,10 @@ AUX$RS <- str_pad(AUX$RS,
 MAPA_BASE_PR_RS <- left_join(MAPA_BASE_RS, 
                              AUX, 
                              by = c("RS" = "RS"))
+
+Summary_TON_AGRO_17_20 <- summary(MAPA_BASE_PR_RS$TON_AGRO_17_20)
+Summary_HA_17_20 <- summary(MAPA_BASE_PR_RS$HA_17_20)
+Summary_AGRO_HA_17_20 <- summary(MAPA_BASE_PR_RS$AGRO_HA_17_20)
 
 MAPA_BASE_PR_RS$Cat <- with(MAPA_BASE_PR_RS, cut(x = AGRO_HA_17_20,
                                                  breaks = c(0, 4.30, 6.05, 7.60, 8.30, 10.00, Inf),
@@ -8093,6 +8094,13 @@ AUX[349, 1] <- "SAO JORGE D'OESTE"
 MAPA_BASE_Mun <- left_join(MAPA_BASE_Mun, 
                            AUX, 
                            by = c("NM_MUN" = "Município_sem_Código"))
+
+Summary_MUN_AGRO_HA_17_20 <- summary(MAPA_BASE_Mun$AGRO_HA_17_20)
+Summary_MUN_AGRO_HA_21_24 <- summary(MAPA_BASE_Mun$AGRO_HA_21_24)
+Summary_MUN_HA_17_20 <- summary(MAPA_BASE_Mun$HA_17_20)
+Summary_MUN_HA_21_24 <- summary(MAPA_BASE_Mun$HA_21_24)
+Summary_MUN_TON_AGRO_17_20 <- summary(MAPA_BASE_Mun$TON_AGRO_17_20)
+Summary_MUN_TON_AGRO_21_24 <- summary(MAPA_BASE_Mun$TON_AGRO_21_24)
 
 MAPA_BASE_Mun$Cat <- with(MAPA_BASE_Mun, cut(x = AGRO_HA_17_20,
                                              breaks = c(0, 3.00, 5.50, 7.30, 9.20, 15.00, Inf),
@@ -11517,6 +11525,132 @@ ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_AGRO_HA_Mun_17_20_21_24.png",
 
 ggsave(filename = "Imagens/DERAL/PR_DERAL_MAP_TON_AGRO_17_20_21_24.png", 
        plot = PR_DERAL_MAP_TON_AGRO_17_20_21_24, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+
+ggsave(filename = "Imagens/SIM/PR_SIM_DO_MAP_TMI_RS_16_20_21_25.png", 
+       plot = PR_SIM_DO_MAP_TMI_RS_16_20_21_25, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SIM/PR_SIM_DO_MAP_TMI_Mun_16_20_21_25.png", 
+       plot = PR_SIM_DO_MAP_TMI_Mun_16_20_21_25, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SIM/PR_SIM_DO_MAP_TMI_ANOMAL_RS_16_20_21_25.png", 
+       plot = PR_SIM_DO_MAP_TMI_ANOMAL_RS_16_20_21_25, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SIM/PR_SIM_DO_MAP_TMI_ANOMAL_Mun_16_20_21_25.png", 
+       plot = PR_SIM_DO_MAP_TMI_ANOMAL_Mun_16_20_21_25, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+gtsave(data = PR_PEVASPEA_SIM_DO_TAB_SERIE_HIST_RS,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_DO_TAB_SERIE_HIST_RS.png" )
+
+gtsave(data = PR_PEVASPEA_SIM_DO_TAB_SERIE_HIST_ANOMAL_RS,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_DO_TAB_SERIE_HIST_ANOMAL_RS.png" )
+
+gtsave(data = PR_PEVASPEA_SIM_DO_TAB_PRIORITARIAS_Infantis,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_DO_TAB_PRIORITARIAS_Infantis.png" )
+
+gtsave(data = PR_PEVASPEA_SIM_DO_TAB_PRIORITARIAS,
+       filename = "Imagens/SIM/PR_PEVASPEA_SIM_DO_TAB_PRIORITARIAS.png" )
+
+gtsave(data = RS_PEVASPEA_SIM_DO_TAB_PRIORITARIAS,
+       filename = "Imagens/SIM/RS_PEVASPEA_SIM_DO_TAB_PRIORITARIAS.png" )
+
+ggsave(filename = "Imagens/SIM/PR_SIM_GRAF_SERIE_HIST_FETAL_GERAL.png",
+       plot = PR_SIM_GRAF_SERIE_HIST_FETAL_GERAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SIM/PR_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL.png",
+       plot = PR_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SIM/RS_SIM_GRAF_SERIE_HIST_FETAL_GERAL.png",
+       plot = RS_SIM_GRAF_SERIE_HIST_FETAL_GERAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SIM/RS_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL.png",
+       plot = RS_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white",
+       dpi = 300) 
+
+ggsave(filename = "Imagens/SIM/PR_SIM_GRAF_SERIE_HIST_INFANTIL_GERAL.png",
+       plot = PR_SIM_GRAF_SERIE_HIST_INFANTIL_GERAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white",
+       dpi = 300)
+
+ggsave(filename = "Imagens/SIM/PR_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL.png",
+       plot = PR_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white",
+       dpi = 300)
+
+ggsave(filename = "Imagens/SIM/PR_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL.png",
+       plot = PR_SIM_GRAF_SERIE_HIST_FETAL_ANOMAL,
+       width = 25,
+       height = 15,
+       units = "cm",
+       bg = "white",
+       dpi = 300)
+
+ggsave(filename = "Imagens/SIM/PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25_TMI_ANOMAL.png", 
+       plot = PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25_TMI_ANOMAL, 
+       width = 35,                               
+       height = 18,                               
+       units = "cm",                               
+       dpi = 300,                                   
+       bg = "white"                                
+)
+
+ggsave(filename = "Imagens/SIM/PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25_TMI.png", 
+       plot = PR_PEVASPEA_SINASC_LOCAL_MORAN_16_20_21_25_TMI, 
        width = 35,                               
        height = 18,                               
        units = "cm",                               
