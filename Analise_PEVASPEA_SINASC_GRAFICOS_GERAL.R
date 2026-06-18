@@ -5,6 +5,7 @@ setwd("/home/gustavo/Área de trabalho/Análise_de_Dados/")
 ####  Libraries
 
 library(spdep)
+library(forcats)
 library(purrr)
 library(scales)
 library(patchwork)
@@ -69,6 +70,8 @@ PR_DERAL_2024_SIMPLIFICADO <- read.csv (file = "Tabulacoes_R/DERAL/PR_DERAL_2024
                                         header = TRUE,
                                         sep = ",")
 
+regex_Mun_RS <- "^(410165|410185|410440|410685|410855|411150|411250|411342|411375|411450|411573|411727|412217|412265|412385|412500)"
+
 #### Criando Objetos Fonte para servirem de base para as fontes dos gráficos/mapas
 
 Fonte <- "Fonte: SINASC. Base DBF acessada em 10/04/2026. Dados sujeitos a alteração."
@@ -94,6 +97,7 @@ SHAPEFILE_ESTADUAL_RS <- st_read("Shapefiles/SESA/Regionais_Dissolvidas/Regionai
 SHAPEFILE_ESTADUAL_RS$Código <- str_sub(SHAPEFILE_ESTADUAL_RS$Código, 1, 2)
 
 SHAPEFILE_ESTADUAL_RS[14, 2] <- "22"
+
 
 ####################################################################################
 ###############################    SINASC   ########################################
@@ -1244,6 +1248,8 @@ MAPA_BASE_RS <- left_join(AUX,
 MAPA_BASE_RS <- MAPA_BASE_RS %>%
   select(RS, contains("16_20"), "geometry")
 
+Summary_TNAC_16_20_RS <- summary(MAPA_BASE_RS$TAXA_4a_16_20)
+
 MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = TAXA_4a_16_20,
                                            breaks = c(0, 5.30, 6.25, 7.45, 8.55, 9.90, Inf),
                                            labels = c("Até 5,29", 
@@ -1313,6 +1319,8 @@ MAPA_BASE_RS <- left_join(AUX,
 
 MAPA_BASE_RS <- MAPA_BASE_RS %>%
   select(RS, contains("4a_21_25"), geometry)
+
+Summary_TNAC_21_25_RS <- summary(MAPA_BASE_RS$TAXA_4a_21_25)
 
 MAPA_BASE_RS$Cat <- with(MAPA_BASE_RS, cut(x = TAXA_4a_21_25,
                                            breaks = c(0, 5.30, 6.25, 7.45, 8.55, 9.90, Inf),
@@ -5763,7 +5771,6 @@ PR_PEVASPEA_SIM_DO_TAB_PRIORITARIAS <- gt(AUX) %>%
   ) 
 
 #########  22ª RS
-regex_Mun_RS <- "^(410165|410185|410440|410685|410855|411150|411250|411342|411375|411450|411573|411727|412217|412265|412385|412500)"
 
 DO_FETAL_RS <- DO_completo %>%
   filter(TIPOBITO == "1",
@@ -10850,24 +10857,492 @@ RS_SINAN_GRAF_PIRAMIDE <- ggplot(AUX,
   scale_x_continuous(labels = abs) +
   Theme() 
 
-##### Tabela regionais
+ IEXOG_Completo <- arquivos_iexog %>%
+   map_df(function(caminho) {
+     read.dbf(file = caminho, as.is = FALSE) %>%
+       select(MUN_EMP, NU_IDADE_N, CS_SEXO, SIT_TRAB, AGENTE_TOX,
+              LOC_EXPO, UTILIZACAO, 
+              ATIVIDA_1, VIA_1, LAVOURA,
+              CIRCUNSTAN, DOENCA_TRA, HOSPITAL,
+              CAT) %>%
+       mutate(UTILIZACAO = case_when(UTILIZACAO == "1" ~ "Inseticida",
+                                     UTILIZACAO == "2" ~ "Herbicida",
+                                     UTILIZACAO == "3" ~ "Carrapaticida",
+                                     UTILIZACAO == "4" ~ "Raticida",
+                                     UTILIZACAO == "5" ~ "Fungicida",
+                                     UTILIZACAO == "6" ~ "Preservante para madeira"),
+              Ano = str_extract(caminho, "\\d{4}"))
+   })
 
-# arquivos_iexog <- list.files(
-#   path = "Tabulacoes_R/SINAN/",
-#   pattern = "^PR_.*GERAL.*\\.csv$",
-#   full.names = TRUE,
-#   ignore.case = TRUE
-# )
+ PR_SINAN_GRAF_UTILIZACAO_AGRO <- IEXOG_Completo %>%
+   count(Ano, UTILIZACAO) %>%
+   filter(!is.na(UTILIZACAO)) %>%
+   mutate(UTILIZACAO = fct_reorder(UTILIZACAO, n, .fun = sum, .desc = TRUE)) %>%
+   ggplot(aes(x = Ano, y = n, group = UTILIZACAO)) +
+   geom_line(linewidth = 1.3, 
+             colour = "black",
+             show.legend = FALSE) +
+   geom_point(fill = "grey", 
+              size = 5, 
+              shape = 21,
+              show.legend = FALSE) + 
+   geom_text(aes(label = n), 
+             size = 3, 
+             vjust = -1.5, 
+             fontface = "bold",
+             show.legend = FALSE) + 
+   scale_x_discrete() +
+   scale_y_continuous(expand = expansion(mult = c(0.1, 0.25))) +
+   facet_wrap(~ UTILIZACAO, 
+              ncol = 2, 
+              scales = "free_y") + 
+   labs(caption = Fonte4, 
+        y = "Número de Notificações",
+        x = NULL,
+        title = "Tipo de Agrotóxico Utilizado nas Intoxicações",
+        subtitle = "Paraná (2016-2025).") +
+   Theme() 
  
- # IEXOG_completo <- arquivos_iexog %>%
- #   map_df(function(caminho) {
- #     read.csv (file = caminho,
- #               header = TRUE,
- #               sep = ",") %>%
- #       select(NU_IDADE_N, CIRCUNSTAN) %>%
- #       mutate(Ano = str_extract(caminho, "\\d{4}")) 
- #   })
+RS_SINAN_GRAF_UTILIZACAO_AGRO <- IEXOG_Completo %>%
+  filter(str_detect(MUN_EMP, regex_Mun_RS)) %>%
+   count(Ano, UTILIZACAO) %>%
+   filter(!is.na(UTILIZACAO)) %>%
+   mutate(UTILIZACAO = fct_reorder(UTILIZACAO, n, .fun = sum, .desc = TRUE)) %>%
+   ggplot(aes(x = Ano, y = n, group = UTILIZACAO)) +
+   geom_line(linewidth = 1.3, 
+             colour = "black",
+             show.legend = FALSE) +
+   geom_point(fill = "grey", 
+              size = 5, 
+              shape = 21,
+              show.legend = FALSE) + 
+   geom_text(aes(label = n), 
+             size = 3, 
+             vjust = -1.5, 
+             fontface = "bold",
+             show.legend = FALSE) + 
+   scale_x_discrete() +
+   scale_y_continuous(expand = expansion(mult = c(0.1, 0.25))) +
+   facet_wrap(~ UTILIZACAO, 
+              ncol = 2, 
+              scales = "free_y") + 
+   labs(caption = Fonte4, 
+        y = "Número de Notificações",
+        x = NULL,
+        title = "Tipo de Agrotóxico Utilizado nas Intoxicações",
+        subtitle = "22ª Regional de Saúde (2016-2025).") +
+   Theme() 
+ 
+PR_SINAN_GRAF_LOCAL_OCORRENCIA <- IEXOG_Completo %>%
+  mutate(LOC_EXPO = case_when(str_detect(LOC_EXPO, "1") ~ "Residência",
+                              str_detect(LOC_EXPO, "2") ~ "Trabalho",
+                              str_detect(LOC_EXPO, "3") ~ "Trajeto trabalho",
+                              str_detect(LOC_EXPO, "4") ~ "Serviços de saúde",
+                              str_detect(LOC_EXPO, "5") ~ "Escola/creche",
+                              str_detect(LOC_EXPO, "6") ~ "Ambiente Externo",
+                              str_detect(LOC_EXPO, "7") ~ "Outros",
+  )) %>%
+  filter(LOC_EXPO != "9",
+         !is.na(LOC_EXPO)) %>%
+  count(Ano, LOC_EXPO) %>%
+  filter(!is.na(LOC_EXPO)) %>%
+  mutate(LOC_EXPO = fct_reorder(LOC_EXPO, n, .fun = sum, .desc = TRUE)) %>%
+  ggplot(aes(x = Ano, y = n, group = LOC_EXPO)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 1))) +
+  facet_wrap(~ LOC_EXPO, 
+             ncol = 2, 
+             scales = "free_y") + 
+  labs(caption = Fonte4, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Local de Ocorrência das Intoxicações Exógenas Geral",
+       subtitle = "Paraná (2016-2025).") +
+  Theme() 
 
+RS_SINAN_GRAF_LOCAL_OCORRENCIA <- IEXOG_Completo %>%
+  mutate(LOC_EXPO = case_when(str_detect(LOC_EXPO, "1") ~ "Residência",
+                              str_detect(LOC_EXPO, "2") ~ "Trabalho",
+                              str_detect(LOC_EXPO, "3") ~ "Trajeto trabalho",
+                              str_detect(LOC_EXPO, "4") ~ "Serviços de saúde",
+                              str_detect(LOC_EXPO, "5") ~ "Escola/creche",
+                              str_detect(LOC_EXPO, "6") ~ "Ambiente Externo",
+                              str_detect(LOC_EXPO, "7") ~ "Outros",
+  )) %>%
+  filter(str_detect(MUN_EMP, regex_Mun_RS),
+         LOC_EXPO != "9",
+         !is.na(LOC_EXPO)) %>%
+  count(Ano, LOC_EXPO) %>%
+  filter(!is.na(LOC_EXPO)) %>%
+  complete(Ano, LOC_EXPO, fill = list(n = 0)) %>% 
+  mutate(LOC_EXPO = fct_reorder(LOC_EXPO, n, .fun = sum, .desc = TRUE)) %>%
+  ggplot(aes(x = Ano, y = n, group = LOC_EXPO)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 1))) +
+  facet_wrap(~ LOC_EXPO, 
+             ncol = 2, 
+             scales = "free_y") + 
+  labs(caption = Fonte4, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Local de Ocorrência das Intoxicações Exógenas Geral",
+       subtitle = "22ª Regional de Saúde (2016-2025).") +
+  Theme() 
+
+#### Local de Ocorrência de intoxicações por agrotóxicos
+
+PR_SINAN_GRAF_LOCAL_OCORRENCIA_AGRO <- IEXOG_Completo %>%
+  mutate(LOC_EXPO = case_when(str_detect(LOC_EXPO, "1") ~ "Residência",
+                              str_detect(LOC_EXPO, "2") ~ "Trabalho",
+                              str_detect(LOC_EXPO, "3") ~ "Trajeto trabalho",
+                              str_detect(LOC_EXPO, "4") ~ "Serviços de saúde",
+                              str_detect(LOC_EXPO, "5") ~ "Escola/creche",
+                              str_detect(LOC_EXPO, "6") ~ "Ambiente Externo",
+                              str_detect(LOC_EXPO, "7") ~ "Outros",
+  )) %>%
+  filter(LOC_EXPO != "9",
+         !is.na(LOC_EXPO),
+         AGENTE_TOX == "02" |
+           AGENTE_TOX == "03" |
+           AGENTE_TOX == "04") %>%
+  count(Ano, LOC_EXPO) %>%
+  filter(!is.na(LOC_EXPO)) %>%
+  complete(Ano, LOC_EXPO, fill = list(n = 0)) %>% 
+  mutate(LOC_EXPO = fct_reorder(LOC_EXPO, n, .fun = sum, .desc = TRUE)) %>%
+  ggplot(aes(x = Ano, y = n, group = LOC_EXPO)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 1))) +
+  facet_wrap(~ LOC_EXPO, 
+             ncol = 2, 
+             scales = "free_y") + 
+  labs(caption = Fonte4, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Local de Ocorrência das Intoxicações Exógenas por Agrotóxicos",
+       subtitle = "Paraná (2016-2025).") +
+  Theme() 
+
+RS_SINAN_GRAF_LOCAL_OCORRENCIA_AGRO <- IEXOG_Completo %>%
+  mutate(LOC_EXPO = case_when(str_detect(LOC_EXPO, "1") ~ "Residência",
+                              str_detect(LOC_EXPO, "2") ~ "Trabalho",
+                              str_detect(LOC_EXPO, "3") ~ "Trajeto trabalho",
+                              str_detect(LOC_EXPO, "4") ~ "Serviços de saúde",
+                              str_detect(LOC_EXPO, "5") ~ "Escola/creche",
+                              str_detect(LOC_EXPO, "6") ~ "Ambiente Externo",
+                              str_detect(LOC_EXPO, "7") ~ "Outros",
+  )) %>%
+  filter(LOC_EXPO != "9",
+         str_detect(MUN_EMP, regex_Mun_RS),
+         !is.na(LOC_EXPO),
+         AGENTE_TOX == "02" |
+           AGENTE_TOX == "03" |
+           AGENTE_TOX == "04") %>%
+  count(Ano, LOC_EXPO) %>%
+  filter(!is.na(LOC_EXPO)) %>%
+  complete(Ano, LOC_EXPO, fill = list(n = 0)) %>% 
+  mutate(LOC_EXPO = fct_reorder(LOC_EXPO, n, .fun = sum, .desc = TRUE)) %>%
+  ggplot(aes(x = Ano, y = n, group = LOC_EXPO)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 1))) +
+  facet_wrap(~ LOC_EXPO, 
+             ncol = 2, 
+             scales = "free_y") + 
+  labs(caption = Fonte4, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Local de Ocorrência das Intoxicações Exógenas por Agrotóxicos",
+       subtitle = "22ª Regional de Saúde (2016-2025).") +
+  Theme() 
+
+#### Via de Exposição Geral
+
+PR_SINAN_GRAF_VIA_EXPOSICAO <- IEXOG_Completo %>%
+  mutate(VIA_1 = case_when(str_detect(VIA_1, "1") ~ "Digestiva",
+                              str_detect(VIA_1, "2") ~ "Cutânea",
+                              str_detect(VIA_1, "3") ~ "Respiratória",
+                              str_detect(VIA_1, "4") ~ "Ocular",
+                              str_detect(VIA_1, "5") ~ "Parenteral",
+                              str_detect(VIA_1, "6") ~ "Vaginal",
+                              str_detect(VIA_1, "7") ~ "Transplacentária",
+                           str_detect(VIA_1, "8") ~ "Outra"
+  )) %>%
+  filter(VIA_1 != "9",
+         !is.na(VIA_1)) %>%
+  count(Ano, VIA_1) %>%
+  filter(!is.na(VIA_1)) %>%
+  complete(Ano, VIA_1, fill = list(n = 0)) %>% 
+  mutate(VIA_1 = fct_reorder(VIA_1, n, .fun = sum, .desc = TRUE)) %>%
+  ggplot(aes(x = Ano, y = n, group = VIA_1)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 1))) +
+  facet_wrap(~ VIA_1, 
+             ncol = 2, 
+             scales = "free_y") + 
+  labs(caption = Fonte4, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Via de Exposição das Intoxicações Exógenas Geral",
+       subtitle = "Paraná (2016-2025).") +
+  Theme() 
+
+RS_SINAN_GRAF_VIA_EXPOSICAO <- IEXOG_Completo %>%
+  mutate(VIA_1 = case_when(str_detect(VIA_1, "1") ~ "Digestiva",
+                           str_detect(VIA_1, "2") ~ "Cutânea",
+                           str_detect(VIA_1, "3") ~ "Respiratória",
+                           str_detect(VIA_1, "4") ~ "Ocular",
+                           str_detect(VIA_1, "5") ~ "Parenteral",
+                           str_detect(VIA_1, "6") ~ "Vaginal",
+                           str_detect(VIA_1, "7") ~ "Transplacentária",
+                           str_detect(VIA_1, "8") ~ "Outra"
+  )) %>%
+  filter(str_detect(MUN_EMP, regex_Mun_RS),
+         VIA_1 != "9",
+         !is.na(VIA_1)) %>%
+  count(Ano, VIA_1) %>%
+  filter(!is.na(VIA_1)) %>%
+  complete(Ano, VIA_1, fill = list(n = 0)) %>% 
+  mutate(VIA_1 = fct_reorder(VIA_1, n, .fun = sum, .desc = TRUE)) %>%
+  ggplot(aes(x = Ano, y = n, group = VIA_1)) +
+  geom_line(linewidth = 1.3, 
+            colour = "black",
+            show.legend = FALSE) +
+  geom_point(fill = "grey", 
+             size = 5, 
+             shape = 21,
+             show.legend = FALSE) + 
+  geom_text(aes(label = n), 
+            size = 3, 
+            vjust = -1.5, 
+            fontface = "bold",
+            show.legend = FALSE) + 
+  scale_x_discrete() +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 1))) +
+  facet_wrap(~ VIA_1, 
+             ncol = 2, 
+             scales = "free_y") + 
+  labs(caption = Fonte4, 
+       y = "Número de Notificações",
+       x = NULL,
+       title = "Via de Exposição das Intoxicações Exógenas Geral",
+       subtitle = "22ª Regional de Saúde (2016-2025).") +
+  Theme() 
+
+####  Saúde do Trabalhador
+
+PR_SINAN_TRAB_GRAF_LAVOURA <- IEXOG_Completo %>%
+   filter(DOENCA_TRA == 1,
+          !is.na(LAVOURA), 
+          LAVOURA != "") %>%
+   group_by(Ano) %>%
+   count(Ano, LAVOURA) %>% 
+   arrange(desc(n), 
+           .by_group = TRUE) %>%
+   slice_head(n = 5) %>%
+   ungroup() %>%
+   mutate(LAVOURA = case_when(str_detect(LAVOURA, "SOJA") ~ "Soja",
+                              str_detect(LAVOURA, "FUMO") ~ "Fumo",
+                              str_detect(LAVOURA, "MILHO") ~ "Milho",
+                              str_detect(LAVOURA, "PASTAGENS") ~ "Pastagens",
+                              str_detect(LAVOURA, "TOMATE") ~ "Tomate",
+                              str_detect(LAVOURA, "CANA-DE") ~ "Cana de açucar",
+                              str_detect(LAVOURA, "CAF") ~ "Café",
+                              str_detect(LAVOURA, "058") | str_detect(LAVOURA, "FEIJ") ~ "Feijão",
+                              TRUE ~ "Outros")) %>%
+   mutate(LAVOURA = fct_reorder(LAVOURA, n, .fun = sum, .desc = TRUE)) %>%
+   ggplot(aes(x = Ano, 
+              y = n,
+              fill = LAVOURA)) +
+   geom_col(position = "fill", 
+            color = "white", 
+            linewidth = 0.2,
+            width = 0.75) + 
+   scale_y_continuous(labels = percent, expand = c(0, 0)) +
+   coord_flip() + 
+   scale_fill_brewer(palette = "BuGn", direction = -1) + 
+   labs(title = "Cultura/lavoura onde Ocorreu a Intoxicação",
+        subtitle = "Paraná, 2016 - 2025", 
+        x = NULL,
+        y = "Percentual de Casos",
+        fill = "Cultivo") +
+   Theme() +
+   theme(
+     legend.box.background = element_blank(),
+     legend.key = element_blank()
+   )
+ 
+RS_SINAN_TRAB_GRAF_LAVOURA <- IEXOG_Completo %>%
+  filter(str_detect(MUN_EMP, regex_Mun_RS), 
+         DOENCA_TRA == 1,
+         !is.na(LAVOURA), 
+         LAVOURA != "") %>%
+  group_by(Ano) %>%
+  count(Ano, LAVOURA) %>% 
+  arrange(desc(n), 
+          .by_group = TRUE) %>%
+  slice_head(n = 5) %>%
+  ungroup() %>%
+  mutate(LAVOURA = case_when(str_detect(LAVOURA, "SOJA") ~ "Soja",
+                             str_detect(LAVOURA, "FUMO") ~ "Fumo",
+                             str_detect(LAVOURA, "MILHO") ~ "Milho",
+                             str_detect(LAVOURA, "PASTAGENS") ~ "Pastagens",
+                             str_detect(LAVOURA, "TOMATE") ~ "Tomate",
+                             str_detect(LAVOURA, "CANA-DE") ~ "Cana de açucar",
+                             str_detect(LAVOURA, "CAF") ~ "Café",
+                             str_detect(LAVOURA, "058") | str_detect(LAVOURA, "FEIJ") ~ "Feijão",
+                             TRUE ~ "Outros")) %>%
+  mutate(LAVOURA = fct_reorder(LAVOURA, n, .fun = sum, .desc = TRUE)) %>%
+  ggplot(aes(x = Ano, 
+             y = n,
+             fill = LAVOURA)) +
+  geom_col(position = "fill", 
+           color = "white", 
+           linewidth = 0.2,
+           width = 0.75) + 
+  scale_y_continuous(labels = percent, expand = c(0, 0)) +
+  coord_flip() + 
+  scale_fill_brewer(palette = "BuGn", direction = -1) + 
+  labs(title = "Cultura/lavoura onde Ocorreu a Intoxicação",
+       subtitle = "Paraná, 2016 - 2025", 
+       x = NULL,
+       y = "Percentual de Casos",
+       fill = "Cultivo") +
+  Theme() +
+  theme(
+    legend.box.background = element_blank(),
+    legend.key = element_blank()
+  )
+
+PR_SINAN_TRAB_GRAF_ATIVIDADE <- IEXOG_Completo %>%
+  filter(SIT_TRAB == "01",
+         AGENTE_TOX == "02" |
+           AGENTE_TOX == "03" |
+           AGENTE_TOX == "04",
+         !is.na(ATIVIDA_1), 
+         ATIVIDA_1 != "",
+         ATIVIDA_1 != "99") %>%
+  group_by(Ano) %>%
+  count(Ano, ATIVIDA_1) %>% 
+  arrange(desc(n), 
+          .by_group = TRUE) %>%
+  ungroup() %>%
+  mutate(ATIVIDA_1 = case_when(str_detect(ATIVIDA_1, "1") ~ "Diluição",
+                               str_detect(ATIVIDA_1, "01") ~ "Diluição",
+                               str_detect(ATIVIDA_1, "02") ~ "Pulverização",
+                               str_detect(ATIVIDA_1, "2") ~ "Pulverização",
+                               str_detect(ATIVIDA_1, "03") ~ "Trat. \nSementes",
+                               str_detect(ATIVIDA_1, "3") ~ "Trat. \nSementes",
+                               str_detect(ATIVIDA_1, "04") ~ "Armazenagem",
+                               str_detect(ATIVIDA_1, "05") ~ "Colheita",
+                               #str_detect(ATIVIDA_1, "06") ~ "Transporte",
+                               str_detect(ATIVIDA_1, "07") ~ "Desinsetização",
+                               #str_detect(ATIVIDA_1, "08") ~ "Produção/\nformulação",
+                               str_detect(ATIVIDA_1, "09") ~ "Outros",
+                               str_detect(ATIVIDA_1, "9") ~ "Outros",
+  )) %>%
+  filter(!is.na(ATIVIDA_1)) %>%
+  mutate(ATIVIDA_1 = fct_reorder(ATIVIDA_1, n, .fun = sum, .desc = TRUE)) %>%
+  ggplot(aes(x = Ano, 
+             y = n,
+             fill = ATIVIDA_1)) +
+  geom_col(position = "fill", 
+           color = "white", 
+           linewidth = 0.2,
+           width = 0.75) + 
+  scale_y_continuous(labels = percent, expand = c(0, 0)) +
+  coord_flip() + 
+  scale_fill_brewer(palette = "BuGn", direction = -1) + 
+  labs(title = "Atividade Exercida no Momento da Intoxicação com Agrotóxico",
+       subtitle = "Paraná, 2016 - 2025", 
+       x = NULL,
+       y = "Percentual de Casos",
+       fill = "Cultivo") +
+  Theme() +
+  theme(
+    legend.box.background = element_blank(),
+    legend.key = element_blank()
+  )
+
+ Teste <- IEXOG_Completo %>%
+   filter(#SIT_TRAB == "01",
+          !is.na(ATIVIDA_1),
+          AGENTE_TOX == "02" |
+            AGENTE_TOX == "03" |
+            AGENTE_TOX == "04") %>%
+   group_by(Ano) %>%
+   count(Ano, ATIVIDA_1) %>% 
+   arrange(desc(n), 
+           .by_group = TRUE) %>%
+   ungroup() %>%
+   mutate(LOC_EXPO = case_when(str_detect(LOC_EXPO, "1") ~ "Residência",
+                                str_detect(LOC_EXPO, "2") ~ "Trabalho",
+                                str_detect(LOC_EXPO, "3") ~ "Trajeto trabalho",
+                                str_detect(LOC_EXPO, "4") ~ "Serviços de saúde",
+                                str_detect(LOC_EXPO, "5") ~ "Escola/creche",
+                                str_detect(LOC_EXPO, "6") ~ "Ambiente Externo",
+                                str_detect(LOC_EXPO, "7") ~ "Outros",
+                                ))
+ 
+ ##### Tabela regionais
 AUX <- PR_2016_GERAL %>%
   group_by(RS) %>% 
   summarize(
@@ -11023,6 +11498,129 @@ PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS <- gt(AUX) %>%
     ),
     locations = cells_body(rows = RS == "22")
   )
+
+#### Série Histórica Municípios
+
+AUX <- PR_2016_GERAL %>%
+  filter(RS == 22) %>% 
+  mutate(Agro_2016 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Código_IBGE, Município_sem_Código, Notificados_2016 = Notificados, Agro_2016)
+
+AUX[, 5:6] <- PR_2017_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2017 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2017 = Notificados, Agro_2017)
+
+AUX[, 7:8] <- PR_2018_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2018 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2018 = Notificados, Agro_2018)
+
+AUX[, 9:10] <- PR_2019_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2019 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2019 = Notificados, Agro_2019)
+
+AUX[, 11:12] <- PR_2020_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2020 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2020 = Notificados, Agro_2020)
+
+AUX[, 13:14] <- PR_2021_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2021 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2021 = Notificados, Agro_2021)
+
+AUX[, 15:16] <- PR_2022_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2022 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2022 = Notificados, Agro_2022)
+
+AUX[, 17:18] <- PR_2023_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2023 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2023 = Notificados, Agro_2023)
+
+AUX[, 19:20] <- PR_2024_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2024 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2024 = Notificados, Agro_2024)
+
+AUX[, 21:22] <- PR_2025_GERAL %>% 
+  filter(RS == 22) %>% 
+  mutate(Agro_2025 = Agrotóxicos_Agr + Agrotóxicos_Domes + Agrotóxicos_Saude) %>%
+  select(Notificados_2025 = Notificados, Agro_2025)
+
+RS_PEVASPEA_SINAN_TAB_Intoxicacoes <- gt(AUX[, -1]) %>%
+  tab_header(
+    title = md("**Intoxicações Exógenas (Geral e por Agrotóxicos) na 22ª Regional de Saúde**"),
+    subtitle = md("2016 – 2025")
+  ) %>%
+  tab_options(
+    heading.align = "left",
+    table.border.top.style = "none",
+    table.border.bottom.color = "black",
+    table.border.bottom.width = px(2),
+    column_labels.border.top.color = "black",
+    column_labels.border.top.width = px(2),
+    column_labels.border.bottom.color = "black",
+    column_labels.border.bottom.width = px(1),
+    table.font.size = px(12),
+    data_row.padding = px(3)
+  ) %>%
+  tab_spanner(label = "2016",
+              columns = c(2:3),
+              id = "2016") %>%
+  tab_spanner(label = "2017",
+              columns = c(4:5),
+              id = "2017") %>%
+  tab_spanner(label = "2018",
+              columns = c(6:7),
+              id = "2018") %>%
+  tab_spanner(label = "2019",
+              columns = c(8:9),
+              id = "2019") %>%
+  tab_spanner(label = "2020",
+              columns = c(10:11),
+              id = "2020") %>%
+  tab_spanner(label = "2021",
+              columns = c(12:13),
+              id = "2021") %>%
+  tab_spanner(label = "2022",
+              columns = c(14:15),
+              id = "2022") %>%
+  tab_spanner(label = "2023",
+              columns = c(16:17),
+              id = "2023") %>%
+  tab_spanner(label = "2024",
+              columns = c(18:19),
+              id = "2024") %>%
+  tab_spanner(label = "2025",
+              columns = c(20:21),
+              id = "2025") %>%
+  cols_align(align = "left", columns = 1) %>%
+  cols_align(align = "center", columns = 2:21) %>%
+  cols_label(Município_sem_Código = "Município",
+             contains("Notifi") ~ "Int. \nGeral",
+             contains("Agro") ~ "Int. \nAgro"
+  ) %>%
+  tab_footnote(
+    footnote = "Fonte: SINAN. Base DBF acessada em 04/02/2026. Dados sujeitos a alteração."
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#f9f9f9"),
+    locations = cells_body(
+      columns = c(4, 5,  
+                  8, 9, 
+                  12, 13, 
+                  16, 17, 
+                  20, 21)
+      )
+    )
 
 ##### Salvando objetos
 
@@ -11249,6 +11847,8 @@ ggsave(filename = "Imagens/SIM/PR_SIM_MAP_TAXA_CANCER_16_20_21_25_MUN.png",
 gtsave(PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS,
        filename = "Imagens/SINAN/PR_PEVASPEA_SINAN_TAB_Intoxicacoes_RS.png" )
 
+gtsave(RS_PEVASPEA_SINAN_TAB_Intoxicacoes,
+       filename = "Imagens/SINAN/RS_PEVASPEA_SINAN_TAB_Intoxicacoes.png" )
 
 ggsave("/home/gustavo/Área de trabalho/Análise_de_Dados/Imagens/SINAN/PR_SINAN_GRAF_SERIE_HIST_Geral.png",
        PR_SINAN_GRAF_SERIE_HIST_Geral,
