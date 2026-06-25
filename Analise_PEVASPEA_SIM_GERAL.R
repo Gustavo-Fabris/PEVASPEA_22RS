@@ -364,6 +364,12 @@ quebras <- c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, I
 rotulos <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", 
              "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
 
+todos_grupos_cid <- c(
+  "Linfatico_Hematologico", "Cerebro_SNC", "Digestivo", "Respiratorio", 
+  "Gen_Fem", "Gen_Masc", "Mama", "Via_Urinaria", "Pele", "Labio_Oral", 
+  "Ossos", "Tec_Mole", "Tireoide_Endo", "Mal_Definidas"
+)
+
 PR_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
   filter(str_detect(CAUSABAS, "C")) %>%
   mutate(
@@ -445,6 +451,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2016 <- DOPR2016 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -846,6 +855,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2017 <- DOPR2017 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -1268,6 +1280,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2018 <- DOPR2018 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -1688,6 +1703,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2019 <- DOPR2019 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -2109,6 +2127,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2020 <- DOPR2020 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -2531,6 +2552,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2021 <- DOPR2021 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -2951,6 +2975,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2022 <- DOPR2022 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -3371,6 +3398,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2023 <- DOPR2023 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -3791,6 +3821,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2024 <- DOPR2024 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
@@ -4211,6 +4244,9 @@ RS_PEVASPEA_SIM_NEOPLASIA_IDADE_2025 <- DOPR2025 %>%
   drop_na(Grupo_CID, Faixa_Etaria) %>%
   group_by(Grupo_CID, Faixa_Etaria) %>%
   summarise(Casos = n(), .groups = "drop") %>%
+  complete(Grupo_CID = todos_grupos_cid, 
+           Faixa_Etaria = factor(rotulos, levels = rotulos), 
+           fill = list(Casos = 0)) %>%
   pivot_wider(names_from = Faixa_Etaria, 
               values_from = Casos, 
               values_fill = 0) %>%
